@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://b7nm2v8xv7i4o"]
+
+[ext_resource type="PackedScene" uid="uid://ctpj4nra38w8o" path="res://assets/art/models/cinema/cinema.glb" id="1_7gvja"]
+
+[node name="Node3D" type="Node3D" unique_id=179770478]
+
+[node name="cinema" parent="." unique_id=1095891558 instance=ExtResource("1_7gvja")]
+
+[editable path="cinema"]
