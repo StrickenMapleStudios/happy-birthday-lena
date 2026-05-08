@@ -138,6 +138,82 @@ corner_radius_top_right = 14
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_option_button_pressed"]
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 18.0
+content_margin_bottom = 14.0
+bg_color = Color(0.341176, 0.317647, 0.207843, 0.82)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.960784, 0, 0.82)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_picker_arrow_normal"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_picker_arrow_hover"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 1, 1, 0.08)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_picker_arrow_pressed"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 0.819608, 0.239216, 0.12)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_picker_arrow_disabled"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
 [node name="menuUI" type="Control" unique_id=899699264]
 layout_mode = 3
 anchors_preset = 15
@@ -278,10 +354,10 @@ theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
 theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 24
-theme_override_styles/normal = SubResource("StyleBoxFlat_option_button")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_7t5wn")
-theme_override_styles/hover = SubResource("StyleBoxFlat_option_button_hover")
-theme_override_styles/focus = SubResource("StyleBoxFlat_option_button_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
+theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
 text = "< BACK"
 alignment = 0
 
@@ -429,14 +505,54 @@ theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
 text = "RESOLUTION"
 
-[node name="ResolutionValue" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow" unique_id=172882970]
+[node name="ResolutionPicker" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow" unique_id=172882970]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ResolutionLeftButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker" unique_id=565510001]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_disabled_color = Color(1, 1, 1, 0.28)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_picker_arrow_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_picker_arrow_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_picker_arrow_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_picker_arrow_disabled")
+text = "<"
+
+[node name="ResolutionValueLabel" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker" unique_id=565510002]
+custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
-text = "<      1920 x 1080      >"
+text = "1920 x 1080"
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ResolutionRightButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker" unique_id=565510003]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_disabled_color = Color(1, 1, 1, 0.28)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_picker_arrow_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_picker_arrow_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_picker_arrow_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_picker_arrow_disabled")
+text = ">"
 
 [node name="FullscreenRow" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent" unique_id=148096443]
 layout_mode = 2
@@ -450,14 +566,50 @@ theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
 text = "FULLSCREEN"
 
-[node name="FullscreenValue" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow" unique_id=166926821]
+[node name="FullscreenPicker" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow" unique_id=166926821]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FullscreenLeftButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker" unique_id=565510004]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_pressed_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_picker_arrow_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_picker_arrow_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_picker_arrow_hover")
+text = "<"
+
+[node name="FullscreenValueLabel" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker" unique_id=565510005]
+custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.819608, 0.239216, 1)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
-text = "<           ON           >"
+text = "ON"
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FullscreenRightButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker" unique_id=565510006]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_pressed_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_picker_arrow_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_picker_arrow_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_picker_arrow_hover")
+text = ">"
 
 [node name="VsyncRow" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent" unique_id=553398377]
 layout_mode = 2
@@ -471,14 +623,50 @@ theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
 text = "VSYNC"
 
-[node name="VsyncValue" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/VsyncRow" unique_id=1775615609]
+[node name="VsyncPicker" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/VsyncRow" unique_id=1775615609]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VsyncLeftButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker" unique_id=565510007]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_pressed_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_picker_arrow_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_picker_arrow_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_picker_arrow_hover")
+text = "<"
+
+[node name="VsyncValueLabel" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker" unique_id=565510008]
+custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.819608, 0.239216, 1)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
-text = "<           ON           >"
+text = "ON"
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VsyncRightButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker" unique_id=565510009]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_pressed_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_picker_arrow_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_picker_arrow_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_picker_arrow_hover")
+text = ">"
 
 [node name="GameplayPanel" type="PanelContainer" parent="SafeMargin/OptionsScreen/OptionsBody" unique_id=326446838]
 custom_minimum_size = Vector2(860, 0)
@@ -509,14 +697,50 @@ theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
 text = "LANGUAGE"
 
-[node name="LanguageValue" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/LanguageRow" unique_id=208044687]
+[node name="LanguagePicker" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/LanguageRow" unique_id=208044687]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LanguageLeftButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker" unique_id=565510010]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_picker_arrow_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_picker_arrow_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_picker_arrow_hover")
+text = "<"
+
+[node name="LanguageValueLabel" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker" unique_id=565510011]
+custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
-text = "<          ENGLISH          >"
+text = "ENGLISH"
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LanguageRightButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker" unique_id=565510012]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_picker_arrow_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_picker_arrow_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_picker_arrow_hover")
+text = ">"
 
 [node name="HintsRow" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent" unique_id=1108204452]
 layout_mode = 2
@@ -530,14 +754,50 @@ theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
 text = "TUTORIAL HINTS"
 
-[node name="HintsValue" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/HintsRow" unique_id=861642213]
+[node name="HintsPicker" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/HintsRow" unique_id=861642213]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HintsLeftButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker" unique_id=565510013]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_pressed_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_picker_arrow_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_picker_arrow_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_picker_arrow_hover")
+text = "<"
+
+[node name="HintsValueLabel" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker" unique_id=565510014]
+custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.819608, 0.239216, 1)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
-text = "<           ON           >"
+text = "ON"
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HintsRightButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker" unique_id=565510015]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_pressed_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_picker_arrow_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_picker_arrow_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_picker_arrow_hover")
+text = ">"
 
 [node name="OptionsFooter" type="HBoxContainer" parent="SafeMargin/OptionsScreen" unique_id=130330222]
 layout_mode = 2
@@ -552,10 +812,10 @@ theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
 theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 24
-theme_override_styles/normal = SubResource("StyleBoxFlat_option_button")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_7t5wn")
-theme_override_styles/hover = SubResource("StyleBoxFlat_option_button_hover")
-theme_override_styles/focus = SubResource("StyleBoxFlat_option_button_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
+theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
 text = "RESET TO DEFAULTS"
 
 [node name="CreditsButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsFooter" unique_id=954210640]
@@ -566,10 +826,10 @@ theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
 theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 24
-theme_override_styles/normal = SubResource("StyleBoxFlat_option_button")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_7t5wn")
-theme_override_styles/hover = SubResource("StyleBoxFlat_option_button_hover")
-theme_override_styles/focus = SubResource("StyleBoxFlat_option_button_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
+theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
 text = "CREDITS"
 
 [node name="ApplyButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsFooter" unique_id=572976331]
@@ -580,10 +840,10 @@ theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
 theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 24
-theme_override_styles/normal = SubResource("StyleBoxFlat_option_button")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_7t5wn")
-theme_override_styles/hover = SubResource("StyleBoxFlat_option_button_hover")
-theme_override_styles/focus = SubResource("StyleBoxFlat_option_button_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_kb1ni")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_2c2wf")
+theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
 text = "APPLY"
 
 [node name="ExitOverlay" type="Control" parent="." unique_id=642576144]
