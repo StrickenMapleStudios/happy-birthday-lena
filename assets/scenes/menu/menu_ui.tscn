@@ -90,6 +90,54 @@ corner_radius_top_right = 24
 corner_radius_bottom_right = 24
 corner_radius_bottom_left = 24
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel_options"]
+content_margin_left = 24.0
+content_margin_top = 18.0
+content_margin_right = 24.0
+content_margin_bottom = 20.0
+bg_color = Color(0.231373, 0.164706, 0.0784314, 0.45)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.929412, 0.729412, 0.28)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_option_button"]
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 18.0
+content_margin_bottom = 14.0
+bg_color = Color(0.180392, 0.180392, 0.180392, 0.42)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.42)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_option_button_hover"]
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 18.0
+content_margin_bottom = 14.0
+bg_color = Color(0.623529, 0.423529, 0, 0.65098)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.960784, 0, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
 [node name="menuUI" type="Control" unique_id=899699264]
 layout_mode = 3
 anchors_preset = 15
@@ -212,6 +260,331 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
 theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
 text = "< EXIT"
 alignment = 0
+
+[node name="OptionsScreen" type="VBoxContainer" parent="SafeMargin"]
+visible = false
+custom_minimum_size = Vector2(930, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 12
+
+[node name="BackButton" type="Button" parent="SafeMargin/OptionsScreen" unique_id=820340001]
+custom_minimum_size = Vector2(168, 52)
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+theme = SubResource("Theme_v8h3d")
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_option_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_option_button_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_option_button_hover")
+text = "< BACK"
+alignment = 0
+
+[node name="OptionsTitle" type="Label" parent="SafeMargin/OptionsScreen" unique_id=148009422]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_fonts/font = ExtResource("1_2e3xq")
+theme_override_font_sizes/font_size = 96
+text = "OPTIONS"
+uppercase = true
+
+[node name="OptionsBody" type="VBoxContainer" parent="SafeMargin/OptionsScreen" unique_id=149023113]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="AudioPanel" type="PanelContainer" parent="SafeMargin/OptionsScreen/OptionsBody" unique_id=165987650]
+custom_minimum_size = Vector2(860, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel_options")
+
+[node name="AudioContent" type="VBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/AudioPanel" unique_id=728614030]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="AudioHeader" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/AudioPanel/AudioContent" unique_id=193448860]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.97)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 24
+text = "AUDIO"
+uppercase = true
+
+[node name="MasterVolumeRow" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/AudioPanel/AudioContent" unique_id=959213872]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="MasterVolumeLabel" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/AudioPanel/AudioContent/MasterVolumeRow" unique_id=1609345840]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "MASTER VOLUME"
+
+[node name="MasterVolumeSlider" type="HSlider" parent="SafeMargin/OptionsScreen/OptionsBody/AudioPanel/AudioContent/MasterVolumeRow" unique_id=212390084]
+custom_minimum_size = Vector2(360, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 100.0
+value = 100.0
+
+[node name="MasterVolumeValue" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/AudioPanel/AudioContent/MasterVolumeRow" unique_id=731026191]
+custom_minimum_size = Vector2(84, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "100%"
+horizontal_alignment = 2
+
+[node name="MusicVolumeRow" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/AudioPanel/AudioContent" unique_id=1515238251]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="MusicVolumeLabel" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/AudioPanel/AudioContent/MusicVolumeRow" unique_id=315310238]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "MUSIC VOLUME"
+
+[node name="MusicVolumeSlider" type="HSlider" parent="SafeMargin/OptionsScreen/OptionsBody/AudioPanel/AudioContent/MusicVolumeRow" unique_id=210803663]
+custom_minimum_size = Vector2(360, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 100.0
+value = 80.0
+
+[node name="MusicVolumeValue" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/AudioPanel/AudioContent/MusicVolumeRow" unique_id=210385060]
+custom_minimum_size = Vector2(84, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "80%"
+horizontal_alignment = 2
+
+[node name="SfxVolumeRow" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/AudioPanel/AudioContent" unique_id=127390285]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="SfxVolumeLabel" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/AudioPanel/AudioContent/SfxVolumeRow" unique_id=286658588]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "SFX VOLUME"
+
+[node name="SfxVolumeSlider" type="HSlider" parent="SafeMargin/OptionsScreen/OptionsBody/AudioPanel/AudioContent/SfxVolumeRow" unique_id=339517920]
+custom_minimum_size = Vector2(360, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 100.0
+value = 90.0
+
+[node name="SfxVolumeValue" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/AudioPanel/AudioContent/SfxVolumeRow" unique_id=853298260]
+custom_minimum_size = Vector2(84, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "90%"
+horizontal_alignment = 2
+
+[node name="DisplayPanel" type="PanelContainer" parent="SafeMargin/OptionsScreen/OptionsBody" unique_id=1913390508]
+custom_minimum_size = Vector2(860, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel_options")
+
+[node name="DisplayContent" type="VBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel" unique_id=195084367]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="DisplayHeader" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent" unique_id=2026181098]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.97)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 24
+text = "DISPLAY"
+uppercase = true
+
+[node name="ResolutionRow" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent" unique_id=1982742488]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="ResolutionLabel" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow" unique_id=589873062]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "RESOLUTION"
+
+[node name="ResolutionValue" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow" unique_id=172882970]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "<      1920 x 1080      >"
+horizontal_alignment = 1
+
+[node name="FullscreenRow" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent" unique_id=148096443]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="FullscreenLabel" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow" unique_id=192344171]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "FULLSCREEN"
+
+[node name="FullscreenValue" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow" unique_id=166926821]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.819608, 0.239216, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "<           ON           >"
+horizontal_alignment = 1
+
+[node name="VsyncRow" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent" unique_id=553398377]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="VsyncLabel" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/VsyncRow" unique_id=1125487824]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "VSYNC"
+
+[node name="VsyncValue" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/VsyncRow" unique_id=1775615609]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.819608, 0.239216, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "<           ON           >"
+horizontal_alignment = 1
+
+[node name="GameplayPanel" type="PanelContainer" parent="SafeMargin/OptionsScreen/OptionsBody" unique_id=326446838]
+custom_minimum_size = Vector2(860, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel_options")
+
+[node name="GameplayContent" type="VBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel" unique_id=1055069480]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="GameplayHeader" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent" unique_id=695530502]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.97)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 24
+text = "GAMEPLAY"
+uppercase = true
+
+[node name="LanguageRow" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent" unique_id=859506137]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="LanguageLabel" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/LanguageRow" unique_id=1247542506]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "LANGUAGE"
+
+[node name="LanguageValue" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/LanguageRow" unique_id=208044687]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "<          ENGLISH          >"
+horizontal_alignment = 1
+
+[node name="HintsRow" type="HBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent" unique_id=1108204452]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="HintsLabel" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/HintsRow" unique_id=1045922867]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "TUTORIAL HINTS"
+
+[node name="HintsValue" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/HintsRow" unique_id=861642213]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.819608, 0.239216, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "<           ON           >"
+horizontal_alignment = 1
+
+[node name="OptionsFooter" type="HBoxContainer" parent="SafeMargin/OptionsScreen" unique_id=130330222]
+layout_mode = 2
+theme = SubResource("Theme_v8h3d")
+theme_override_constants/separation = 26
+
+[node name="ResetDefaultsButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsFooter" unique_id=1533466024]
+custom_minimum_size = Vector2(286, 78)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_option_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_option_button_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_option_button_hover")
+text = "RESET TO DEFAULTS"
+
+[node name="CreditsButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsFooter" unique_id=954210640]
+custom_minimum_size = Vector2(220, 78)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_option_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_option_button_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_option_button_hover")
+text = "CREDITS"
+
+[node name="ApplyButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsFooter" unique_id=572976331]
+custom_minimum_size = Vector2(190, 78)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_option_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_option_button_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_option_button_hover")
+text = "APPLY"
 
 [node name="ExitOverlay" type="Control" parent="." unique_id=642576144]
 visible = false
