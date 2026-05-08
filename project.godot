@@ -15,9 +15,18 @@ run/main_scene="uid://c3pfhf3o67ojp"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/assetplus/plugin.cfg", "res://addons/godot_state_charts/plugin.cfg")
+enabled=PackedStringArray("res://addons/assetplus/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/godot_state_charts/plugin.cfg")
 
 [physics]
 
