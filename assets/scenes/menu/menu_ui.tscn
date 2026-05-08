@@ -3,6 +3,10 @@
 [ext_resource type="FontFile" uid="uid://dkrxonksevp7k" path="res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf" id="1_2e3xq"]
 [ext_resource type="FontFile" uid="uid://cmykgjkhr31m3" path="res://assets/art/fonts/Paytone_One/PaytoneOne-Regular.ttf" id="2_j1n5m"]
 [ext_resource type="Script" uid="uid://drm568c26glfe" path="res://assets/scripts/menu_ui.gd" id="3_rl1ix"]
+[ext_resource type="Texture2D" uid="uid://dxb5w7xclcxcl" path="res://assets/art/sprites/play-button-arrowhead.png" id="4_4dwnj"]
+[ext_resource type="Texture2D" uid="uid://swv5sjr2qw25" path="res://assets/art/sprites/plus-icon.png" id="5_c8xxy"]
+[ext_resource type="Texture2D" uid="uid://bjox7kpvieq6v" path="res://assets/art/sprites/gear-icon.png" id="6_2ccdv"]
+[ext_resource type="Texture2D" uid="uid://j5ngks8biypl" path="res://assets/art/sprites/exit-icon.png" id="7_x5wro"]
 
 [sub_resource type="Theme" id="Theme_j0h4h"]
 Label/fonts/font = ExtResource("1_2e3xq")
@@ -174,7 +178,7 @@ content_margin_left = 8.0
 content_margin_top = 8.0
 content_margin_right = 8.0
 content_margin_bottom = 8.0
-bg_color = Color(1, 1, 1, 0.08)
+bg_color = Color(0, 0, 0, 0)
 border_width_left = 0
 border_width_top = 0
 border_width_right = 0
@@ -189,7 +193,7 @@ content_margin_left = 8.0
 content_margin_top = 8.0
 content_margin_right = 8.0
 content_margin_bottom = 8.0
-bg_color = Color(1, 0.819608, 0.239216, 0.12)
+bg_color = Color(0, 0, 0, 0)
 border_width_left = 0
 border_width_top = 0
 border_width_right = 0
@@ -275,6 +279,8 @@ custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
 size_flags_horizontal = 0
 mouse_default_cursor_shape = 2
+theme_override_constants/h_separation = 18
+theme_override_constants/icon_max_width = 30
 theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
 theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
@@ -286,7 +292,9 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_u0yq1")
 theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
 disabled = true
-text = "> CONTINUE"
+icon_alignment = 0
+icon = ExtResource("4_4dwnj")
+text = "CONTINUE"
 alignment = 0
 
 [node name="NewGameButton" type="Button" parent="SafeMargin/Sidebar/ButtonStack" unique_id=1005522670]
@@ -294,6 +302,8 @@ custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
 size_flags_horizontal = 0
 mouse_default_cursor_shape = 2
+theme_override_constants/h_separation = 18
+theme_override_constants/icon_max_width = 28
 theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
 theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
@@ -302,7 +312,9 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
 theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
 theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
-text = "+ NEW GAME"
+icon_alignment = 0
+icon = ExtResource("5_c8xxy")
+text = "NEW GAME"
 alignment = 0
 
 [node name="OptionsButton" type="Button" parent="SafeMargin/Sidebar/ButtonStack" unique_id=1010049590]
@@ -310,6 +322,8 @@ custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
 size_flags_horizontal = 0
 mouse_default_cursor_shape = 2
+theme_override_constants/h_separation = 18
+theme_override_constants/icon_max_width = 28
 theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
 theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
@@ -318,7 +332,9 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
 theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
 theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
-text = "* OPTIONS"
+icon_alignment = 0
+icon = ExtResource("6_2ccdv")
+text = "OPTIONS"
 alignment = 0
 
 [node name="ExitButton" type="Button" parent="SafeMargin/Sidebar/ButtonStack" unique_id=1734098870]
@@ -326,6 +342,8 @@ custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
 size_flags_horizontal = 0
 mouse_default_cursor_shape = 2
+theme_override_constants/h_separation = 18
+theme_override_constants/icon_max_width = 28
 theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
 theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
@@ -334,12 +352,14 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
 theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
 theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
-text = "< EXIT"
+icon_alignment = 0
+icon = ExtResource("7_x5wro")
+text = "EXIT"
 alignment = 0
 
 [node name="OptionsScreen" type="VBoxContainer" parent="SafeMargin"]
 visible = false
-custom_minimum_size = Vector2(930, 0)
+custom_minimum_size = Vector2(900, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_constants/separation = 12
@@ -376,7 +396,7 @@ layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="AudioPanel" type="PanelContainer" parent="SafeMargin/OptionsScreen/OptionsBody" unique_id=165987650]
-custom_minimum_size = Vector2(860, 0)
+custom_minimum_size = Vector2(830, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel_options")
 
@@ -477,13 +497,13 @@ text = "90%"
 horizontal_alignment = 2
 
 [node name="DisplayPanel" type="PanelContainer" parent="SafeMargin/OptionsScreen/OptionsBody" unique_id=1913390508]
-custom_minimum_size = Vector2(860, 0)
+custom_minimum_size = Vector2(830, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel_options")
 
 [node name="DisplayContent" type="VBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel" unique_id=195084367]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 8
 
 [node name="DisplayHeader" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent" unique_id=2026181098]
 layout_mode = 2
@@ -510,12 +530,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="ResolutionLeftButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker" unique_id=565510001]
-custom_minimum_size = Vector2(54, 54)
+custom_minimum_size = Vector2(42, 38)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_disabled_color = Color(1, 1, 1, 0.28)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
@@ -538,12 +558,12 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ResolutionRightButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker" unique_id=565510003]
-custom_minimum_size = Vector2(54, 54)
+custom_minimum_size = Vector2(42, 38)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_disabled_color = Color(1, 1, 1, 0.28)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
@@ -571,12 +591,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="FullscreenLeftButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker" unique_id=565510004]
-custom_minimum_size = Vector2(54, 54)
+custom_minimum_size = Vector2(42, 38)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_pressed_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
@@ -597,12 +617,12 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="FullscreenRightButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker" unique_id=565510006]
-custom_minimum_size = Vector2(54, 54)
+custom_minimum_size = Vector2(42, 38)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_pressed_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
@@ -628,12 +648,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="VsyncLeftButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker" unique_id=565510007]
-custom_minimum_size = Vector2(54, 54)
+custom_minimum_size = Vector2(42, 38)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_pressed_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
@@ -654,12 +674,12 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="VsyncRightButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker" unique_id=565510009]
-custom_minimum_size = Vector2(54, 54)
+custom_minimum_size = Vector2(42, 38)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_pressed_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
@@ -669,13 +689,13 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_picker_arrow_hover")
 text = ">"
 
 [node name="GameplayPanel" type="PanelContainer" parent="SafeMargin/OptionsScreen/OptionsBody" unique_id=326446838]
-custom_minimum_size = Vector2(860, 0)
+custom_minimum_size = Vector2(830, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel_options")
 
 [node name="GameplayContent" type="VBoxContainer" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel" unique_id=1055069480]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 8
 
 [node name="GameplayHeader" type="Label" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent" unique_id=695530502]
 layout_mode = 2
@@ -702,12 +722,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="LanguageLeftButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker" unique_id=565510010]
-custom_minimum_size = Vector2(54, 54)
+custom_minimum_size = Vector2(42, 38)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
@@ -728,12 +748,12 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="LanguageRightButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker" unique_id=565510012]
-custom_minimum_size = Vector2(54, 54)
+custom_minimum_size = Vector2(42, 38)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
@@ -759,12 +779,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="HintsLeftButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker" unique_id=565510013]
-custom_minimum_size = Vector2(54, 54)
+custom_minimum_size = Vector2(42, 38)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_pressed_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
@@ -785,12 +805,12 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="HintsRightButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker" unique_id=565510015]
-custom_minimum_size = Vector2(54, 54)
+custom_minimum_size = Vector2(42, 38)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_pressed_color = Color(0.98, 0.98, 0.98, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_picker_arrow_normal")
@@ -802,10 +822,10 @@ text = ">"
 [node name="OptionsFooter" type="HBoxContainer" parent="SafeMargin/OptionsScreen" unique_id=130330222]
 layout_mode = 2
 theme = SubResource("Theme_v8h3d")
-theme_override_constants/separation = 26
+theme_override_constants/separation = 22
 
 [node name="ResetDefaultsButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsFooter" unique_id=1533466024]
-custom_minimum_size = Vector2(286, 78)
+custom_minimum_size = Vector2(320, 78)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
@@ -818,22 +838,8 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
 theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
 text = "RESET TO DEFAULTS"
 
-[node name="CreditsButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsFooter" unique_id=954210640]
-custom_minimum_size = Vector2(220, 78)
-layout_mode = 2
-mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
-theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 24
-theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
-theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
-theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
-text = "CREDITS"
-
 [node name="ApplyButton" type="Button" parent="SafeMargin/OptionsScreen/OptionsFooter" unique_id=572976331]
-custom_minimum_size = Vector2(190, 78)
+custom_minimum_size = Vector2(180, 78)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
