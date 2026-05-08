@@ -1,6 +1,8 @@
 extends Node3D
 
-const ROTATION_SPEED := 7.5
+const WALKING_TURN_SPEED := 6.0
+const RUNNING_TURN_SPEED := 9.0
+const NARUTO_RUNNING_TURN_SPEED := 11.0
 const ANIMATION_WALKING := "Walking"
 const ANIMATION_RUNNING := "Running"
 const ANIMATION_NARUTO_RUNNING := "NarutoRunning"
@@ -58,8 +60,7 @@ func _process(delta: float) -> void:
 
 	if is_moving:
 		var direction := Vector3(input.x, 0.0, input.y).normalized()
-		var target_rotation := atan2(direction.x, direction.z)
-		rotation.y = lerp_angle(rotation.y, target_rotation, delta * ROTATION_SPEED)
+		_rotate_towards(direction, delta)
 		global_position += direction * _get_current_move_speed() * delta
 
 	_update_running_loops(is_moving, speed_up)
@@ -111,6 +112,24 @@ func _sync_animation_flags(is_moving: bool, speed_up: bool) -> void:
 
 func _get_current_move_speed() -> float:
 	return float(_movement_speeds.get(_current_state, 0.0))
+
+
+func _rotate_towards(direction: Vector3, delta: float) -> void:
+	var target_rotation := atan2(direction.x, direction.z)
+	var target_basis := Basis.from_euler(Vector3(0.0, target_rotation, 0.0))
+	var turn_weight := clampf(delta * _get_current_turn_speed(), 0.0, 1.0)
+	transform.basis = transform.basis.orthonormalized().slerp(target_basis, turn_weight)
+
+
+func _get_current_turn_speed() -> float:
+	match _current_state:
+		STATE_RUNNING:
+			return RUNNING_TURN_SPEED
+		STATE_NARUTO_RUNNING:
+			return NARUTO_RUNNING_TURN_SPEED
+		_:
+			return WALKING_TURN_SPEED
+
 
 func _get_current_play_position() -> float:
 	if _playback == null:

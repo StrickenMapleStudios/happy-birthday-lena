@@ -11,15 +11,20 @@ config_version=5
 [application]
 
 config/name="HappyBirthdayLena"
-run/main_scene="uid://cf5y77c0aowei"
+run/main_scene="uid://dk6375uhsedxh"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
-_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 SceneTransition="*res://assets/scripts/scene_transition.gd"
 GameSettings="*res://assets/scripts/game_settings.gd"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
 
 [editor_plugins]
 

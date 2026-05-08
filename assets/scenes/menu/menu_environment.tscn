@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cuvqsplyq6dy6" path="res://assets/art/models/characters/character.glb" id="2_ugn2o"]
 [ext_resource type="PackedScene" uid="uid://b4vwbq1fnyglj" path="res://assets/art/models/menu/ground.glb" id="3_ugn2o"]
 [ext_resource type="Script" uid="uid://d2cshtjt3o6ep" path="res://assets/art/models/characters/menu_character.gd" id="3_xuqax"]
+[ext_resource type="PackedScene" uid="uid://p8ojij8lhtbr" path="res://addons/Free Forest Nature Pack/Trees/Oak/Flat_Tree_Oak_hero_green.glb" id="5_fmrf6"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_y2m7k"]
 sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
@@ -56,54 +57,54 @@ animation = &"Idle"
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_xuqax"]
 animation = &"IdleToSitting"
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_l0v2w"]
-animation = &"SittingToStanding"
-
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_q8r6g"]
 animation = &"LegSwinging"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_0wlwb"]
 animation = &"Sitting"
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_c4qlh"]
-advance_mode = 2
-switch_mode = 2
-break_loop_at_end = true
-xfade_time = 0.25
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_4jp7k"]
-advance_mode = 2
-advance_condition = &"standing"
-xfade_time = 0.25
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ujvk5"]
-advance_mode = 2
-switch_mode = 2
-xfade_time = 0.25
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_0ujva"]
-advance_mode = 2
-advance_condition = &"not_standing"
-xfade_time = 0.25
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_u7y45"]
-advance_mode = 2
-advance_condition = &"standing"
-switch_mode = 2
-xfade_time = 0.25
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_xuqax"]
-advance_mode = 2
-switch_mode = 2
-xfade_time = 0.25
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_l0v2w"]
+animation = &"SittingToStanding"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_pw4oi"]
 advance_mode = 2
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_legreturn"]
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_c4qlh"]
+xfade_time = 0.25
+break_loop_at_end = true
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_4jp7k"]
+xfade_time = 0.25
 advance_mode = 2
 advance_condition = &"standing"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_legreturn"]
 xfade_time = 0.25
+advance_mode = 2
+advance_condition = &"standing"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ujvk5"]
+xfade_time = 0.25
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_0ujva"]
+xfade_time = 0.25
+advance_mode = 2
+advance_condition = &"not_standing"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_xuqax"]
+xfade_time = 0.25
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_u7y45"]
+xfade_time = 0.25
+switch_mode = 2
+advance_mode = 2
+advance_condition = &"standing"
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_pw4oi"]
 states/Idle/node = SubResource("AnimationNodeAnimation_ugn2o")
@@ -133,16 +134,17 @@ light_angular_distance = 2.2
 shadow_enabled = true
 shadow_bias = 0.02
 shadow_normal_bias = 0.8
-directional_shadow_mode = 2
+shadow_opacity = 0.65
 directional_shadow_blend_splits = true
 directional_shadow_fade_start = 0.75
-directional_shadow_max_distance = 12.0
+directional_shadow_max_distance = 150.0
+directional_shadow_pancake_size = 0.1
 
 [node name="bench2" parent="." unique_id=437807775 instance=ExtResource("1_8aat6")]
 
 [node name="Camera" parent="bench2" index="1" unique_id=156707382]
-keep_aspect = 0
-fov = 37.849285
+transform = Transform3D(0.97514963, 0.033892278, -0.21893951, 1.0281801e-06, 0.9882286, 0.15298437, 0.22154728, -0.14918287, 0.96367073, -5.8436613, 4.746599, 14.7683735)
+fov = 22.9
 near = 0.05
 far = 4000.0
 
@@ -160,37 +162,37 @@ transform = Transform3D(0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0,
 bones/0/position = Vector3(3.5527137e-14, -3.6064699, -2.757546)
 bones/1/position = Vector3(0.003718836, -0.17532344, -1.5893912)
 bones/1/rotation = Quaternion(-0.5130054, 0.48703897, -0.5126735, 0.48660493)
-bones/3/rotation = Quaternion(0.23644881, 0.68806773, 0.6692398, -0.15090705)
-bones/4/rotation = Quaternion(-0.1118307, -0.011738598, 0.10812834, 0.98775727)
+bones/3/rotation = Quaternion(0.23720762, 0.6864306, 0.6698485, -0.15443015)
+bones/4/rotation = Quaternion(-0.114258766, -0.011732175, 0.11047605, 0.9872195)
 bones/5/rotation = Quaternion(0.043536115, 0.69632345, -0.2892777, 0.65540576)
-bones/7/rotation = Quaternion(0.715209, -0.32882294, 0.15052661, 0.59807456)
-bones/8/rotation = Quaternion(-0.43680635, 0.7778336, 0.45176306, -0.009243781)
+bones/7/rotation = Quaternion(0.7137162, -0.32689875, 0.15154755, 0.6006495)
+bones/8/rotation = Quaternion(-0.43278718, 0.7824688, 0.4476063, -0.009298865)
 bones/9/rotation = Quaternion(0.043536097, -0.69632334, 0.2892778, 0.6554059)
 bones/10/rotation = Quaternion(1.9329853e-05, 0.00016351107, -0.20205328, 0.9793745)
-bones/11/rotation = Quaternion(0.01744508, 0.00749246, 0.049199052, 0.9986086)
+bones/11/rotation = Quaternion(0.016179953, 0.0069430005, 0.0491996, 0.99863386)
 bones/13/position = Vector3(0.014173147, 0.26441514, 0.048959997)
 bones/13/rotation = Quaternion(-0.02140963, 0.6937462, 0.71958137, -0.02145996)
-bones/14/rotation = Quaternion(-0.529792, 0.11509088, 0.15132573, 0.82654405)
+bones/14/rotation = Quaternion(-0.5302639, 0.11380183, 0.15221928, 0.82625574)
 bones/15/rotation = Quaternion(-0.001631237, 0.0011987643, -0.0029288044, 0.9999937)
 bones/17/position = Vector3(0.014173218, 0.26441497, -0.048960004)
-bones/18/rotation = Quaternion(-0.5524628, -0.09956715, -0.16529116, 0.81089467)
+bones/18/rotation = Quaternion(-0.5520542, -0.10086666, -0.16433117, 0.81120735)
 bones/19/rotation = Quaternion(-0.0016235696, -0.0011987519, 0.0029150555, 0.99999374)
-bones/21/rotation = Quaternion(0.01475906, 0.005232931, 0.054719634, 0.998379)
+bones/21/rotation = Quaternion(0.0129527915, 0.004592478, 0.05472063, 0.9984071)
 bones/22/rotation = Quaternion(0.009666363, -0.007941529, 0.7868128, 0.617065)
 bones/23/rotation = Quaternion(0.49999997, 0.5, 0.50000006, -0.49999997)
 bones/24/scale = Vector3(1, 0.9999997, 0)
 bones/25/scale = Vector3(1.0000001, 0.99999994, 0)
 bones/26/position = Vector3(4.248607e-09, 0.11478758, 0.62679654)
-bones/26/rotation = Quaternion(0.022667676, -0.00034810166, 0.046794325, 0.9986473)
+bones/26/rotation = Quaternion(0.022668945, -0.00027334754, 0.043502323, 0.99879616)
 bones/29/rotation = Quaternion(0.49999994, 0.5000002, 0.5, -0.50000006)
 bones/30/rotation = Quaternion(0.49999994, 0.5000002, 0.5, -0.50000006)
 bones/33/position = Vector3(-1.6762627, -0.04000151, -0.0005618808)
 bones/33/rotation = Quaternion(0.010253614, -0.0070506, 0.84339535, 0.5371494)
-bones/34/position = Vector3(0.35872006, 1.3456829, -1.1193831)
-bones/34/rotation = Quaternion(0.0028696447, 0.82454056, 0.001969154, 0.5657923)
+bones/34/position = Vector3(0.35872006, 1.33917, -1.1053386)
+bones/34/rotation = Quaternion(0.0028750428, 0.8260918, 0.0019612622, 0.5635249)
 bones/35/position = Vector3(0.781606, 0.49115577, -0.040587)
-bones/36/position = Vector3(-0.3587203, 0.47948575, -0.6127612)
-bones/36/rotation = Quaternion(0.0032229216, -0.9260534, -0.001313426, 0.37737647)
+bones/36/position = Vector3(-0.3587203, 0.49534464, -0.61318874)
+bones/36/rotation = Quaternion(0.0032193016, -0.92501324, -0.0013222751, 0.37991908)
 bones/37/position = Vector3(-0.78160584, 0.49115536, -0.040586554)
 bones/38/position = Vector3(0.65265083, -0.69192594, -1.705002)
 bones/39/position = Vector3(0.48740414, 0.21616471, -0.14989354)
@@ -198,7 +200,7 @@ bones/40/position = Vector3(-0.62390125, -0.691926, -1.7107518)
 bones/41/position = Vector3(-0.48740417, 0.21616483, -0.1498935)
 
 [node name="hat_2" parent="character/Rig/Skeleton3D" index="0" unique_id=1468740649]
-transform = Transform3D(1.3650274, 0.044847097, 0.041467283, -0.060989078, 1.0513723, 0.8705919, -0.0033329143, -0.8715729, 1.0523245, 0.075179495, 0.37095267, -3.580404)
+transform = Transform3D(1.3653998, 0.03791514, 0.035727177, -0.05198904, 1.0516448, 0.8708469, -0.0033329069, -0.8715735, 1.052324, 0.065759376, 0.37130815, -3.5804052)
 
 [node name="hat" parent="character/Rig/Skeleton3D/hat_2" index="0" unique_id=562585729]
 transform = Transform3D(0.99968886, 0.02494508, -0.00032679713, -0.020696668, 0.8219749, -0.5691469, -0.01392881, 0.5689771, 0.8222344, -0.054496896, -2.533786, -1.7157384)
@@ -207,12 +209,13 @@ transform = Transform3D(0.99968886, 0.02494508, -0.00032679713, -0.020696668, 0.
 root_node = NodePath("../..")
 tree_root = SubResource("AnimationNodeStateMachine_pw4oi")
 anim_player = NodePath("..")
-active = true
-parameters/conditions/goodbye = false
-parameters/conditions/standing = false
 parameters/conditions/not_standing = true
+parameters/conditions/standing = false
 
 [node name="ground2" parent="." unique_id=833784654 instance=ExtResource("3_ugn2o")]
+
+[node name="Flat_Tree_Oak_hero_green" parent="." unique_id=734089509 instance=ExtResource("5_fmrf6")]
+transform = Transform3D(0.799517, 0, -0.6006435, 0, 1, 0, 0.6006435, 0, 0.799517, 6.6391497, -2.1189198, -7.5865955)
 
 [editable path="bench2"]
 [editable path="character"]

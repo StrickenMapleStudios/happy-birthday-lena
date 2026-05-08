@@ -2,33 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://cuvqsplyq6dy6" path="res://assets/art/models/characters/character.glb" id="1_v42cq"]
 [ext_resource type="Script" uid="uid://uhnj7b0665k6" path="res://assets/scripts/test_movement_character.gd" id="2_hl0i2"]
+[ext_resource type="PackedScene" path="res://assets/scenes/game/test_movement_level.tscn" id="2_mcf1p"]
 [ext_resource type="Script" uid="uid://b84roxoxwu700" path="res://assets/scripts/test_movement_camera.gd" id="3_huu8q"]
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_test_movement"]
-sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
-sky_horizon_color = Color(0.729412, 0.882353, 0.984314, 1)
-ground_bottom_color = Color(0.286275, 0.317647, 0.270588, 1)
-ground_horizon_color = Color(0.54902, 0.596078, 0.486275, 1)
-
-[sub_resource type="Sky" id="Sky_test_movement"]
-sky_material = SubResource("ProceduralSkyMaterial_test_movement")
-
-[sub_resource type="Environment" id="Environment_test_movement"]
-background_mode = 2
-sky = SubResource("Sky_test_movement")
-ambient_light_source = 3
-ambient_light_color = Color(1, 1, 1, 1)
-ambient_light_energy = 0.2
-reflected_light_source = 1
-tonemap_mode = 2
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_test_movement"]
-size = Vector2(600, 600)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
-albedo_color = Color(0.439216, 0.529412, 0.372549, 1)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_jixbc"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_idle"]
 animation = &"Idle"
@@ -91,32 +66,7 @@ graph_offset = Vector2(36, 17)
 
 [node name="game" type="Node3D" unique_id=250801342]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1634670009]
-environment = SubResource("Environment_test_movement")
-
-[node name="Sun" type="DirectionalLight3D" parent="." unique_id=664493155]
-transform = Transform3D(-0.6530099, -0.6150685, 0.44191104, -1.1948032e-08, 0.5837285, 0.81194884, -0.75732034, 0.5301067, -0.38136047, 0, 5.18316, 0)
-light_color = Color(1, 0.952941, 0.858824, 1)
-light_energy = 0.85
-shadow_enabled = true
-shadow_bias = 0.02
-shadow_normal_bias = 0.8
-directional_shadow_blend_splits = true
-directional_shadow_fade_start = 0.75
-directional_shadow_max_distance = 30.0
-
-[node name="Ground" type="MeshInstance3D" parent="." unique_id=170603198]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.014071941, -0.029748935, 0.002511382)
-mesh = SubResource("PlaneMesh_test_movement")
-surface_material_override/0 = SubResource("StandardMaterial3D_ground")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground" unique_id=1575317340]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.105615, 0, -15.357545)
-mesh = SubResource("CylinderMesh_jixbc")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="Ground" unique_id=876200230]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2119823, 0, -6.1859164)
-mesh = SubResource("CylinderMesh_jixbc")
+[node name="Level" parent="." unique_id=1748344399 instance=ExtResource("2_mcf1p")]
 
 [node name="character" parent="." unique_id=1465858297 instance=ExtResource("1_v42cq")]
 transform = Transform3D(-1, 0, -8.940697e-08, 0, 1, 0, 8.940697e-08, 0, -1, 0, 0, 0)

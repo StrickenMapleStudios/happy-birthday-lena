@@ -1,0 +1,126 @@
+[gd_scene format=3]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_test_movement"]
+sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
+sky_horizon_color = Color(0.729412, 0.882353, 0.984314, 1)
+ground_bottom_color = Color(0.286275, 0.317647, 0.270588, 1)
+ground_horizon_color = Color(0.54902, 0.596078, 0.486275, 1)
+
+[sub_resource type="Sky" id="Sky_test_movement"]
+sky_material = SubResource("ProceduralSkyMaterial_test_movement")
+
+[sub_resource type="Environment" id="Environment_test_movement"]
+background_mode = 2
+sky = SubResource("Sky_test_movement")
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.2
+reflected_light_source = 1
+tonemap_mode = 2
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_test_movement"]
+size = Vector2(600, 600)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
+albedo_color = Color(0.439216, 0.529412, 0.372549, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_marker_red"]
+albedo_color = Color(0.807843, 0.301961, 0.27451, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_marker_blue"]
+albedo_color = Color(0.254902, 0.47451, 0.74902, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_marker_yellow"]
+albedo_color = Color(0.862745, 0.72549, 0.313726, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_marker_box"]
+size = Vector3(1.8, 1.8, 1.8)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_marker_column"]
+top_radius = 0.8
+bottom_radius = 0.8
+height = 3.6
+
+[sub_resource type="SphereMesh" id="SphereMesh_marker_sphere"]
+radius = 1.2
+height = 2.4
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_marker_capsule"]
+radius = 0.9
+mid_height = 2.2
+
+[node name="TestMovementLevel" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_test_movement")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.6530099, -0.6150685, 0.44191104, -1.1948032e-08, 0.5837285, 0.81194884, -0.75732034, 0.5301067, -0.38136047, 0, 5.18316, 0)
+light_color = Color(1, 0.952941, 0.858824, 1)
+light_energy = 0.85
+shadow_enabled = true
+shadow_bias = 0.02
+shadow_normal_bias = 0.8
+directional_shadow_blend_splits = true
+directional_shadow_fade_start = 0.75
+directional_shadow_max_distance = 30.0
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.014071941, -0.029748935, 0.002511382)
+mesh = SubResource("PlaneMesh_test_movement")
+surface_material_override/0 = SubResource("StandardMaterial3D_ground")
+
+[node name="OrientationProps" type="Node3D" parent="."]
+
+[node name="NorthBox" type="MeshInstance3D" parent="OrientationProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, -12)
+mesh = SubResource("BoxMesh_marker_box")
+surface_material_override/0 = SubResource("StandardMaterial3D_marker_red")
+
+[node name="NorthEastColumn" type="MeshInstance3D" parent="OrientationProps"]
+transform = Transform3D(0.9238795, 0, -0.38268346, 0, 1, 0, 0.38268346, 0, 0.9238795, 9, 1.8, -9)
+mesh = SubResource("CylinderMesh_marker_column")
+surface_material_override/0 = SubResource("StandardMaterial3D_marker_blue")
+
+[node name="EastSphere" type="MeshInstance3D" parent="OrientationProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 1.2, 0)
+mesh = SubResource("SphereMesh_marker_sphere")
+surface_material_override/0 = SubResource("StandardMaterial3D_marker_yellow")
+
+[node name="SouthEastCapsule" type="MeshInstance3D" parent="OrientationProps"]
+transform = Transform3D(0.9659258, 0, 0.25881904, 0, 1, 0, -0.25881904, 0, 0.9659258, 10, 2, 11)
+mesh = SubResource("CapsuleMesh_marker_capsule")
+surface_material_override/0 = SubResource("StandardMaterial3D_marker_red")
+
+[node name="SouthBox" type="MeshInstance3D" parent="OrientationProps"]
+transform = Transform3D(1.6, 0, 0, 0, 3.2, 0, 0, 0, 1.6, 0, 1.6, 18)
+mesh = SubResource("BoxMesh_marker_box")
+surface_material_override/0 = SubResource("StandardMaterial3D_marker_blue")
+
+[node name="SouthWestColumn" type="MeshInstance3D" parent="OrientationProps"]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, -11, 1.8, 9)
+mesh = SubResource("CylinderMesh_marker_column")
+surface_material_override/0 = SubResource("StandardMaterial3D_marker_yellow")
+
+[node name="WestSphere" type="MeshInstance3D" parent="OrientationProps"]
+transform = Transform3D(1, 0, 0, 0, 2.2, 0, 0, 0, 1, -15, 2.64, 0)
+mesh = SubResource("SphereMesh_marker_sphere")
+surface_material_override/0 = SubResource("StandardMaterial3D_marker_red")
+
+[node name="NorthWestCapsule" type="MeshInstance3D" parent="OrientationProps"]
+transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, -8, 2, -10)
+mesh = SubResource("CapsuleMesh_marker_capsule")
+surface_material_override/0 = SubResource("StandardMaterial3D_marker_blue")
+
+[node name="FarNorthColumn" type="MeshInstance3D" parent="OrientationProps"]
+transform = Transform3D(1, 0, 0, 0, 1.4, 0, 0, 0, 1, 4, 2.52, -24)
+mesh = SubResource("CylinderMesh_marker_column")
+surface_material_override/0 = SubResource("StandardMaterial3D_marker_yellow")
+
+[node name="FarSouthSphere" type="MeshInstance3D" parent="OrientationProps"]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, -4, 1.68, 26)
+mesh = SubResource("SphereMesh_marker_sphere")
+surface_material_override/0 = SubResource("StandardMaterial3D_marker_blue")
