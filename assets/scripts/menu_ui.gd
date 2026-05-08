@@ -2,6 +2,7 @@ extends Control
 
 const CINEMA_SCENE_PATH := "res://assets/scenes/cinema.tscn"
 
+@onready var menu_character: Node = get_parent().get_node_or_null("menuEnvironment/character")
 @onready var new_game_button: Button = $SafeMargin/Sidebar/ButtonStack/NewGameButton
 @onready var options_button: Button = $SafeMargin/Sidebar/ButtonStack/OptionsButton
 @onready var exit_button: Button = $SafeMargin/Sidebar/ButtonStack/ExitButton
@@ -79,6 +80,8 @@ const CINEMA_SCENE_PATH := "res://assets/scenes/cinema.tscn"
 ]
 
 var _pending_settings: Dictionary = {}
+var _exit_in_progress: bool = false
+var _slot_selection_locked: bool = false
 
 
 func _ready() -> void:
@@ -140,6 +143,16 @@ func _on_new_game_pressed() -> void:
 
 
 func _on_save_slot_pressed(_slot_index: int) -> void:
+	if _slot_selection_locked:
+		return
+
+	_slot_selection_locked = true
+	_lock_save_slot_selection()
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	if menu_character != null and menu_character.has_method("stand_up_and_wait"):
+		await menu_character.call("stand_up_and_wait")
+	else:
+		_set_character_standing(true)
 	await SceneTransition.change_scene_to_file(CINEMA_SCENE_PATH)
 
 
@@ -173,8 +186,16 @@ func _hide_exit_overlay() -> void:
 
 
 func _confirm_exit() -> void:
+	if _exit_in_progress:
+		return
+
+	_exit_in_progress = true
 	exit_backdrop.visible = false
 	exit_overlay.visible = false
+
+	if menu_character != null and menu_character.has_method("play_goodbye"):
+		await menu_character.call("play_goodbye")
+
 	get_tree().quit.call_deferred()
 
 
@@ -184,6 +205,7 @@ func _show_options_screen() -> void:
 	save_slot_screen.visible = false
 	back_button.visible = true
 	options_screen.visible = true
+	_set_character_standing(false)
 	_set_button_focus_enabled(menu_buttons, false)
 	_set_button_focus_enabled(save_slot_screen_buttons, false)
 	_set_button_focus_enabled(options_buttons, true)
@@ -194,16 +216,19 @@ func _hide_options_screen() -> void:
 	back_button.visible = false
 	options_screen.visible = false
 	sidebar.visible = true
+	_set_character_standing(false)
 	_set_button_focus_enabled(options_buttons, false)
 	_set_button_focus_enabled(menu_buttons, true)
 	options_button.grab_focus()
 
 
 func _show_save_slot_screen() -> void:
+	_slot_selection_locked = false
 	sidebar.visible = false
 	options_screen.visible = false
 	back_button.visible = true
 	save_slot_screen.visible = true
+	_set_character_standing(false)
 	_set_button_focus_enabled(menu_buttons, false)
 	_set_button_focus_enabled(options_buttons, false)
 	_set_button_focus_enabled(save_slot_screen_buttons, true)
@@ -211,9 +236,11 @@ func _show_save_slot_screen() -> void:
 
 
 func _hide_save_slot_screen() -> void:
+	_slot_selection_locked = false
 	back_button.visible = false
 	save_slot_screen.visible = false
 	sidebar.visible = true
+	_set_character_standing(false)
 	_set_button_focus_enabled(save_slot_screen_buttons, false)
 	_set_button_focus_enabled(menu_buttons, true)
 	new_game_button.grab_focus()
@@ -237,6 +264,9 @@ func _set_button_focus_enabled(buttons: Array[Button], enabled: bool) -> void:
 
 
 func _sync_hover_focus(button: Button) -> void:
+	if _slot_selection_locked:
+		return
+
 	if exit_overlay.visible or save_slot_screen.visible:
 		button.grab_focus()
 
@@ -338,3 +368,17 @@ func _refresh_option_views() -> void:
 
 func _on_off_text(value: bool) -> String:
 	return "ON" if value else "OFF"
+
+
+func _set_character_standing(active: bool) -> void:
+	if menu_character != null and menu_character.has_method("set_standing"):
+		menu_character.call("set_standing", active)
+
+
+func _lock_save_slot_selection() -> void:
+	_set_button_focus_enabled(save_slot_screen_buttons, false)
+	for button in save_slot_buttons:
+		button.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	back_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	get_viewport().gui_release_focus()

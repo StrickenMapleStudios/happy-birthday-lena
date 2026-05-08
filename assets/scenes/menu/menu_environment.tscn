@@ -67,47 +67,58 @@ animation = &"Sitting"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_c4qlh"]
 advance_mode = 2
+switch_mode = 2
+break_loop_at_end = true
+xfade_time = 0.25
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_4jp7k"]
 advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_nf3ne"]
-resource_local_to_scene = true
-states/LegSwinging/node = SubResource("AnimationNodeAnimation_q8r6g")
-states/LegSwinging/position = Vector2(591, 46)
-states/Sitting/node = SubResource("AnimationNodeAnimation_0wlwb")
-states/Sitting/position = Vector2(440, 120)
-states/Start/position = Vector2(259, 120)
-transitions = ["Start", "Sitting", SubResource("AnimationNodeStateMachineTransition_c4qlh"), "Sitting", "LegSwinging", SubResource("AnimationNodeStateMachineTransition_4jp7k")]
+advance_condition = &"standing"
+xfade_time = 0.25
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ujvk5"]
 advance_mode = 2
+switch_mode = 2
+xfade_time = 0.25
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_0ujva"]
 advance_mode = 2
-advance_expression = "edit_character == false"
+advance_condition = &"not_standing"
+xfade_time = 0.25
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_u7y45"]
-advance_expression = "edit_character == true"
+advance_mode = 2
+advance_condition = &"standing"
+switch_mode = 2
+xfade_time = 0.25
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_xuqax"]
 advance_mode = 2
+switch_mode = 2
+xfade_time = 0.25
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_pw4oi"]
 advance_mode = 2
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_legreturn"]
+advance_mode = 2
+advance_condition = &"standing"
+xfade_time = 0.25
+
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_pw4oi"]
 states/Idle/node = SubResource("AnimationNodeAnimation_ugn2o")
-states/Idle/position = Vector2(630, 108)
+states/Idle/position = Vector2(650, 104)
 states/IdleToSitting/node = SubResource("AnimationNodeAnimation_xuqax")
-states/IdleToSitting/position = Vector2(460, 184)
+states/IdleToSitting/position = Vector2(430, 172)
+states/LegSwinging/node = SubResource("AnimationNodeAnimation_q8r6g")
+states/LegSwinging/position = Vector2(510, 32)
+states/Sitting/node = SubResource("AnimationNodeAnimation_0wlwb")
+states/Sitting/position = Vector2(348, 120)
 states/SittingToStanding/node = SubResource("AnimationNodeAnimation_l0v2w")
-states/SittingToStanding/position = Vector2(529, 28)
-states/Start/position = Vector2(155, 156)
-states/StateMachine/node = SubResource("AnimationNodeStateMachine_nf3ne")
-states/StateMachine/position = Vector2(308, 28)
-transitions = ["SittingToStanding", "Idle", SubResource("AnimationNodeStateMachineTransition_ujvk5"), "Idle", "IdleToSitting", SubResource("AnimationNodeStateMachineTransition_0ujva"), "StateMachine", "SittingToStanding", SubResource("AnimationNodeStateMachineTransition_u7y45"), "IdleToSitting", "StateMachine", SubResource("AnimationNodeStateMachineTransition_xuqax"), "Start", "StateMachine", SubResource("AnimationNodeStateMachineTransition_pw4oi")]
-graph_offset = Vector2(-136, -32)
+states/SittingToStanding/position = Vector2(500, 120)
+states/Start/position = Vector2(185, 121)
+transitions = ["Start", "Sitting", SubResource("AnimationNodeStateMachineTransition_pw4oi"), "Sitting", "LegSwinging", SubResource("AnimationNodeStateMachineTransition_c4qlh"), "LegSwinging", "SittingToStanding", SubResource("AnimationNodeStateMachineTransition_4jp7k"), "Sitting", "SittingToStanding", SubResource("AnimationNodeStateMachineTransition_legreturn"), "SittingToStanding", "Idle", SubResource("AnimationNodeStateMachineTransition_ujvk5"), "Idle", "IdleToSitting", SubResource("AnimationNodeStateMachineTransition_0ujva"), "IdleToSitting", "Sitting", SubResource("AnimationNodeStateMachineTransition_xuqax"), "IdleToSitting", "SittingToStanding", SubResource("AnimationNodeStateMachineTransition_u7y45")]
+graph_offset = Vector2(-108, -4)
 
 [node name="menuEnvironment" type="Node3D" unique_id=469778504]
 
@@ -196,6 +207,10 @@ transform = Transform3D(0.99968886, 0.02494508, -0.00032679713, -0.020696668, 0.
 root_node = NodePath("../..")
 tree_root = SubResource("AnimationNodeStateMachine_pw4oi")
 anim_player = NodePath("..")
+active = true
+parameters/conditions/goodbye = false
+parameters/conditions/standing = false
+parameters/conditions/not_standing = true
 
 [node name="ground2" parent="." unique_id=833784654 instance=ExtResource("3_ugn2o")]
 
