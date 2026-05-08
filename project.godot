@@ -11,13 +11,14 @@ config_version=5
 [application]
 
 config/name="HappyBirthdayLena"
-run/main_scene="uid://dk6375uhsedxh"
+run/main_scene="res://assets/scenes/intro.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
+SceneTransition="*res://assets/scripts/scene_transition.gd"
 
 [display]
 
