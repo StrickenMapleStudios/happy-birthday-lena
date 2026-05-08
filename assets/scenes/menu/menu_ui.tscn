@@ -2,7 +2,7 @@
 
 [ext_resource type="FontFile" uid="uid://dkrxonksevp7k" path="res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf" id="1_2e3xq"]
 [ext_resource type="FontFile" uid="uid://cmykgjkhr31m3" path="res://assets/art/fonts/Paytone_One/PaytoneOne-Regular.ttf" id="2_j1n5m"]
-[ext_resource type="Script" path="res://assets/scripts/menu_ui.gd" id="3_rl1ix"]
+[ext_resource type="Script" uid="uid://drm568c26glfe" path="res://assets/scripts/menu_ui.gd" id="3_rl1ix"]
 
 [sub_resource type="Theme" id="Theme_j0h4h"]
 Label/fonts/font = ExtResource("1_2e3xq")
@@ -91,7 +91,6 @@ corner_radius_bottom_right = 24
 corner_radius_bottom_left = 24
 
 [node name="menuUI" type="Control" unique_id=899699264]
-script = ExtResource("3_rl1ix")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -99,6 +98,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("3_rl1ix")
 
 [node name="SafeMargin" type="MarginContainer" parent="." unique_id=1626828643]
 layout_mode = 1
@@ -151,17 +151,17 @@ custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
 size_flags_horizontal = 0
 mouse_default_cursor_shape = 2
-disabled = true
 theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
-theme_override_colors/font_disabled_color = Color(0.968627, 0.968627, 0.968627, 0.45)
 theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_disabled_color = Color(0.968627, 0.968627, 0.968627, 0.45)
 theme_override_font_sizes/font_size = 34
-theme_override_styles/disabled = SubResource("StyleBoxFlat_u0yq1")
 theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
 theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_u0yq1")
 theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
+disabled = true
 text = "> CONTINUE"
 alignment = 0
 
@@ -243,61 +243,61 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="DialogPanel" type="PanelContainer" parent="ExitOverlay/DialogCenter" unique_id=732821656]
-custom_minimum_size = Vector2(640, 0)
+custom_minimum_size = Vector2(670, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_1i63k")
 
 [node name="DialogContent" type="VBoxContainer" parent="ExitOverlay/DialogCenter/DialogPanel" unique_id=558104624]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 20
 
 [node name="DialogTitle" type="Label" parent="ExitOverlay/DialogCenter/DialogPanel/DialogContent" unique_id=1363186568]
 layout_mode = 2
-horizontal_alignment = 1
 theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
-theme_override_fonts/font = ExtResource("1_2e3xq")
 theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("1_2e3xq")
 theme_override_font_sizes/font_size = 42
 text = "Exit Game?"
+horizontal_alignment = 1
 uppercase = true
 
 [node name="DialogBody" type="Label" parent="ExitOverlay/DialogCenter/DialogPanel/DialogContent" unique_id=874999194]
 layout_mode = 2
-horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 0.92)
 theme_override_fonts/font = ExtResource("2_j1n5m")
 theme_override_font_sizes/font_size = 22
 text = "Do you want to close the game now?"
+horizontal_alignment = 1
 
 [node name="DialogButtons" type="HBoxContainer" parent="ExitOverlay/DialogCenter/DialogPanel/DialogContent" unique_id=582215907]
 layout_mode = 2
 theme = SubResource("Theme_v8h3d")
-theme_override_constants/separation = 14
+theme_override_constants/separation = 18
 alignment = 1
-
-[node name="CancelExitButton" type="Button" parent="ExitOverlay/DialogCenter/DialogPanel/DialogContent/DialogButtons" unique_id=1824623944]
-custom_minimum_size = Vector2(220, 78)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
-theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
-theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
-theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
-text = "CANCEL"
 
 [node name="ConfirmExitButton" type="Button" parent="ExitOverlay/DialogCenter/DialogPanel/DialogContent/DialogButtons" unique_id=498218120]
 custom_minimum_size = Vector2(220, 78)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
 theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
 theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
 text = "EXIT GAME"
+
+[node name="CancelExitButton" type="Button" parent="ExitOverlay/DialogCenter/DialogPanel/DialogContent/DialogButtons" unique_id=1824623944]
+custom_minimum_size = Vector2(220, 78)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxFlat_kb1ni")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_2c2wf")
+theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
+text = "CANCEL"
