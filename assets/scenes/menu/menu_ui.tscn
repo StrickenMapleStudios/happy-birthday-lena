@@ -361,10 +361,10 @@ alignment = 0
 visible = false
 custom_minimum_size = Vector2(168, 52)
 layout_mode = 0
-offset_left = 54.0
-offset_top = 22.0
-offset_right = 222.0
-offset_bottom = 74.0
+offset_left = 108.0
+offset_top = 16.0
+offset_right = 276.0
+offset_bottom = 68.0
 mouse_default_cursor_shape = 2
 theme = SubResource("Theme_v8h3d")
 theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
@@ -855,6 +855,249 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_2c2wf")
 theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
 theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
 text = "APPLY"
+
+[node name="SaveSlotScreen" type="VBoxContainer" parent="SafeMargin"]
+visible = false
+custom_minimum_size = Vector2(920, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 16
+
+[node name="SaveSlotTitle" type="Label" parent="SafeMargin/SaveSlotScreen" unique_id=156009422]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_fonts/font = ExtResource("1_2e3xq")
+theme_override_font_sizes/font_size = 88
+text = "SELECT SLOT"
+uppercase = true
+
+[node name="SaveSlotSubtitle" type="Label" parent="SafeMargin/SaveSlotScreen" unique_id=156009423]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 0.92)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 24
+text = "Choose where to begin Lena's adventure"
+uppercase = true
+
+[node name="SlotList" type="VBoxContainer" parent="SafeMargin/SaveSlotScreen" unique_id=156009424]
+layout_mode = 2
+theme = SubResource("Theme_v8h3d")
+theme_override_constants/separation = 14
+
+[node name="SaveSlotButton01" type="Button" parent="SafeMargin/SaveSlotScreen/SlotList" unique_id=156009425]
+custom_minimum_size = Vector2(880, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
+theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
+alignment = 0
+
+[node name="SlotRow" type="HBoxContainer" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton01" unique_id=156009426]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 22.0
+offset_right = -30.0
+offset_bottom = -22.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 24
+
+[node name="SlotIndex" type="Label" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton01/SlotRow" unique_id=156009427]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("1_2e3xq")
+theme_override_font_sizes/font_size = 44
+text = "01"
+vertical_alignment = 1
+
+[node name="SlotDetails" type="VBoxContainer" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton01/SlotRow" unique_id=156009428]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="SlotTitle" type="Label" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton01/SlotRow/SlotDetails" unique_id=156009429]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.98)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 28
+text = "EMPTY SLOT"
+uppercase = true
+
+[node name="SlotBody" type="Label" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton01/SlotRow/SlotDetails" unique_id=156009430]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.94, 0.94, 0.86)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 20
+text = "Start a new adventure from slot 01"
+
+[node name="StartHint" type="Label" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton01/SlotRow" unique_id=156009431]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.819608, 0.239216, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "START"
+horizontal_alignment = 2
+vertical_alignment = 1
+uppercase = true
+
+[node name="SaveSlotButton02" type="Button" parent="SafeMargin/SaveSlotScreen/SlotList" unique_id=156009432]
+custom_minimum_size = Vector2(880, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
+theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
+alignment = 0
+
+[node name="SlotRow" type="HBoxContainer" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton02" unique_id=156009433]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 22.0
+offset_right = -30.0
+offset_bottom = -22.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 24
+
+[node name="SlotIndex" type="Label" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton02/SlotRow" unique_id=156009434]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("1_2e3xq")
+theme_override_font_sizes/font_size = 44
+text = "02"
+vertical_alignment = 1
+
+[node name="SlotDetails" type="VBoxContainer" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton02/SlotRow" unique_id=156009435]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="SlotTitle" type="Label" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton02/SlotRow/SlotDetails" unique_id=156009436]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.98)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 28
+text = "EMPTY SLOT"
+uppercase = true
+
+[node name="SlotBody" type="Label" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton02/SlotRow/SlotDetails" unique_id=156009437]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.94, 0.94, 0.86)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 20
+text = "Start a new adventure from slot 02"
+
+[node name="StartHint" type="Label" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton02/SlotRow" unique_id=156009438]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.819608, 0.239216, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "START"
+horizontal_alignment = 2
+vertical_alignment = 1
+uppercase = true
+
+[node name="SaveSlotButton03" type="Button" parent="SafeMargin/SaveSlotScreen/SlotList" unique_id=156009439]
+custom_minimum_size = Vector2(880, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
+theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
+alignment = 0
+
+[node name="SlotRow" type="HBoxContainer" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton03" unique_id=156009440]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 22.0
+offset_right = -30.0
+offset_bottom = -22.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 24
+
+[node name="SlotIndex" type="Label" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton03/SlotRow" unique_id=156009441]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("1_2e3xq")
+theme_override_font_sizes/font_size = 44
+text = "03"
+vertical_alignment = 1
+
+[node name="SlotDetails" type="VBoxContainer" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton03/SlotRow" unique_id=156009442]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="SlotTitle" type="Label" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton03/SlotRow/SlotDetails" unique_id=156009443]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.98)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 28
+text = "EMPTY SLOT"
+uppercase = true
+
+[node name="SlotBody" type="Label" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton03/SlotRow/SlotDetails" unique_id=156009444]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.94, 0.94, 0.86)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 20
+text = "Start a new adventure from slot 03"
+
+[node name="StartHint" type="Label" parent="SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton03/SlotRow" unique_id=156009445]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.819608, 0.239216, 1)
+theme_override_fonts/font = ExtResource("2_j1n5m")
+theme_override_font_sizes/font_size = 22
+text = "START"
+horizontal_alignment = 2
+vertical_alignment = 1
+uppercase = true
 
 [node name="ExitOverlay" type="Control" parent="." unique_id=642576144]
 visible = false

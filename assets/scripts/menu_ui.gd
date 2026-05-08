@@ -8,6 +8,12 @@ const CINEMA_SCENE_PATH := "res://assets/scenes/cinema.tscn"
 @onready var back_button: Button = $BackButton
 @onready var sidebar: VBoxContainer = $SafeMargin/Sidebar
 @onready var options_screen: VBoxContainer = $SafeMargin/OptionsScreen
+@onready var save_slot_screen: VBoxContainer = $SafeMargin/SaveSlotScreen
+@onready var save_slot_buttons: Array[Button] = [
+	$SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton01,
+	$SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton02,
+	$SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton03,
+]
 
 @onready var resolution_left_button: Button = $SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionLeftButton
 @onready var resolution_right_button: Button = $SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionRightButton
@@ -65,6 +71,12 @@ const CINEMA_SCENE_PATH := "res://assets/scenes/cinema.tscn"
 	$SafeMargin/OptionsScreen/OptionsFooter/ResetDefaultsButton,
 	$SafeMargin/OptionsScreen/OptionsFooter/ApplyButton,
 ]
+@onready var save_slot_screen_buttons: Array[Button] = [
+	$BackButton,
+	$SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton01,
+	$SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton02,
+	$SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton03,
+]
 
 var _pending_settings: Dictionary = {}
 
@@ -73,7 +85,7 @@ func _ready() -> void:
 	new_game_button.pressed.connect(_on_new_game_pressed)
 	options_button.pressed.connect(_show_options_screen)
 	exit_button.pressed.connect(_on_exit_pressed)
-	back_button.pressed.connect(_hide_options_screen)
+	back_button.pressed.connect(_on_back_pressed)
 
 	resolution_left_button.pressed.connect(_cycle_resolution.bind(-1))
 	resolution_right_button.pressed.connect(_cycle_resolution.bind(1))
@@ -94,6 +106,10 @@ func _ready() -> void:
 	cancel_exit_button.mouse_entered.connect(_sync_hover_focus.bind(cancel_exit_button))
 	confirm_exit_button.mouse_entered.connect(_sync_hover_focus.bind(confirm_exit_button))
 
+	for index in save_slot_buttons.size():
+		save_slot_buttons[index].pressed.connect(_on_save_slot_pressed.bind(index))
+		save_slot_buttons[index].mouse_entered.connect(_sync_hover_focus.bind(save_slot_buttons[index]))
+
 	for index in volume_sliders.size():
 		volume_sliders[index].value_changed.connect(_on_volume_slider_changed.bind(index))
 
@@ -103,7 +119,10 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not exit_overlay.visible:
-		if options_screen.visible and event.is_action_pressed("ui_cancel"):
+		if save_slot_screen.visible and event.is_action_pressed("ui_cancel"):
+			get_viewport().set_input_as_handled()
+			_hide_save_slot_screen()
+		elif options_screen.visible and event.is_action_pressed("ui_cancel"):
 			get_viewport().set_input_as_handled()
 			_hide_options_screen()
 		elif event.is_action_pressed("ui_cancel"):
@@ -117,6 +136,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_new_game_pressed() -> void:
+	_show_save_slot_screen()
+
+
+func _on_save_slot_pressed(_slot_index: int) -> void:
 	await SceneTransition.change_scene_to_file(CINEMA_SCENE_PATH)
 
 
@@ -127,6 +150,7 @@ func _on_exit_pressed() -> void:
 func _show_exit_overlay() -> void:
 	_set_button_focus_enabled(menu_buttons, false)
 	_set_button_focus_enabled(options_buttons, false)
+	_set_button_focus_enabled(save_slot_screen_buttons, false)
 	exit_backdrop.visible = true
 	exit_overlay.visible = true
 	confirm_exit_button.grab_focus()
@@ -134,6 +158,11 @@ func _show_exit_overlay() -> void:
 
 func _hide_exit_overlay() -> void:
 	exit_overlay.visible = false
+	if save_slot_screen.visible:
+		_set_button_focus_enabled(save_slot_screen_buttons, true)
+		save_slot_buttons[0].grab_focus()
+		return
+
 	if options_screen.visible:
 		_set_button_focus_enabled(options_buttons, true)
 		back_button.grab_focus()
@@ -152,9 +181,11 @@ func _confirm_exit() -> void:
 func _show_options_screen() -> void:
 	_sync_pending_settings_from_source(GameSettings.get_settings())
 	sidebar.visible = false
+	save_slot_screen.visible = false
 	back_button.visible = true
 	options_screen.visible = true
 	_set_button_focus_enabled(menu_buttons, false)
+	_set_button_focus_enabled(save_slot_screen_buttons, false)
 	_set_button_focus_enabled(options_buttons, true)
 	back_button.grab_focus()
 
@@ -168,6 +199,34 @@ func _hide_options_screen() -> void:
 	options_button.grab_focus()
 
 
+func _show_save_slot_screen() -> void:
+	sidebar.visible = false
+	options_screen.visible = false
+	back_button.visible = true
+	save_slot_screen.visible = true
+	_set_button_focus_enabled(menu_buttons, false)
+	_set_button_focus_enabled(options_buttons, false)
+	_set_button_focus_enabled(save_slot_screen_buttons, true)
+	save_slot_buttons[0].grab_focus()
+
+
+func _hide_save_slot_screen() -> void:
+	back_button.visible = false
+	save_slot_screen.visible = false
+	sidebar.visible = true
+	_set_button_focus_enabled(save_slot_screen_buttons, false)
+	_set_button_focus_enabled(menu_buttons, true)
+	new_game_button.grab_focus()
+
+
+func _on_back_pressed() -> void:
+	if save_slot_screen.visible:
+		_hide_save_slot_screen()
+		return
+
+	_hide_options_screen()
+
+
 func _set_button_focus_enabled(buttons: Array[Button], enabled: bool) -> void:
 	for button in buttons:
 		if button.disabled:
@@ -178,7 +237,7 @@ func _set_button_focus_enabled(buttons: Array[Button], enabled: bool) -> void:
 
 
 func _sync_hover_focus(button: Button) -> void:
-	if exit_overlay.visible:
+	if exit_overlay.visible or save_slot_screen.visible:
 		button.grab_focus()
 
 
