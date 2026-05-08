@@ -29,19 +29,17 @@ var _playback: AnimationNodeStateMachinePlayback
 var _current_state := StringName()
 var _running_loops := 0
 var _previous_running_play_position := 0.0
-var _movement_speeds: Dictionary = {}
+var _root_motion_track_path := NodePath()
 
 
 func _ready() -> void:
 	_ensure_input_map()
-	animation_tree.root_motion_track = NodePath()
 	animation_tree.active = true
 	_playback = animation_tree.get("parameters/playback") as AnimationNodeStateMachinePlayback
-	_movement_speeds.clear()
-	_movement_speeds[STATE_IDLE] = 0.0
 	_prepare_locomotion_animation(ANIMATION_WALKING, WALKING_SPEED_SCALE, STATE_WALKING)
 	_prepare_locomotion_animation(ANIMATION_RUNNING, RUNNING_SPEED_SCALE, STATE_RUNNING)
 	_prepare_locomotion_animation(ANIMATION_NARUTO_RUNNING, NARUTO_RUNNING_SPEED_SCALE, STATE_NARUTO_RUNNING)
+	_configure_root_motion_track()
 	_sync_animation_flags(false, false)
 	_travel_to(STATE_IDLE)
 
@@ -57,14 +55,15 @@ func _process(delta: float) -> void:
 	var speed_up := is_moving and Input.is_action_pressed(ACTION_SPEED_UP)
 
 	_sync_animation_flags(is_moving, speed_up)
+	_update_animation_state(is_moving, speed_up)
 
 	if is_moving:
 		var direction := Vector3(input.x, 0.0, input.y).normalized()
 		_rotate_towards(direction, delta)
-		global_position += direction * _get_current_move_speed() * delta
+
+	_apply_root_motion()
 
 	_update_running_loops(is_moving, speed_up)
-	_update_animation_state(is_moving, speed_up)
 
 
 func _update_animation_state(is_moving: bool, speed_up: bool) -> void:
@@ -110,15 +109,13 @@ func _sync_animation_flags(is_moving: bool, speed_up: bool) -> void:
 	animation_tree.set("parameters/conditions/SpeedUp", speed_up)
 
 
-func _get_current_move_speed() -> float:
-	return float(_movement_speeds.get(_current_state, 0.0))
-
-
 func _rotate_towards(direction: Vector3, delta: float) -> void:
 	var target_rotation := atan2(direction.x, direction.z)
 	var target_basis := Basis.from_euler(Vector3(0.0, target_rotation, 0.0))
 	var turn_weight := clampf(delta * _get_current_turn_speed(), 0.0, 1.0)
-	transform.basis = transform.basis.orthonormalized().slerp(target_basis, turn_weight)
+	var current_transform := global_transform
+	current_transform.basis = current_transform.basis.orthonormalized().slerp(target_basis, turn_weight)
+	global_transform = current_transform
 
 
 func _get_current_turn_speed() -> float:
@@ -138,7 +135,7 @@ func _get_current_play_position() -> float:
 	return _playback.get_current_play_position()
 
 
-func _prepare_locomotion_animation(animation_name: StringName, speed_scale: float, state_name: StringName) -> void:
+func _prepare_locomotion_animation(animation_name: StringName, speed_scale: float, _state_name: StringName) -> void:
 	var library: AnimationLibrary = animation_player.get_animation_library("")
 	if library == null:
 		return
@@ -152,11 +149,6 @@ func _prepare_locomotion_animation(animation_name: StringName, speed_scale: floa
 	if animation == null:
 		return
 
-	var loop_delta := Vector3.ZERO
-	var root_track_index := _find_root_position_track(animation)
-	if root_track_index >= 0:
-		loop_delta = _make_animation_in_place(animation, root_track_index)
-
 	for track_index in animation.get_track_count():
 		var key_count := animation.track_get_key_count(track_index)
 		for key_index in key_count:
@@ -166,11 +158,10 @@ func _prepare_locomotion_animation(animation_name: StringName, speed_scale: floa
 	animation.length = source_animation.length / speed_scale
 	library.remove_animation(animation_key)
 	library.add_animation(animation_key, animation)
-
-	if not is_zero_approx(animation.length):
-		_movement_speeds[state_name] = loop_delta.length() / animation.length
-	else:
-		_movement_speeds[state_name] = 0.0
+	if _root_motion_track_path.is_empty():
+		var root_track_index := _find_root_position_track(animation)
+		if root_track_index >= 0:
+			_root_motion_track_path = animation.track_get_path(root_track_index)
 
 
 func _find_root_position_track(animation: Animation) -> int:
@@ -185,23 +176,23 @@ func _find_root_position_track(animation: Animation) -> int:
 	return -1
 
 
-func _make_animation_in_place(animation: Animation, track_index: int) -> Vector3:
-	var key_count := animation.track_get_key_count(track_index)
-	if key_count == 0:
-		return Vector3.ZERO
+func _configure_root_motion_track() -> void:
+	if _root_motion_track_path.is_empty():
+		return
 
-	var start_position: Vector3 = animation.track_get_key_value(track_index, 0) as Vector3
-	var end_position: Vector3 = animation.position_track_interpolate(track_index, animation.length)
-	var loop_delta := end_position - start_position
-	loop_delta.y = 0.0
+	animation_tree.root_motion_track = _root_motion_track_path
 
-	for key_index in key_count:
-		var key_position: Vector3 = animation.track_get_key_value(track_index, key_index) as Vector3
-		key_position.x = start_position.x
-		key_position.z = start_position.z
-		animation.track_set_key_value(track_index, key_index, key_position)
 
-	return loop_delta
+func _apply_root_motion() -> void:
+	if animation_tree.root_motion_track.is_empty():
+		return
+
+	var root_motion: Vector3 = animation_tree.get_root_motion_position()
+	root_motion.y = 0.0
+	if root_motion.is_zero_approx():
+		return
+
+	global_position += global_transform.basis * root_motion
 
 
 func _ensure_input_map() -> void:

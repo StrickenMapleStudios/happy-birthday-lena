@@ -5,6 +5,13 @@
 [ext_resource type="PackedScene" uid="uid://b4vwbq1fnyglj" path="res://assets/art/models/menu/ground.glb" id="3_ugn2o"]
 [ext_resource type="Script" uid="uid://d2cshtjt3o6ep" path="res://assets/art/models/characters/menu_character.gd" id="3_xuqax"]
 [ext_resource type="PackedScene" uid="uid://p8ojij8lhtbr" path="res://addons/Free Forest Nature Pack/Trees/Oak/Flat_Tree_Oak_hero_green.glb" id="5_fmrf6"]
+[ext_resource type="PackedScene" uid="uid://3uaj1uqgh8rl" path="res://addons/Free Forest Nature Pack/Trees/Pine/Flat_Tree_Pine_hero.glb" id="6_0s7ae"]
+[ext_resource type="PackedScene" uid="uid://cqv5266rqui2y" path="res://addons/Free Forest Nature Pack/Trees/Pine/Flat_Tree_Pine_large.glb" id="7_6mkww"]
+[ext_resource type="PackedScene" uid="uid://jgs2yvp5lmdi" path="res://addons/Free Forest Nature Pack/Trees/Spruce/Flat_Tree_Spruce_large.glb" id="8_5g3d3"]
+[ext_resource type="PackedScene" uid="uid://berhpqhc32tqf" path="res://addons/Free Forest Nature Pack/Trees/Spruce/Flat_Tree_Spruce_medium.glb" id="9_qfk10"]
+[ext_resource type="PackedScene" uid="uid://cs3o6qnlelbv4" path="res://addons/Free Forest Nature Pack/Trees/Park Trees/Flat_Tree_Park_large_green.glb" id="10_3n52f"]
+[ext_resource type="PackedScene" uid="uid://bfaokm7jotso3" path="res://addons/Free Forest Nature Pack/Bushes/Flat_Bush_with_Flowers.glb" id="11_hv2lo"]
+[ext_resource type="PackedScene" uid="uid://k480akhish3k" path="res://addons/Free Forest Nature Pack/Grass/Flat_Grass_large.glb" id="12_m06lr"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_y2m7k"]
 sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
@@ -66,6 +73,9 @@ animation = &"Sitting"
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_l0v2w"]
 animation = &"SittingToStanding"
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_goodbye"]
+animation = &"Goodbye"
+
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_pw4oi"]
 advance_mode = 2
 
@@ -106,7 +116,34 @@ switch_mode = 2
 advance_mode = 2
 advance_condition = &"standing"
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_legswinging_goodbye"]
+xfade_time = 0.3
+advance_mode = 2
+advance_condition = &"goodbye"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_sitting_goodbye"]
+xfade_time = 0.3
+advance_mode = 2
+advance_condition = &"goodbye"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idle_goodbye"]
+xfade_time = 0.3
+advance_mode = 2
+advance_condition = &"goodbye"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idletositting_goodbye"]
+xfade_time = 0.3
+advance_mode = 2
+advance_condition = &"goodbye"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_sittingtostanding_goodbye"]
+xfade_time = 0.3
+advance_mode = 2
+advance_condition = &"goodbye"
+
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_pw4oi"]
+states/Goodbye/node = SubResource("AnimationNodeAnimation_goodbye")
+states/Goodbye/position = Vector2(720, -12)
 states/Idle/node = SubResource("AnimationNodeAnimation_ugn2o")
 states/Idle/position = Vector2(650, 104)
 states/IdleToSitting/node = SubResource("AnimationNodeAnimation_xuqax")
@@ -118,7 +155,7 @@ states/Sitting/position = Vector2(348, 120)
 states/SittingToStanding/node = SubResource("AnimationNodeAnimation_l0v2w")
 states/SittingToStanding/position = Vector2(500, 120)
 states/Start/position = Vector2(185, 121)
-transitions = ["Start", "Sitting", SubResource("AnimationNodeStateMachineTransition_pw4oi"), "Sitting", "LegSwinging", SubResource("AnimationNodeStateMachineTransition_c4qlh"), "LegSwinging", "SittingToStanding", SubResource("AnimationNodeStateMachineTransition_4jp7k"), "Sitting", "SittingToStanding", SubResource("AnimationNodeStateMachineTransition_legreturn"), "SittingToStanding", "Idle", SubResource("AnimationNodeStateMachineTransition_ujvk5"), "Idle", "IdleToSitting", SubResource("AnimationNodeStateMachineTransition_0ujva"), "IdleToSitting", "Sitting", SubResource("AnimationNodeStateMachineTransition_xuqax"), "IdleToSitting", "SittingToStanding", SubResource("AnimationNodeStateMachineTransition_u7y45")]
+transitions = ["Start", "Sitting", SubResource("AnimationNodeStateMachineTransition_pw4oi"), "Sitting", "LegSwinging", SubResource("AnimationNodeStateMachineTransition_c4qlh"), "LegSwinging", "SittingToStanding", SubResource("AnimationNodeStateMachineTransition_4jp7k"), "Sitting", "SittingToStanding", SubResource("AnimationNodeStateMachineTransition_legreturn"), "SittingToStanding", "Idle", SubResource("AnimationNodeStateMachineTransition_ujvk5"), "Idle", "IdleToSitting", SubResource("AnimationNodeStateMachineTransition_0ujva"), "IdleToSitting", "Sitting", SubResource("AnimationNodeStateMachineTransition_xuqax"), "IdleToSitting", "SittingToStanding", SubResource("AnimationNodeStateMachineTransition_u7y45"), "LegSwinging", "Goodbye", SubResource("AnimationNodeStateMachineTransition_legswinging_goodbye"), "Sitting", "Goodbye", SubResource("AnimationNodeStateMachineTransition_sitting_goodbye"), "Idle", "Goodbye", SubResource("AnimationNodeStateMachineTransition_idle_goodbye"), "IdleToSitting", "Goodbye", SubResource("AnimationNodeStateMachineTransition_idletositting_goodbye"), "SittingToStanding", "Goodbye", SubResource("AnimationNodeStateMachineTransition_sittingtostanding_goodbye")]
 graph_offset = Vector2(-108, -4)
 
 [node name="menuEnvironment" type="Node3D" unique_id=469778504]
@@ -162,37 +199,37 @@ transform = Transform3D(0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0,
 bones/0/position = Vector3(3.5527137e-14, -3.6064699, -2.757546)
 bones/1/position = Vector3(0.003718836, -0.17532344, -1.5893912)
 bones/1/rotation = Quaternion(-0.5130054, 0.48703897, -0.5126735, 0.48660493)
-bones/3/rotation = Quaternion(0.23720762, 0.6864306, 0.6698485, -0.15443015)
-bones/4/rotation = Quaternion(-0.114258766, -0.011732175, 0.11047605, 0.9872195)
+bones/3/rotation = Quaternion(0.20315135, 0.6417037, 0.68878174, -0.2693061)
+bones/4/rotation = Quaternion(-0.2943559, -0.010841434, 0.28461075, 0.9122685)
 bones/5/rotation = Quaternion(0.043536115, 0.69632345, -0.2892777, 0.65540576)
-bones/7/rotation = Quaternion(0.7137162, -0.32689875, 0.15154755, 0.6006495)
-bones/8/rotation = Quaternion(-0.43278718, 0.7824688, 0.4476063, -0.009298865)
+bones/7/rotation = Quaternion(0.68309855, -0.24577335, 0.2268469, 0.64923996)
+bones/8/rotation = Quaternion(-0.21397206, 0.95137537, 0.2212987, -0.011306177)
 bones/9/rotation = Quaternion(0.043536097, -0.69632334, 0.2892778, 0.6554059)
 bones/10/rotation = Quaternion(1.9329853e-05, 0.00016351107, -0.20205328, 0.9793745)
-bones/11/rotation = Quaternion(0.016179953, 0.0069430005, 0.0491996, 0.99863386)
+bones/11/rotation = Quaternion(-0.011672144, -0.0051533477, 0.049195785, 0.99870765)
 bones/13/position = Vector3(0.014173147, 0.26441514, 0.048959997)
 bones/13/rotation = Quaternion(-0.02140963, 0.6937462, 0.71958137, -0.02145996)
-bones/14/rotation = Quaternion(-0.5302639, 0.11380183, 0.15221928, 0.82625574)
+bones/14/rotation = Quaternion(-0.54012966, 0.085890554, 0.17220235, 0.8192858)
 bones/15/rotation = Quaternion(-0.001631237, 0.0011987643, -0.0029288044, 0.9999937)
 bones/17/position = Vector3(0.014173218, 0.26441497, -0.048960004)
-bones/18/rotation = Quaternion(-0.5520542, -0.10086666, -0.16433117, 0.81120735)
+bones/18/rotation = Quaternion(-0.54252815, -0.12996042, -0.1434915, 0.81742513)
 bones/19/rotation = Quaternion(-0.0016235696, -0.0011987519, 0.0029150555, 0.99999374)
-bones/21/rotation = Quaternion(0.0129527915, 0.004592478, 0.05472063, 0.9984071)
+bones/21/rotation = Quaternion(-0.023506392, -0.008334946, 0.0546982, 0.9981915)
 bones/22/rotation = Quaternion(0.009666363, -0.007941529, 0.7868128, 0.617065)
 bones/23/rotation = Quaternion(0.49999997, 0.5, 0.50000006, -0.49999997)
 bones/24/scale = Vector3(1, 0.9999997, 0)
 bones/25/scale = Vector3(1.0000001, 0.99999994, 0)
 bones/26/position = Vector3(4.248607e-09, 0.11478758, 0.62679654)
-bones/26/rotation = Quaternion(0.022668945, -0.00027334754, 0.043502323, 0.99879616)
+bones/26/rotation = Quaternion(0.02263055, 0.0012913005, -0.025516326, 0.99941736)
 bones/29/rotation = Quaternion(0.49999994, 0.5000002, 0.5, -0.50000006)
 bones/30/rotation = Quaternion(0.49999994, 0.5000002, 0.5, -0.50000006)
 bones/33/position = Vector3(-1.6762627, -0.04000151, -0.0005618808)
 bones/33/rotation = Quaternion(0.010253614, -0.0070506, 0.84339535, 0.5371494)
-bones/34/position = Vector3(0.35872006, 1.33917, -1.1053386)
-bones/34/rotation = Quaternion(0.0028750428, 0.8260918, 0.0019612622, 0.5635249)
+bones/34/position = Vector3(0.35872006, 0.9294687, -0.6924437)
+bones/34/rotation = Quaternion(0.0030942624, 0.8890837, 0.0015930797, 0.45773154)
 bones/35/position = Vector3(0.781606, 0.49115577, -0.040587)
-bones/36/position = Vector3(-0.3587203, 0.49534464, -0.61318874)
-bones/36/rotation = Quaternion(0.0032193016, -0.92501324, -0.0013222751, 0.37991908)
+bones/36/position = Vector3(-0.35872036, 1.0782248, -0.7740961)
+bones/36/rotation = Quaternion(0.0030324156, -0.8713117, -0.0017078781, 0.4907177)
 bones/37/position = Vector3(-0.78160584, 0.49115536, -0.040586554)
 bones/38/position = Vector3(0.65265083, -0.69192594, -1.705002)
 bones/39/position = Vector3(0.48740414, 0.21616471, -0.14989354)
@@ -200,7 +237,7 @@ bones/40/position = Vector3(-0.62390125, -0.691926, -1.7107518)
 bones/41/position = Vector3(-0.48740417, 0.21616483, -0.1498935)
 
 [node name="hat_2" parent="character/Rig/Skeleton3D" index="0" unique_id=1468740649]
-transform = Transform3D(1.3653998, 0.03791514, 0.035727177, -0.05198904, 1.0516448, 0.8708469, -0.0033329069, -0.8715735, 1.052324, 0.065759376, 0.37130815, -3.5804052)
+transform = Transform3D(1.3595561, -0.10722328, -0.084499724, 0.13647678, 1.0468568, 0.8674667, -0.00333252, -0.87156653, 1.0523298, -0.13337219, 0.36598462, -3.5803936)
 
 [node name="hat" parent="character/Rig/Skeleton3D/hat_2" index="0" unique_id=562585729]
 transform = Transform3D(0.99968886, 0.02494508, -0.00032679713, -0.020696668, 0.8219749, -0.5691469, -0.01392881, 0.5689771, 0.8222344, -0.054496896, -2.533786, -1.7157384)
@@ -209,13 +246,59 @@ transform = Transform3D(0.99968886, 0.02494508, -0.00032679713, -0.020696668, 0.
 root_node = NodePath("../..")
 tree_root = SubResource("AnimationNodeStateMachine_pw4oi")
 anim_player = NodePath("..")
+parameters/conditions/goodbye = false
 parameters/conditions/not_standing = true
 parameters/conditions/standing = false
 
 [node name="ground2" parent="." unique_id=833784654 instance=ExtResource("3_ugn2o")]
 
-[node name="Flat_Tree_Oak_hero_green" parent="." unique_id=734089509 instance=ExtResource("5_fmrf6")]
-transform = Transform3D(0.799517, 0, -0.6006435, 0, 1, 0, 0.6006435, 0, 0.799517, 6.6391497, -2.1189198, -7.5865955)
+[node name="FramingTrees" type="Node3D" parent="." unique_id=100594201]
+
+[node name="RightOak" parent="FramingTrees" unique_id=734089509 instance=ExtResource("5_fmrf6")]
+transform = Transform3D(0.410424, 0, -0.286356, 0, 0.5, 0, 0.286356, 0, 0.410424, 15.236, -1.46, -22.781)
+
+[node name="LeftPineHero" parent="FramingTrees" unique_id=350288140 instance=ExtResource("6_0s7ae")]
+transform = Transform3D(0.537143, 0, 0.154205, 0, 0.58, 0, -0.154205, 0, 0.537143, -17.842, -1.12, -24.366)
+
+[node name="LeftPineSupport" parent="FramingTrees" unique_id=121305140 instance=ExtResource("7_6mkww")]
+transform = Transform3D(0.335849, 0, 0.118191, 0, 0.42, 0, -0.118191, 0, 0.335849, -24.911, -1.3, -33.524)
+
+[node name="MidgroundForest" type="Node3D" parent="." unique_id=242905317]
+
+[node name="ParkTreeCenter" parent="MidgroundForest" unique_id=343033530 instance=ExtResource("10_3n52f")]
+transform = Transform3D(0.341871, 0, -0.079826, 0, 0.35, 0, 0.079826, 0, 0.341871, 18.456, -1.18, -39.718)
+
+[node name="SpruceLeftA" parent="MidgroundForest" unique_id=968373022 instance=ExtResource("8_5g3d3")]
+transform = Transform3D(0.622081, 0, 0.11405, 0, 0.72, 0, -0.11405, 0, 0.622081, -10.842, -0.96, -36.114)
+
+[node name="SpruceLeftB" parent="MidgroundForest" unique_id=406225181 instance=ExtResource("9_qfk10")]
+transform = Transform3D(0.453557, 0, -0.106807, 0, 0.54, 0, 0.106807, 0, 0.453557, -5.114, -1.05, -31.862)
+
+[node name="SpruceCenterRightA" parent="MidgroundForest" unique_id=395018211 instance=ExtResource("8_5g3d3")]
+transform = Transform3D(0.564582, 0, -0.102556, 0, 0.66, 0, 0.102556, 0, 0.564582, 4.981, -0.98, -34.205)
+
+[node name="SpruceCenterRightB" parent="MidgroundForest" unique_id=796045901 instance=ExtResource("9_qfk10")]
+transform = Transform3D(0.439234, 0, 0.135927, 0, 0.5, 0, -0.135927, 0, 0.439234, 9.263, -1.09, -30.414)
+
+[node name="SpruceFarRight" parent="MidgroundForest" unique_id=286600135 instance=ExtResource("9_qfk10")]
+transform = Transform3D(0.327402, 0, -0.064637, 0, 0.38, 0, 0.064637, 0, 0.327402, 14.954, -1.19, -27.538)
+
+[node name="ForegroundDetails" type="Node3D" parent="." unique_id=840546880]
+
+[node name="BushLeft" parent="ForegroundDetails" unique_id=468783115 instance=ExtResource("11_hv2lo")]
+transform = Transform3D(0.403504, 0, -0.088803, 0, 0.38, 0, 0.088803, 0, 0.403504, -14.882, -1.16, -10.633)
+
+[node name="BushRight" parent="ForegroundDetails" unique_id=976692015 instance=ExtResource("11_hv2lo")]
+transform = Transform3D(0.357295, 0, 0.065795, 0, 0.34, 0, -0.065795, 0, 0.357295, 13.467, -1.15, -8.942)
+
+[node name="GrassClumpLeft" parent="ForegroundDetails" unique_id=143989175 instance=ExtResource("12_m06lr")]
+transform = Transform3D(0.306968, 0, 0.054137, 0, 0.27, 0, -0.054137, 0, 0.306968, -6.284, -1.08, -4.621)
+
+[node name="GrassClumpCenter" parent="ForegroundDetails" unique_id=119395728 instance=ExtResource("12_m06lr")]
+transform = Transform3D(0.346012, 0, -0.076364, 0, 0.32, 0, 0.076364, 0, 0.346012, 6.972, -1.07, -5.438)
+
+[node name="GrassClumpRight" parent="ForegroundDetails" unique_id=296305914 instance=ExtResource("12_m06lr")]
+transform = Transform3D(0.28198, 0, 0.080678, 0, 0.25, 0, -0.080678, 0, 0.28198, 11.421, -1.08, -4.217)
 
 [editable path="bench2"]
 [editable path="character"]

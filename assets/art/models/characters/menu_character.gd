@@ -6,11 +6,13 @@ const ANIMATION_GOODBYE := "Goodbye"
 const ANIMATION_IDLE_TO_SITTING := "IdleToSitting"
 const ANIMATION_LEG_SWINGING := "LegSwinging"
 const ANIMATION_SITTING_TO_STANDING := "SittingToStanding"
+const STATE_GOODBYE := "Goodbye"
 const STATE_SITTING_TO_STANDING := "SittingToStanding"
 const STATE_IDLE := "Idle"
 const PARAM_STANDING := "parameters/conditions/standing"
 const PARAM_NOT_STANDING := "parameters/conditions/not_standing"
 const PARAM_GOODBYE := "parameters/conditions/goodbye"
+const GOODBYE_FINISH_PADDING := 0.02
 const IDLE_TO_SITTING_SPEED_SCALE := 1.3
 const LEG_SWINGING_SPEED_SCALE := 1.7
 const SITTING_TO_STANDING_SPEED_SCALE := 1.8
@@ -64,10 +66,11 @@ func play_goodbye() -> void:
 	_goodbye_in_progress = true
 	_set_condition(PARAM_GOODBYE, true)
 
-	if animation_player.has_animation(ANIMATION_GOODBYE):
-		animation_tree.active = false
-		animation_player.play(ANIMATION_GOODBYE)
-		await animation_player.animation_finished
+	if animation_player.has_animation(ANIMATION_GOODBYE) and _playback != null:
+		await _wait_for_state(STATE_GOODBYE)
+		var goodbye_animation: Animation = animation_player.get_animation(ANIMATION_GOODBYE)
+		if goodbye_animation != null:
+			await get_tree().create_timer(goodbye_animation.length + GOODBYE_FINISH_PADDING).timeout
 	else:
 		push_warning("Menu character is missing the 'Goodbye' animation. Closing without a wave.")
 

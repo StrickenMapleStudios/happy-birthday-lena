@@ -2,9 +2,16 @@
 
 [ext_resource type="PackedScene" uid="uid://c3pfhf3o67ojp" path="res://assets/scenes/menu/menu_environment.tscn" id="1_ko25s"]
 [ext_resource type="PackedScene" uid="uid://df155h7gooru8" path="res://assets/scenes/menu/menu_ui.tscn" id="2_h7tvt"]
+[ext_resource type="Script" path="res://assets/scripts/menu_main.gd" id="3_l77y1"]
+[ext_resource type="AudioStream" uid="uid://byai2vskgnh43" path="res://assets/audio/menu_music.mp3" id="4_qk1w3"]
 
 [node name="menuMain" type="Node3D" unique_id=1000388063]
+script = ExtResource("3_l77y1")
 
 [node name="menuEnvironment" parent="." unique_id=469778504 instance=ExtResource("1_ko25s")]
 
 [node name="menuUI" parent="." unique_id=899699264 instance=ExtResource("2_h7tvt")]
+
+[node name="MenuMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_qk1w3")
+bus = &"Music"

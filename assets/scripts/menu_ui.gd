@@ -82,6 +82,7 @@ const NEW_GAME_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
 var _pending_settings: Dictionary = {}
 var _exit_in_progress: bool = false
 var _slot_selection_locked: bool = false
+var _ui_transition_locked: bool = false
 
 
 func _ready() -> void:
@@ -121,6 +122,10 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _ui_transition_locked:
+		get_viewport().set_input_as_handled()
+		return
+
 	if not exit_overlay.visible:
 		if save_slot_screen.visible and event.is_action_pressed("ui_cancel"):
 			get_viewport().set_input_as_handled()
@@ -147,8 +152,7 @@ func _on_save_slot_pressed(_slot_index: int) -> void:
 		return
 
 	_slot_selection_locked = true
-	_lock_save_slot_selection()
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	_begin_ui_transition_lock()
 	if menu_character != null and menu_character.has_method("stand_up_and_wait"):
 		await menu_character.call("stand_up_and_wait")
 	else:
@@ -190,6 +194,7 @@ func _confirm_exit() -> void:
 		return
 
 	_exit_in_progress = true
+	_begin_ui_transition_lock()
 	exit_backdrop.visible = false
 	exit_overlay.visible = false
 
@@ -224,11 +229,13 @@ func _hide_options_screen() -> void:
 
 func _show_save_slot_screen() -> void:
 	_slot_selection_locked = false
+	_ui_transition_locked = false
 	sidebar.visible = false
 	options_screen.visible = false
 	back_button.visible = true
 	save_slot_screen.visible = true
 	_set_character_standing(false)
+	_restore_menu_interactivity()
 	_set_button_focus_enabled(menu_buttons, false)
 	_set_button_focus_enabled(options_buttons, false)
 	_set_button_focus_enabled(save_slot_screen_buttons, true)
@@ -237,10 +244,12 @@ func _show_save_slot_screen() -> void:
 
 func _hide_save_slot_screen() -> void:
 	_slot_selection_locked = false
+	_ui_transition_locked = false
 	back_button.visible = false
 	save_slot_screen.visible = false
 	sidebar.visible = true
 	_set_character_standing(false)
+	_restore_menu_interactivity()
 	_set_button_focus_enabled(save_slot_screen_buttons, false)
 	_set_button_focus_enabled(menu_buttons, true)
 	new_game_button.grab_focus()
@@ -382,3 +391,32 @@ func _lock_save_slot_selection() -> void:
 
 	back_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	get_viewport().gui_release_focus()
+
+
+func _begin_ui_transition_lock() -> void:
+	_ui_transition_locked = true
+	_lock_save_slot_selection()
+	_set_button_focus_enabled(menu_buttons, false)
+	_set_button_focus_enabled(options_buttons, false)
+	_set_button_focus_enabled(save_slot_screen_buttons, false)
+	_set_button_mouse_filter(menu_buttons, Control.MOUSE_FILTER_IGNORE)
+	_set_button_mouse_filter(options_buttons, Control.MOUSE_FILTER_IGNORE)
+	_set_button_mouse_filter(save_slot_buttons, Control.MOUSE_FILTER_IGNORE)
+	_set_button_mouse_filter([cancel_exit_button, confirm_exit_button], Control.MOUSE_FILTER_IGNORE)
+	back_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	get_viewport().gui_release_focus()
+
+
+func _restore_menu_interactivity() -> void:
+	_set_button_mouse_filter(menu_buttons, Control.MOUSE_FILTER_STOP)
+	_set_button_mouse_filter(options_buttons, Control.MOUSE_FILTER_STOP)
+	_set_button_mouse_filter(save_slot_buttons, Control.MOUSE_FILTER_STOP)
+	_set_button_mouse_filter([cancel_exit_button, confirm_exit_button], Control.MOUSE_FILTER_STOP)
+	back_button.mouse_filter = Control.MOUSE_FILTER_STOP
+
+
+func _set_button_mouse_filter(buttons: Array, filter: Control.MouseFilter) -> void:
+	for button in buttons:
+		if button is Control:
+			(button as Control).mouse_filter = filter
