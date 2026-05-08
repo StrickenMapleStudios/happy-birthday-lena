@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dk6375uhsedxh"]
+
+[ext_resource type="PackedScene" uid="uid://c3pfhf3o67ojp" path="res://assets/scenes/menu/menu_environment.tscn" id="1_ko25s"]
+[ext_resource type="PackedScene" uid="uid://df155h7gooru8" path="res://assets/scenes/menu/menu_ui.tscn" id="2_h7tvt"]
+
+[node name="menuMain" type="Node3D" unique_id=1000388063]
+
+[node name="menuEnvironment" parent="." unique_id=469778504 instance=ExtResource("1_ko25s")]
+
+[node name="menuUI" parent="." unique_id=899699264 instance=ExtResource("2_h7tvt")]

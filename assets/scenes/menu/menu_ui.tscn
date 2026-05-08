@@ -1,56 +1,177 @@
 [gd_scene format=3 uid="uid://df155h7gooru8"]
 
-[sub_resource type="Theme" id="Theme_ysavv"]
+[ext_resource type="FontFile" uid="uid://dkrxonksevp7k" path="res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf" id="1_2e3xq"]
+[ext_resource type="FontFile" uid="uid://cmykgjkhr31m3" path="res://assets/art/fonts/Paytone_One/PaytoneOne-Regular.ttf" id="2_j1n5m"]
 
-[sub_resource type="Theme" id="Theme_wecll"]
-default_font_size = 0
+[sub_resource type="Theme" id="Theme_j0h4h"]
+Label/fonts/font = ExtResource("1_2e3xq")
 
-[sub_resource type="Theme" id="Theme_r1n70"]
+[sub_resource type="Theme" id="Theme_v8h3d"]
+Button/fonts/font = ExtResource("2_j1n5m")
 
-[node name="menu" type="Control" unique_id=899699264]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2c2wf"]
+content_margin_left = 42.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+bg_color = Color(0.235294, 0.235294, 0.235294, 0.65098)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.631373, 0.631373, 0.631373, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kb1ni"]
+content_margin_left = 42.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+bg_color = Color(0.745098, 0.596078, 0, 0.8)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.960784, 0, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7t5wn"]
+content_margin_left = 42.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+bg_color = Color(0.623529, 0.423529, 0, 0.65098)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.960784, 0, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[node name="menuUI" type="Control" unique_id=899699264]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1626828643]
+[node name="SafeMargin" type="MarginContainer" parent="." unique_id=1626828643]
 layout_mode = 1
-anchors_preset = 9
+anchors_preset = 15
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 547.0
+grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 100
-theme_override_constants/margin_top = 100
+theme_override_constants/margin_left = 108
+theme_override_constants/margin_top = 76
+theme_override_constants/margin_right = 56
+theme_override_constants/margin_bottom = 56
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1710463965]
+[node name="Sidebar" type="VBoxContainer" parent="SafeMargin" unique_id=1710463965]
+custom_minimum_size = Vector2(540, 0)
 layout_mode = 2
-theme = SubResource("Theme_ysavv")
+size_flags_horizontal = 0
+theme_override_constants/separation = 34
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer" unique_id=181577048]
+[node name="TitleBlock" type="VBoxContainer" parent="SafeMargin/Sidebar" unique_id=166005321]
 layout_mode = 2
-theme = SubResource("Theme_wecll")
+theme = SubResource("Theme_j0h4h")
+theme_override_constants/separation = -26
+
+[node name="HappyBirthdayLabel" type="Label" parent="SafeMargin/Sidebar/TitleBlock" unique_id=181577048]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 84
 text = "Happy Birthday"
 uppercase = true
 
-[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer" unique_id=109947678]
+[node name="LenaLabel" type="Label" parent="SafeMargin/Sidebar/TitleBlock" unique_id=109947678]
 layout_mode = 2
-theme = SubResource("Theme_r1n70")
+theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 138
 text = "Lena"
 uppercase = true
 
-[node name="buttonContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=382199971]
+[node name="ButtonStack" type="VBoxContainer" parent="SafeMargin/Sidebar" unique_id=382199971]
 layout_mode = 2
+theme = SubResource("Theme_v8h3d")
+theme_override_constants/separation = 14
 
-[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/buttonContainer" unique_id=11907706]
+[node name="ContinueButton" type="Button" parent="SafeMargin/Sidebar/ButtonStack" unique_id=11907706]
+custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 34
+theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
+theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
+text = "> CONTINUE"
+alignment = 0
 
-[node name="Button2" type="Button" parent="MarginContainer/VBoxContainer/buttonContainer" unique_id=1005522670]
+[node name="NewGameButton" type="Button" parent="SafeMargin/Sidebar/ButtonStack" unique_id=1005522670]
+custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 34
+theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
+theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
+text = "+ NEW GAME"
+alignment = 0
 
-[node name="Button3" type="Button" parent="MarginContainer/VBoxContainer/buttonContainer" unique_id=1010049590]
+[node name="OptionsButton" type="Button" parent="SafeMargin/Sidebar/ButtonStack" unique_id=1010049590]
+custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 34
+theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
+theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
+text = "* OPTIONS"
+alignment = 0
 
-[node name="Button4" type="Button" parent="MarginContainer/VBoxContainer/buttonContainer" unique_id=1734098870]
+[node name="ExitButton" type="Button" parent="SafeMargin/Sidebar/ButtonStack" unique_id=1734098870]
+custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
+size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 34
+theme_override_styles/normal = SubResource("StyleBoxFlat_2c2wf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_kb1ni")
+theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
+theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
+text = "< EXIT"
+alignment = 0
