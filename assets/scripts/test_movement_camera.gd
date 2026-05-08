@@ -1,7 +1,7 @@
 extends Node3D
 
 const FOLLOW_LERP_SPEED := 4.0
-const LOOK_LERP_SPEED := 5.0
+const LOOK_LERP_SPEED := 4.0
 const FOCUS_HEIGHT := 1.6
 const RUN_TILT_OFFSET := 0.55
 
@@ -10,6 +10,8 @@ const RUN_TILT_OFFSET := 0.55
 var _target: Node3D
 var _last_target_position := Vector3.ZERO
 var _look_height_offset: float = 0.0
+var _smoothed_target_position := Vector3.ZERO
+var _smoothed_focus_point := Vector3.ZERO
 
 
 func _ready() -> void:
@@ -17,7 +19,9 @@ func _ready() -> void:
 	if _target == null:
 		return
 
+	_smoothed_target_position = _target.global_position
 	_last_target_position = _target.global_position
+	_smoothed_focus_point = _target.global_position + Vector3(0.0, FOCUS_HEIGHT, 0.0)
 	_update_camera(1.0)
 
 
@@ -32,7 +36,8 @@ func _update_camera(delta: float) -> void:
 	var target_position: Vector3 = _target.global_position
 	var desired_position: Vector3 = target_position
 	var follow_weight: float = minf(delta * FOLLOW_LERP_SPEED, 1.0)
-	global_position = global_position.lerp(desired_position, follow_weight)
+	_smoothed_target_position = _smoothed_target_position.lerp(desired_position, follow_weight)
+	global_position = _smoothed_target_position
 
 	var move_delta: Vector3 = target_position - _last_target_position
 	_last_target_position = target_position
@@ -49,4 +54,5 @@ func _update_camera(delta: float) -> void:
 	_look_height_offset = lerpf(_look_height_offset, desired_look_height_offset, look_weight)
 
 	var focus_point: Vector3 = target_position + Vector3(0.0, FOCUS_HEIGHT + _look_height_offset, 0.0)
-	$Camera3D.look_at(focus_point, Vector3.UP)
+	_smoothed_focus_point = _smoothed_focus_point.lerp(focus_point, look_weight)
+	$Camera3D.look_at(_smoothed_focus_point, Vector3.UP)

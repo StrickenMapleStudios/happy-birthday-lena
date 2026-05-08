@@ -168,7 +168,6 @@ transform = Transform3D(1.3659678, -0.028279578, -0.019032495, 0.034084756, 1.12
 
 [node name="AnimationTree" type="AnimationTree" parent="character/AnimationPlayer" parent_id_path=PackedInt32Array(1465858297, 1973788001) index="0" unique_id=780552913]
 root_node = NodePath("../..")
-root_motion_track = NodePath("Rig")
 tree_root = SubResource("AnimationNodeStateMachine_test_movement")
 anim_player = NodePath("..")
 
@@ -178,7 +177,7 @@ script = ExtResource("3_huu8q")
 [node name="Camera3D" type="Camera3D" parent="CameraRig" unique_id=109099008]
 transform = Transform3D(1, -4.712819e-08, 1.6832325e-07, 4.144082e-09, 0.9690889, 0.24671175, -1.7474727e-07, -0.24671175, 0.9690889, -8.6249166e-08, 4.0897617, 8.217516)
 current = true
-fov = 40.0
+fov = 60.0
 far = 200.0
 
 [editable path="character"]
