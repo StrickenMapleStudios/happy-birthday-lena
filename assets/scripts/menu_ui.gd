@@ -1,6 +1,6 @@
 extends Control
 
-const CINEMA_SCENE_PATH := "res://assets/scenes/cinema.tscn"
+const NEW_GAME_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
 
 @onready var menu_character: Node = get_parent().get_node_or_null("menuEnvironment/character")
 @onready var new_game_button: Button = $SafeMargin/Sidebar/ButtonStack/NewGameButton
@@ -153,7 +153,7 @@ func _on_save_slot_pressed(_slot_index: int) -> void:
 		await menu_character.call("stand_up_and_wait")
 	else:
 		_set_character_standing(true)
-	await SceneTransition.change_scene_to_file(CINEMA_SCENE_PATH)
+	await SceneTransition.change_scene_to_file(NEW_GAME_SCENE_PATH)
 
 
 func _on_exit_pressed() -> void:

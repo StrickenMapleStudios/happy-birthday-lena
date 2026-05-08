@@ -1,0 +1,184 @@
+[gd_scene format=3 uid="uid://cf5y77c0aowei"]
+
+[ext_resource type="PackedScene" uid="uid://cuvqsplyq6dy6" path="res://assets/art/models/characters/character.glb" id="1_v42cq"]
+[ext_resource type="Script" uid="uid://uhnj7b0665k6" path="res://assets/scripts/test_movement_character.gd" id="2_hl0i2"]
+[ext_resource type="Script" uid="uid://b84roxoxwu700" path="res://assets/scripts/test_movement_camera.gd" id="3_huu8q"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_test_movement"]
+sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
+sky_horizon_color = Color(0.729412, 0.882353, 0.984314, 1)
+ground_bottom_color = Color(0.286275, 0.317647, 0.270588, 1)
+ground_horizon_color = Color(0.54902, 0.596078, 0.486275, 1)
+
+[sub_resource type="Sky" id="Sky_test_movement"]
+sky_material = SubResource("ProceduralSkyMaterial_test_movement")
+
+[sub_resource type="Environment" id="Environment_test_movement"]
+background_mode = 2
+sky = SubResource("Sky_test_movement")
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.2
+reflected_light_source = 1
+tonemap_mode = 2
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_test_movement"]
+size = Vector2(600, 600)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
+albedo_color = Color(0.439216, 0.529412, 0.372549, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_jixbc"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_idle"]
+animation = &"Idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_naruto"]
+animation = &"NarutoRunning"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_running"]
+animation = &"Running"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_walking"]
+animation = &"Walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_start"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idle_to_walking"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idle_to_running"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_walking_to_idle"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_walking_to_running"]
+xfade_time = 0.3
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_running_to_idle"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_running_to_walking"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_running_to_naruto"]
+xfade_time = 0.25
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_naruto_to_idle"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_naruto_to_walking"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_naruto_to_running"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_test_movement"]
+states/Idle/node = SubResource("AnimationNodeAnimation_idle")
+states/Idle/position = Vector2(440, 138)
+states/NarutoRunning/node = SubResource("AnimationNodeAnimation_naruto")
+states/NarutoRunning/position = Vector2(855, 28)
+states/Running/node = SubResource("AnimationNodeAnimation_running")
+states/Running/position = Vector2(665, 82)
+states/Start/position = Vector2(210, 140)
+states/Walking/node = SubResource("AnimationNodeAnimation_walking")
+states/Walking/position = Vector2(660, 170)
+transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_start"), "Idle", "Walking", SubResource("AnimationNodeStateMachineTransition_idle_to_walking"), "Idle", "Running", SubResource("AnimationNodeStateMachineTransition_idle_to_running"), "Walking", "Idle", SubResource("AnimationNodeStateMachineTransition_walking_to_idle"), "Walking", "Running", SubResource("AnimationNodeStateMachineTransition_walking_to_running"), "Running", "Idle", SubResource("AnimationNodeStateMachineTransition_running_to_idle"), "Running", "Walking", SubResource("AnimationNodeStateMachineTransition_running_to_walking"), "Running", "NarutoRunning", SubResource("AnimationNodeStateMachineTransition_running_to_naruto"), "NarutoRunning", "Idle", SubResource("AnimationNodeStateMachineTransition_naruto_to_idle"), "NarutoRunning", "Walking", SubResource("AnimationNodeStateMachineTransition_naruto_to_walking"), "NarutoRunning", "Running", SubResource("AnimationNodeStateMachineTransition_naruto_to_running")]
+graph_offset = Vector2(36, 17)
+
+[node name="game" type="Node3D" unique_id=250801342]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1634670009]
+environment = SubResource("Environment_test_movement")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=664493155]
+transform = Transform3D(-0.6530099, -0.6150685, 0.44191104, -1.1948032e-08, 0.5837285, 0.81194884, -0.75732034, 0.5301067, -0.38136047, 0, 5.18316, 0)
+light_color = Color(1, 0.952941, 0.858824, 1)
+light_energy = 0.85
+shadow_enabled = true
+shadow_bias = 0.02
+shadow_normal_bias = 0.8
+directional_shadow_blend_splits = true
+directional_shadow_fade_start = 0.75
+directional_shadow_max_distance = 30.0
+
+[node name="Ground" type="MeshInstance3D" parent="." unique_id=170603198]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.014071941, -0.029748935, 0.002511382)
+mesh = SubResource("PlaneMesh_test_movement")
+surface_material_override/0 = SubResource("StandardMaterial3D_ground")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground" unique_id=1575317340]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.105615, 0, -15.357545)
+mesh = SubResource("CylinderMesh_jixbc")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Ground" unique_id=876200230]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2119823, 0, -6.1859164)
+mesh = SubResource("CylinderMesh_jixbc")
+
+[node name="character" parent="." unique_id=1465858297 instance=ExtResource("1_v42cq")]
+transform = Transform3D(-1, 0, -8.940697e-08, 0, 1, 0, 8.940697e-08, 0, -1, 0, 0, 0)
+script = ExtResource("2_hl0i2")
+
+[node name="Skeleton3D" parent="character/Rig" parent_id_path=PackedInt32Array(1465858297, 1617534080) index="0" unique_id=1001129209]
+bones/0/position = Vector3(0, -4.286089, -1.7575461)
+bones/1/position = Vector3(0.003718821, -0.0594041, -1.6887507)
+bones/1/rotation = Quaternion(-0.47282243, 0.526142, -0.47245717, 0.5257356)
+bones/3/rotation = Quaternion(0.6692323, 0.36634985, 0.51994795, -0.38414854)
+bones/4/rotation = Quaternion(-0.0023051028, -0.011883185, 0.002228781, 0.99992424)
+bones/5/rotation = Quaternion(0.0435361, 0.6963234, -0.2892777, 0.6554058)
+bones/7/rotation = Quaternion(0.5162685, -0.3846987, 0.670023, 0.36951718)
+bones/8/rotation = Quaternion(-0.0022288074, 0.99992424, 0.002305135, -0.011883115)
+bones/9/rotation = Quaternion(0.043536104, -0.69632334, 0.28927785, 0.6554059)
+bones/10/rotation = Quaternion(-1.4904118e-09, 1.9522659e-07, 0.011051623, 0.9999389)
+bones/11/rotation = Quaternion(5.9252168e-09, -1.8822452e-07, -0.06298179, 0.9980147)
+bones/13/position = Vector3(0.014173125, 0.26441503, 0.04896001)
+bones/13/rotation = Quaternion(-0.021409614, 0.6937462, 0.71958137, -0.021459945)
+bones/14/rotation = Quaternion(-0.5484158, -0.01812027, 0.061963245, 0.83370996)
+bones/15/rotation = Quaternion(-0.042388182, 0.0011942049, -0.07610651, 0.99619764)
+bones/17/position = Vector3(0.0141729545, 0.2644151, -0.04896001)
+bones/18/rotation = Quaternion(-0.54880095, 0.027774606, -0.059578966, 0.8333646)
+bones/19/rotation = Quaternion(-0.03410528, -0.00119581, 0.061234854, 0.9975399)
+bones/21/rotation = Quaternion(-8.080731e-09, -2.2881933e-07, 0.05472206, 0.9985017)
+bones/22/rotation = Quaternion(0.0085411845, -0.009092, 0.6941114, 0.7197595)
+bones/23/rotation = Quaternion(0.49999997, 0.5, 0.50000006, -0.49999997)
+bones/24/scale = Vector3(0.99999976, 0.9999997, 0)
+bones/25/scale = Vector3(1, 1, 0)
+bones/26/position = Vector3(1.9033344e-08, 0.11478812, 0.62679625)
+bones/26/rotation = Quaternion(-0.020466901, -9.9931975e-05, 0.012088185, 0.9997175)
+bones/29/rotation = Quaternion(0.49999994, 0.5000001, 0.5, -0.5)
+bones/30/rotation = Quaternion(0.49999994, 0.5000001, 0.5, -0.5)
+bones/33/position = Vector3(-1.0783954, 0.13029787, -0.00039511523)
+bones/33/rotation = Quaternion(0.008331957, -0.0093026515, 0.68200433, 0.7312415)
+bones/34/position = Vector3(0.3587203, -0.044209473, -0.19160524)
+bones/34/rotation = Quaternion(0.0024609398, 0.70710254, 0.0024609403, 0.7071024)
+bones/35/position = Vector3(0.78160626, 0.49115565, -0.040586725)
+bones/36/position = Vector3(-0.3587204, -0.044209477, -0.19160509)
+bones/36/rotation = Quaternion(0.0024609403, -0.7071024, -0.0024609398, 0.70710254)
+bones/37/position = Vector3(-0.78160626, 0.49115542, -0.040586635)
+bones/38/position = Vector3(0.6239008, -0.03892064, -1.9292513)
+bones/39/position = Vector3(0.48740414, 0.21616471, -0.14989355)
+bones/40/position = Vector3(-0.6239013, -0.03892064, -1.9292506)
+bones/41/position = Vector3(-0.48740417, 0.21616483, -0.14989355)
+
+[node name="hat_2" parent="character/Rig/Skeleton3D" index="0" unique_id=1468740649]
+transform = Transform3D(1.3659678, -0.028279578, -0.019032495, 0.034084756, 1.1231414, 0.77744734, -0.00044637822, -0.7776808, 1.1234988, -0.029868808, -0.104537845, -1.8004179)
+
+[node name="AnimationTree" type="AnimationTree" parent="character/AnimationPlayer" parent_id_path=PackedInt32Array(1465858297, 1973788001) index="0" unique_id=780552913]
+root_node = NodePath("../..")
+root_motion_track = NodePath("Rig")
+tree_root = SubResource("AnimationNodeStateMachine_test_movement")
+anim_player = NodePath("..")
+
+[node name="CameraRig" type="Node3D" parent="." unique_id=1843382860]
+script = ExtResource("3_huu8q")
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig" unique_id=109099008]
+transform = Transform3D(1, -4.712819e-08, 1.6832325e-07, 4.144082e-09, 0.9690889, 0.24671175, -1.7474727e-07, -0.24671175, 0.9690889, -8.6249166e-08, 4.0897617, 8.217516)
+current = true
+fov = 40.0
+far = 200.0
+
+[editable path="character"]
