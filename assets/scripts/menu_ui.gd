@@ -5,9 +5,9 @@ const CINEMA_SCENE_PATH := "res://assets/scenes/cinema.tscn"
 @onready var new_game_button: Button = $SafeMargin/Sidebar/ButtonStack/NewGameButton
 @onready var options_button: Button = $SafeMargin/Sidebar/ButtonStack/OptionsButton
 @onready var exit_button: Button = $SafeMargin/Sidebar/ButtonStack/ExitButton
+@onready var back_button: Button = $BackButton
 @onready var sidebar: VBoxContainer = $SafeMargin/Sidebar
 @onready var options_screen: VBoxContainer = $SafeMargin/OptionsScreen
-@onready var back_button: Button = $SafeMargin/OptionsScreen/BackButton
 
 @onready var resolution_left_button: Button = $SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionLeftButton
 @onready var resolution_right_button: Button = $SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionRightButton
@@ -51,7 +51,7 @@ const CINEMA_SCENE_PATH := "res://assets/scenes/cinema.tscn"
 	$SafeMargin/Sidebar/ButtonStack/ExitButton,
 ]
 @onready var options_buttons: Array[Button] = [
-	$SafeMargin/OptionsScreen/BackButton,
+	$BackButton,
 	$SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionLeftButton,
 	$SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionRightButton,
 	$SafeMargin/OptionsScreen/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker/FullscreenLeftButton,
@@ -152,6 +152,7 @@ func _confirm_exit() -> void:
 func _show_options_screen() -> void:
 	_sync_pending_settings_from_source(GameSettings.get_settings())
 	sidebar.visible = false
+	back_button.visible = true
 	options_screen.visible = true
 	_set_button_focus_enabled(menu_buttons, false)
 	_set_button_focus_enabled(options_buttons, true)
@@ -159,6 +160,7 @@ func _show_options_screen() -> void:
 
 
 func _hide_options_screen() -> void:
+	back_button.visible = false
 	options_screen.visible = false
 	sidebar.visible = true
 	_set_button_focus_enabled(options_buttons, false)

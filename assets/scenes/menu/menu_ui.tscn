@@ -357,17 +357,14 @@ icon = ExtResource("7_x5wro")
 text = "EXIT"
 alignment = 0
 
-[node name="OptionsScreen" type="VBoxContainer" parent="SafeMargin"]
+[node name="BackButton" type="Button" parent="." unique_id=820340001]
 visible = false
-custom_minimum_size = Vector2(900, 0)
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_constants/separation = 12
-
-[node name="BackButton" type="Button" parent="SafeMargin/OptionsScreen" unique_id=820340001]
 custom_minimum_size = Vector2(168, 52)
-layout_mode = 2
-size_flags_horizontal = 0
+layout_mode = 0
+offset_left = 56.0
+offset_top = 42.0
+offset_right = 224.0
+offset_bottom = 94.0
 mouse_default_cursor_shape = 2
 theme = SubResource("Theme_v8h3d")
 theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
@@ -380,6 +377,13 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_7t5wn")
 theme_override_styles/focus = SubResource("StyleBoxFlat_7t5wn")
 text = "< BACK"
 alignment = 0
+
+[node name="OptionsScreen" type="VBoxContainer" parent="SafeMargin"]
+visible = false
+custom_minimum_size = Vector2(900, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 12
 
 [node name="OptionsTitle" type="Label" parent="SafeMargin/OptionsScreen" unique_id=148009422]
 layout_mode = 2
