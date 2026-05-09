@@ -21,6 +21,11 @@ dof_blur_far_distance = 8.0
 dof_blur_near_enabled = true
 dof_blur_near_transition = 1.2
 
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_game"]
+dof_blur_far_enabled = true
+dof_blur_far_distance = 85.0
+dof_blur_far_transition = 40.0
+
 [node name="game" type="Node3D" unique_id=250801342]
 script = ExtResource("5_game")
 
@@ -49,6 +54,7 @@ script = ExtResource("4_camera")
 
 [node name="GameCamera" type="Camera3D" parent="CameraRig" unique_id=109099008]
 transform = Transform3D(1, -4.712819e-08, 1.6832325e-07, 4.144082e-09, 0.9690889, 0.24671175, -1.7474727e-07, -0.24671175, 0.9690889, -8.6249166e-08, 4.0897617, 8.217516)
+attributes = SubResource("CameraAttributesPractical_game")
 current = true
 fov = 60.0
 far = 200.0
