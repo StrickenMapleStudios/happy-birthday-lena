@@ -49,6 +49,8 @@ var _pending_settings: Dictionary = {}
 
 
 func _ready() -> void:
+	_apply_slider_theme()
+
 	resolution_left_button.pressed.connect(_cycle_resolution.bind(-1))
 	resolution_right_button.pressed.connect(_cycle_resolution.bind(1))
 	fullscreen_left_button.pressed.connect(_toggle_fullscreen)
@@ -185,3 +187,29 @@ func _refresh_option_views() -> void:
 
 func _on_off_text(value: bool) -> String:
 	return "ON" if value else "OFF"
+
+
+func _apply_slider_theme() -> void:
+	var grabber: Texture2D = _make_slider_grabber(Color(1, 1, 1, 1))
+	var grabber_disabled: Texture2D = _make_slider_grabber(Color(0.72, 0.72, 0.72, 1))
+
+	for slider in volume_sliders:
+		slider.add_theme_icon_override("grabber", grabber)
+		slider.add_theme_icon_override("grabber_highlight", grabber)
+		slider.add_theme_icon_override("grabber_disabled", grabber_disabled)
+
+
+func _make_slider_grabber(color: Color) -> ImageTexture:
+	var size: int = 20
+	var radius: float = 7.0
+	var center: Vector2 = Vector2((size - 1) * 0.5, (size - 1) * 0.5)
+	var image: Image = Image.create(size, size, false, Image.FORMAT_RGBA8)
+
+	image.fill(Color(0, 0, 0, 0))
+
+	for y in range(size):
+		for x in range(size):
+			if Vector2(x, y).distance_to(center) <= radius:
+				image.set_pixel(x, y, color)
+
+	return ImageTexture.create_from_image(image)
