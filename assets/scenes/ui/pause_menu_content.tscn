@@ -94,7 +94,7 @@ icon = ExtResource("4_play_icon")
 text = "RESUME"
 alignment = 0
 
-[node name="OptionsButton" type="Button" parent="Layout/MenuColumn/ButtonStack" unique_name_in_owner=true]
+[node name="ContextButton" type="Button" parent="Layout/MenuColumn/ButtonStack" unique_name_in_owner=true]
 custom_minimum_size = Vector2(500, 82)
 theme_override_constants/h_separation = 18
 theme_override_constants/icon_max_width = 28
@@ -114,6 +114,7 @@ alignment = 0
 [node name="MainMenuButton" type="Button" parent="Layout/MenuColumn/ButtonStack" unique_name_in_owner=true]
 custom_minimum_size = Vector2(500, 82)
 theme_override_constants/h_separation = 18
+theme_override_constants/icon_max_width = 28
 theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
 theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
@@ -122,6 +123,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
 theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
 theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
+icon_alignment = 0
 text = "MAIN MENU"
 alignment = 0
 
@@ -148,22 +150,3 @@ offset_left = 0.0
 offset_top = 0.0
 offset_right = 900.0
 offset_bottom = 888.0
-
-[node name="BackButton" type="Button" parent="." unique_name_in_owner=true]
-visible = false
-custom_minimum_size = Vector2(168, 52)
-offset_left = 12.0
-offset_top = 0.0
-offset_right = 180.0
-offset_bottom = 52.0
-theme = SubResource("Theme_buttons")
-theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
-theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 24
-theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
-theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
-theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
-text = "< BACK"
-alignment = 0

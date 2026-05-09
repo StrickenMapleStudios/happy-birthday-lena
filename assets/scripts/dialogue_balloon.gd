@@ -9,7 +9,8 @@ signal pause_requested
 @export var auto_start: bool = false
 @export var will_block_other_input: bool = true
 @export var next_action: StringName = &"ui_accept"
-@export var skip_action: StringName = &"ui_cancel"
+@export var pause_action: StringName = &"ui_cancel"
+@export var skip_action: StringName = &"dialogue_skip"
 
 @onready var audio_stream_player: AudioStreamPlayer = $AudioStreamPlayer
 
@@ -52,6 +53,8 @@ func _ready() -> void:
 	if responses_menu.next_action.is_empty():
 		responses_menu.next_action = next_action
 
+	_ensure_dialogue_skip_input()
+
 	mutation_cooldown.timeout.connect(_on_mutation_cooldown_timeout)
 	add_child(mutation_cooldown)
 
@@ -67,7 +70,7 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(_event: InputEvent) -> void:
-	if _event.is_action_pressed(skip_action) and not dialogue_label.is_typing:
+	if _event.is_action_pressed(pause_action) and not dialogue_label.is_typing:
 		pause_requested.emit()
 		get_viewport().set_input_as_handled()
 		return
@@ -186,6 +189,11 @@ func _on_balloon_gui_input(event: InputEvent) -> void:
 			dialogue_label.skip_typing()
 			return
 
+	if event.is_action_pressed(pause_action):
+		get_viewport().set_input_as_handled()
+		pause_requested.emit()
+		return
+
 	if not is_waiting_for_input:
 		return
 
@@ -270,3 +278,15 @@ func _focus_response_by_index(items: Array, index: int) -> bool:
 	var item: Control = items[index]
 	item.grab_focus()
 	return true
+
+
+func _ensure_dialogue_skip_input() -> void:
+	if not InputMap.has_action(skip_action):
+		InputMap.add_action(skip_action)
+
+	if not InputMap.action_get_events(skip_action).is_empty():
+		return
+
+	var event := InputEventKey.new()
+	event.keycode = KEY_F
+	InputMap.action_add_event(skip_action, event)

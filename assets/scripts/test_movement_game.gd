@@ -178,6 +178,19 @@ func _resume_from_pause() -> void:
 	_refresh_cursor_mode()
 
 
+func _exit_dialogue_from_pause() -> void:
+	if not _pause_active:
+		return
+
+	get_tree().paused = false
+	_pause_active = false
+	if _active_pause_menu != null:
+		_active_pause_menu.call("close")
+	_active_pause_menu = null
+	_refresh_cursor_mode()
+	await _cancel_active_dialogue()
+
+
 func _return_to_main_menu() -> void:
 	if _pause_transition_locked:
 		return
@@ -313,6 +326,8 @@ func _connect_pause_menu_signals(menu: Node) -> void:
 	menu.connect("resume_requested", Callable(self, "_resume_from_pause"))
 	menu.connect("main_menu_requested", Callable(self, "_return_to_main_menu"))
 	menu.connect("quit_requested", Callable(self, "_quit_from_pause"))
+	if menu.has_signal("exit_dialogue_requested"):
+		menu.connect("exit_dialogue_requested", Callable(self, "_exit_dialogue_from_pause"))
 
 
 func _get_pause_menu_for_current_context() -> Node:
