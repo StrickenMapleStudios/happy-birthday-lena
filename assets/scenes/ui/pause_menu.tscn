@@ -1,0 +1,205 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://assets/scripts/pause_menu.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://assets/scenes/ui/options_panel.tscn" id="2_options"]
+[ext_resource type="PackedScene" path="res://assets/scenes/ui/confirm_dialog.tscn" id="3_confirm"]
+[ext_resource type="Shader" path="res://assets/shaders/ui_background_blur.gdshader" id="4_blur_shader"]
+[ext_resource type="FontFile" path="res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf" id="5_title_font"]
+[ext_resource type="FontFile" path="res://assets/art/fonts/Paytone_One/PaytoneOne-Regular.ttf" id="6_body_font"]
+[ext_resource type="Texture2D" path="res://assets/art/sprites/play-button-arrowhead.png" id="7_play_icon"]
+[ext_resource type="Texture2D" path="res://assets/art/sprites/gear-icon.png" id="8_gear_icon"]
+[ext_resource type="Texture2D" path="res://assets/art/sprites/exit-icon.png" id="9_exit_icon"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blur"]
+shader = ExtResource("4_blur_shader")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_dark"]
+content_margin_left = 42.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+bg_color = Color(0.235294, 0.235294, 0.235294, 0.65)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.631373, 0.631373, 0.631373, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_gold"]
+content_margin_left = 42.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+bg_color = Color(0.623529, 0.423529, 0, 0.65)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.960784, 0, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="Theme" id="Theme_buttons"]
+Button/fonts/font = ExtResource("6_body_font")
+
+[node name="PauseMenu" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="BackBufferCopy" type="BackBufferCopy" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+copy_mode = 2
+
+[node name="BlurOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+material = SubResource("ShaderMaterial_blur")
+color = Color(1, 1, 1, 1)
+
+[node name="SafeMargin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 96
+theme_override_constants/margin_top = 72
+theme_override_constants/margin_right = 56
+theme_override_constants/margin_bottom = 44
+
+[node name="Layout" type="HBoxContainer" parent="SafeMargin"]
+layout_mode = 2
+theme_override_constants/separation = 56
+
+[node name="MenuColumn" type="VBoxContainer" parent="SafeMargin/Layout"]
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 28
+
+[node name="PausedLabel" type="Label" parent="SafeMargin/Layout/MenuColumn"]
+theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_fonts/font = ExtResource("5_title_font")
+theme_override_font_sizes/font_size = 82
+text = "PAUSED"
+uppercase = true
+
+[node name="ButtonStack" type="VBoxContainer" parent="SafeMargin/Layout/MenuColumn"]
+layout_mode = 2
+theme = SubResource("Theme_buttons")
+theme_override_constants/separation = 14
+
+[node name="ResumeButton" type="Button" parent="SafeMargin/Layout/MenuColumn/ButtonStack"]
+custom_minimum_size = Vector2(500, 82)
+theme_override_constants/h_separation = 18
+theme_override_constants/icon_max_width = 30
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_dark")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
+icon_alignment = 0
+icon = ExtResource("7_play_icon")
+text = "RESUME"
+alignment = 0
+
+[node name="OptionsButton" type="Button" parent="SafeMargin/Layout/MenuColumn/ButtonStack"]
+custom_minimum_size = Vector2(500, 82)
+theme_override_constants/h_separation = 18
+theme_override_constants/icon_max_width = 28
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
+icon_alignment = 0
+icon = ExtResource("8_gear_icon")
+text = "OPTIONS"
+alignment = 0
+
+[node name="MainMenuButton" type="Button" parent="SafeMargin/Layout/MenuColumn/ButtonStack"]
+custom_minimum_size = Vector2(500, 82)
+theme_override_constants/h_separation = 18
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
+text = "MAIN MENU"
+alignment = 0
+
+[node name="ExitButton" type="Button" parent="SafeMargin/Layout/MenuColumn/ButtonStack"]
+custom_minimum_size = Vector2(500, 82)
+theme_override_constants/h_separation = 18
+theme_override_constants/icon_max_width = 28
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
+icon_alignment = 0
+icon = ExtResource("9_exit_icon")
+text = "EXIT GAME"
+alignment = 0
+
+[node name="OptionsPanel" parent="SafeMargin/Layout" instance=ExtResource("2_options")]
+visible = false
+size_flags_horizontal = 0
+
+[node name="BackButton" type="Button" parent="."]
+visible = false
+custom_minimum_size = Vector2(164, 64)
+offset_left = 20.0
+offset_top = 16.0
+offset_right = 184.0
+offset_bottom = 80.0
+theme = SubResource("Theme_buttons")
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
+text = "< BACK"
+alignment = 0
+
+[node name="ConfirmDialog" parent="." instance=ExtResource("3_confirm")]

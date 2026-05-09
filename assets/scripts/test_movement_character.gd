@@ -21,6 +21,7 @@ const STATE_IDLE := "Idle"
 const STATE_WALKING := "Walking"
 const STATE_RUNNING := "Running"
 const STATE_NARUTO_RUNNING := "NarutoRunning"
+const PREPARED_SPEED_SCALE_META := &"prepared_speed_scale"
 
 @export var dialogue_speaker_name := "Lena"
 
@@ -153,6 +154,13 @@ func _prepare_locomotion_animation(animation_name: StringName, speed_scale: floa
 	if source_animation == null:
 		return
 
+	if source_animation.has_meta(PREPARED_SPEED_SCALE_META):
+		if _root_motion_track_path.is_empty():
+			var existing_root_track_index := _find_root_position_track(source_animation)
+			if existing_root_track_index >= 0:
+				_root_motion_track_path = source_animation.track_get_path(existing_root_track_index)
+		return
+
 	var animation: Animation = source_animation.duplicate(true) as Animation
 	if animation == null:
 		return
@@ -164,6 +172,7 @@ func _prepare_locomotion_animation(animation_name: StringName, speed_scale: floa
 			animation.track_set_key_time(track_index, key_index, key_time / speed_scale)
 
 	animation.length = source_animation.length / speed_scale
+	animation.set_meta(PREPARED_SPEED_SCALE_META, speed_scale)
 	library.remove_animation(animation_key)
 	library.add_animation(animation_key, animation)
 	if _root_motion_track_path.is_empty():

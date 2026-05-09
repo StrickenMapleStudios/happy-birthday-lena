@@ -1,5 +1,7 @@
 extends Node3D
 
+const MAIN_MENU_SCENE_PATH := "res://assets/scenes/menu/menu_main.tscn"
+
 @onready var camera_rig := $CameraRig
 @onready var dialogue_pivot_right := $DialoguePivotRight
 @onready var dialogue_pivot_left := $DialoguePivotLeft
@@ -8,6 +10,7 @@ extends Node3D
 @onready var player := $character
 @onready var npc := $npc
 @onready var interaction_source: InteractionSource = $character/InteractionSource
+@onready var pause_menu: Control = $PauseMenu
 @onready var dialogue_manager: Node = Engine.get_singleton("DialogueManager")
 
 const DIALOGUE_BALLOON_SCENE := preload("res://assets/scenes/ui/dialogue_balloon.tscn")
@@ -21,6 +24,8 @@ var _current_dialogue_speaker: Node3D
 var _active_dialogue_balloon: Node
 var _active_dialogue_resource: DialogueResource
 var _saved_player_transform := Transform3D.IDENTITY
+var _pause_active := false
+var _pause_transition_locked := false
 
 
 func _ready() -> void:
@@ -29,10 +34,21 @@ func _ready() -> void:
 		interaction_source.interaction_requested.connect(_on_interaction_requested)
 	if dialogue_manager != null and not dialogue_manager.is_connected("dialogue_ended", Callable(self, "_on_dialogue_ended")):
 		dialogue_manager.connect("dialogue_ended", Callable(self, "_on_dialogue_ended"))
+	if pause_menu != null:
+		pause_menu.process_mode = Node.PROCESS_MODE_ALWAYS
+		pause_menu.connect("resume_requested", Callable(self, "_resume_from_pause"))
+		pause_menu.connect("main_menu_requested", Callable(self, "_return_to_main_menu"))
+		pause_menu.connect("quit_requested", Callable(self, "_quit_from_pause"))
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _pause_active or _pause_transition_locked:
+		return
+
 	if not _dialogue_active:
+		if event.is_action_pressed("ui_cancel") and not _interaction_locked:
+			get_viewport().set_input_as_handled()
+			_open_pause_menu()
 		return
 
 	if not event.is_action_pressed("ui_cancel"):
@@ -119,6 +135,49 @@ func _cancel_active_dialogue() -> void:
 		return
 
 	await _exit_dialogue_mode()
+
+
+func _open_pause_menu() -> void:
+	if _pause_active or _dialogue_active or _interaction_locked or pause_menu == null:
+		return
+
+	_pause_active = true
+	get_tree().paused = true
+	pause_menu.call("open")
+
+
+func _resume_from_pause() -> void:
+	if not _pause_active:
+		return
+
+	get_tree().paused = false
+	_pause_active = false
+	if pause_menu != null:
+		pause_menu.call("close")
+
+
+func _return_to_main_menu() -> void:
+	if _pause_transition_locked:
+		return
+
+	_pause_transition_locked = true
+	get_tree().paused = false
+	_pause_active = false
+	if pause_menu != null:
+		pause_menu.call("close")
+	await SceneTransition.change_scene_to_file(MAIN_MENU_SCENE_PATH)
+
+
+func _quit_from_pause() -> void:
+	if _pause_transition_locked:
+		return
+
+	_pause_transition_locked = true
+	get_tree().paused = false
+	_pause_active = false
+	if pause_menu != null:
+		pause_menu.call("close")
+	get_tree().quit.call_deferred()
 
 
 func _start_dialogue_balloon(dialogue_resource: DialogueResource, start_title: String) -> void:
