@@ -1,0 +1,8 @@
+~ start
+Villager: Glad you came over.
+Lena: I wanted to check whether the dialogue system is finally alive.
+- It looks great.
+	Villager: Then let's keep building on it.
+- Show me another line.
+	Lena: The camera and UI should now follow whoever is speaking.
+	Villager: And the background is softened by the dialogue cameras.

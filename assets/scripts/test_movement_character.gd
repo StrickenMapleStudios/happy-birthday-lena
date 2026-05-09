@@ -22,6 +22,8 @@ const STATE_WALKING := "Walking"
 const STATE_RUNNING := "Running"
 const STATE_NARUTO_RUNNING := "NarutoRunning"
 
+@export var dialogue_speaker_name := "Lena"
+
 @onready var animation_tree: AnimationTree = $AnimationPlayer/AnimationTree
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 
@@ -214,6 +216,10 @@ func set_character_visible(value: bool) -> void:
 
 func get_dialogue_camera_mount() -> Node3D:
 	return $DialogueSpeakerPivot
+
+
+func get_dialogue_speaker_name() -> String:
+	return dialogue_speaker_name
 
 
 func face_towards_position(target_position: Vector3) -> void:

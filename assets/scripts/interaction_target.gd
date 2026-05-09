@@ -4,6 +4,8 @@ class_name InteractionTarget
 
 @export var dialogue_camera_mount_path: NodePath = ^"../DialogueCameraMount/CameraMount"
 @export var player_dialogue_anchor_path: NodePath = ^"../PlayerDialogueAnchor"
+@export var dialogue_resource: DialogueResource
+@export var dialogue_start_title := "start"
 @export var interaction_enabled := true
 
 
@@ -17,3 +19,11 @@ func get_dialogue_camera_mount() -> Node3D:
 
 func get_player_dialogue_anchor() -> Node3D:
 	return get_node_or_null(player_dialogue_anchor_path) as Node3D
+
+
+func get_dialogue_resource() -> DialogueResource:
+	return dialogue_resource
+
+
+func get_dialogue_start_title() -> String:
+	return dialogue_start_title

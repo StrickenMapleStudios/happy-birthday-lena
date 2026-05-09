@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://assets/scenes/common/dialogue_camera_mount.tscn" id="2_mount"]
 [ext_resource type="Script" path="res://assets/scripts/interaction_target.gd" id="3_interaction"]
 [ext_resource type="Script" path="res://assets/scripts/npc_character.gd" id="4_script"]
+[ext_resource type="Resource" path="res://assets/dialogue/test_npc.dialogue" id="5_dialogue"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_interaction"]
 radius = 2.4
@@ -31,6 +32,8 @@ collision_mask = 2
 monitoring = true
 monitorable = true
 script = ExtResource("3_interaction")
+dialogue_resource = ExtResource("5_dialogue")
+dialogue_start_title = "start"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionTarget" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)

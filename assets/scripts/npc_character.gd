@@ -2,6 +2,7 @@ extends Node3D
 
 @export var visual_root_path: NodePath = ^"Rig"
 @export var player_dialogue_anchor_path: NodePath = ^"PlayerDialogueAnchor"
+@export var dialogue_speaker_name := "Villager"
 
 
 func set_character_visible(value: bool) -> void:
@@ -28,3 +29,7 @@ func get_player_dialogue_anchor() -> Node3D:
 
 func get_dialogue_camera_mount() -> Node3D:
 	return $DialogueSpeakerPivot
+
+
+func get_dialogue_speaker_name() -> String:
+	return dialogue_speaker_name
