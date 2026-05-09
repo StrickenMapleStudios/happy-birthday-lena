@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cf5y77c0aowei"]
 
 [ext_resource type="PackedScene" uid="uid://cgbqg1ajsh5ut" path="res://assets/scenes/game/test_movement_level.tscn" id="1_level"]
-[ext_resource type="PackedScene" path="res://assets/scenes/characters/player_character.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://dmb72unyvr0t3" path="res://assets/scenes/characters/player_character.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://assets/scenes/characters/npc_character.tscn" id="3_npc"]
 [ext_resource type="Script" uid="uid://b84roxoxwu700" path="res://assets/scripts/test_movement_camera.gd" id="4_camera"]
 [ext_resource type="Script" uid="uid://ptlmyvnfxne6" path="res://assets/scripts/test_movement_game.gd" id="5_game"]
@@ -16,22 +16,25 @@ height = 3.6
 albedo_color = Color(0.862745, 0.72549, 0.313726, 1)
 roughness = 0.8
 
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_game"]
+dof_blur_far_enabled = true
+dof_blur_far_distance = 85.0
+dof_blur_far_transition = 40.0
+
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_dialogue"]
 dof_blur_far_enabled = true
 dof_blur_far_distance = 8.0
 dof_blur_near_enabled = true
 dof_blur_near_transition = 1.2
 
-[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_game"]
-dof_blur_far_enabled = true
-dof_blur_far_distance = 85.0
-dof_blur_far_transition = 40.0
-
 [node name="game" type="Node3D" unique_id=250801342]
 script = ExtResource("5_game")
 
 [node name="Level" parent="." unique_id=1748344399 instance=ExtResource("1_level")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="NorthBox" parent="Level/OrientationProps" parent_id_path=PackedInt32Array(1748344399, 1223392466) index="0" unique_id=1323818157]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.3611817, 0.9, -12)
 
 [node name="FarNorthColumn2" type="MeshInstance3D" parent="Level/OrientationProps" parent_id_path=PackedInt32Array(1748344399, 1223392466) index="9" unique_id=1841138750]
 transform = Transform3D(1, 0, 0, 0, 1.4, 0, 0, 0, 1, -28.53847, 2.520001, -82.090454)
@@ -43,11 +46,13 @@ transform = Transform3D(1, 0, 0, 0, 1.4, 0, 0, 0, 1, -6.9817467, 2.520001, -66.9
 mesh = SubResource("CylinderMesh_marker_column")
 surface_material_override/0 = SubResource("StandardMaterial3D_marker_yellow")
 
-[node name="character" parent="." unique_id=1465858297 instance=ExtResource("2_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+[node name="character" parent="." unique_id=77292897 instance=ExtResource("2_player")]
 
-[node name="npc" parent="." unique_id=489832762 instance=ExtResource("3_npc")]
+[node name="npc" parent="." unique_id=680308868 instance=ExtResource("3_npc")]
 transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.6293204, 20.40683, 0, 75.499916)
+
+[node name="npc2" parent="." unique_id=949489206 instance=ExtResource("3_npc")]
+transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.6293204, 17.73838, -9.536743e-07, 22.134308)
 
 [node name="CameraRig" type="Node3D" parent="." unique_id=1843382860]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
@@ -61,8 +66,8 @@ fov = 60.0
 far = 200.0
 
 [node name="DialoguePivotRight" type="Node3D" parent="." unique_id=1302733744]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 process_mode = 4
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
 [node name="DialogueCameraRight" type="Camera3D" parent="DialoguePivotRight" unique_id=843857471]
 transform = Transform3D(-0.83823305, 0.087016225, -0.5383251, 7.752061e-09, 0.9871866, 0.15957133, 0.54531246, 0.13375793, -0.82749224, -1.2970997, 3.3030784, -2.917794)
@@ -71,8 +76,8 @@ fov = 60.0
 far = 200.0
 
 [node name="DialoguePivotLeft" type="Node3D" parent="." unique_id=225155647]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 process_mode = 4
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 visible = false
 
 [node name="DialogueCameraLeft" type="Camera3D" parent="DialoguePivotLeft" unique_id=1664870713]
@@ -81,6 +86,6 @@ attributes = SubResource("CameraAttributesPractical_dialogue")
 fov = 60.0
 far = 200.0
 
-[node name="PauseMenu" parent="." instance=ExtResource("6_pause_menu")]
+[node name="PauseMenu" parent="." unique_id=1516564974 instance=ExtResource("6_pause_menu")]
 
 [editable path="Level"]

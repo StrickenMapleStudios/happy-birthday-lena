@@ -26,6 +26,7 @@ const PREPARED_SPEED_SCALE_META := &"prepared_speed_scale"
 @export var dialogue_speaker_name := "Lena"
 
 @onready var animation_tree: AnimationTree = $AnimationPlayer/AnimationTree
+@onready var dialogue_animation_tree: AnimationTree = $AnimationPlayer/DialogueAnimationTree
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 
 var _playback: AnimationNodeStateMachinePlayback
@@ -34,11 +35,15 @@ var _running_loops := 0
 var _previous_running_play_position := 0.0
 var _root_motion_track_path := NodePath()
 var _controls_enabled := true
+var _dialogue_animation_mode_active := false
+var _saved_animation_tree: AnimationTree
 
 
 func _ready() -> void:
 	_ensure_input_map()
 	animation_tree.active = true
+	if dialogue_animation_tree != null:
+		dialogue_animation_tree.active = false
 	_playback = animation_tree.get("parameters/playback") as AnimationNodeStateMachinePlayback
 	_prepare_locomotion_animation(ANIMATION_WALKING, WALKING_SPEED_SCALE, STATE_WALKING)
 	_prepare_locomotion_animation(ANIMATION_RUNNING, RUNNING_SPEED_SCALE, STATE_RUNNING)
@@ -223,6 +228,32 @@ func set_character_visible(value: bool) -> void:
 	$Rig.visible = value
 
 
+func enter_dialogue_animation_mode(_is_talking: bool) -> void:
+	if dialogue_animation_tree == null:
+		return
+
+	if not _dialogue_animation_mode_active:
+		_saved_animation_tree = _get_active_animation_tree(dialogue_animation_tree)
+		if _saved_animation_tree != null:
+			_saved_animation_tree.active = false
+		_dialogue_animation_mode_active = true
+
+	dialogue_animation_tree.active = true
+
+
+func exit_dialogue_animation_mode() -> void:
+	if dialogue_animation_tree == null or not _dialogue_animation_mode_active:
+		return
+
+	dialogue_animation_tree.active = false
+
+	if _saved_animation_tree != null:
+		_saved_animation_tree.active = true
+
+	_saved_animation_tree = null
+	_dialogue_animation_mode_active = false
+
+
 func get_dialogue_camera_mount() -> Node3D:
 	return $DialogueSpeakerPivot
 
@@ -241,6 +272,17 @@ func face_towards_position(target_position: Vector3) -> void:
 	var current_transform := global_transform
 	current_transform.basis = Basis.from_euler(Vector3(0.0, target_rotation, 0.0))
 	global_transform = current_transform
+
+
+func _get_active_animation_tree(excluded_tree: AnimationTree) -> AnimationTree:
+	for child in animation_player.get_children():
+		var tree := child as AnimationTree
+		if tree == null or tree == excluded_tree:
+			continue
+		if tree.active:
+			return tree
+
+	return null
 
 
 func _ensure_input_map() -> void:

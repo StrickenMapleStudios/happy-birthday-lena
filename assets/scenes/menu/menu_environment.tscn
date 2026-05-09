@@ -14,10 +14,11 @@
 [ext_resource type="PackedScene" uid="uid://k480akhish3k" path="res://addons/Free Forest Nature Pack/Grass/Flat_Grass_large.glb" id="12_m06lr"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_y2m7k"]
-sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
-sky_horizon_color = Color(0.454902, 0.67451, 0.94902, 1)
-ground_bottom_color = Color(0.454902, 0.67451, 0.94902, 1)
-ground_horizon_color = Color(0.454902, 0.67451, 0.94902, 1)
+sky_top_color = Color(0.431373, 0.72549, 0.811765, 1)
+sky_horizon_color = Color(0.698039, 0.870588, 0.854902, 1)
+ground_bottom_color = Color(0.501961, 0.556863, 0.384314, 1)
+ground_horizon_color = Color(0.737255, 0.780392, 0.643137, 1)
+sun_angle_max = 20.0
 
 [sub_resource type="Sky" id="Sky_33q6e"]
 sky_material = SubResource("ProceduralSkyMaterial_y2m7k")
@@ -26,14 +27,33 @@ sky_material = SubResource("ProceduralSkyMaterial_y2m7k")
 background_mode = 2
 sky = SubResource("Sky_33q6e")
 ambient_light_source = 3
-ambient_light_color = Color(1, 1, 1, 1)
-ambient_light_energy = 0.08
+ambient_light_color = Color(0.878431, 0.937255, 0.960784, 1)
+ambient_light_sky_contribution = 0.45
+ambient_light_energy = 0.18
 reflected_light_source = 1
 tonemap_mode = 2
+tonemap_white = 1.3
 ssao_enabled = true
 ssao_radius = 0.45
-ssao_intensity = 1.6
-ssao_power = 1.8
+ssao_intensity = 1.2
+ssao_power = 1.6
+glow_enabled = true
+glow_levels/3 = 0.08
+glow_levels/5 = 0.04
+glow_normalized = true
+glow_intensity = 0.55
+glow_strength = 0.45
+glow_blend_mode = 0
+fog_light_color = Color(0.921569, 0.847059, 0.690196, 1)
+fog_light_energy = 0.8
+fog_sun_scatter = 0.18
+fog_density = 0.012
+fog_aerial_perspective = 0.18
+fog_sky_affect = 0.3
+adjustment_enabled = true
+adjustment_brightness = 1.02
+adjustment_contrast = 1.08
+adjustment_saturation = 0.86
 
 [sub_resource type="QuadMesh" id="QuadMesh_nwe8m"]
 size = Vector2(420, 250)
@@ -57,10 +77,13 @@ void fragment() {
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8f2v2"]
 render_priority = -100
 shader = SubResource("Shader_wd4u4")
-shader_parameter/top_color = Color(0.39, 0.74, 0.96, 1)
-shader_parameter/horizon_color = Color(0.58, 0.82, 0.98, 1)
-shader_parameter/horizon_height = 0.18
-shader_parameter/horizon_softness = 0.18
+shader_parameter/top_color = Color(0.35, 0.72, 0.84, 1)
+shader_parameter/horizon_color = Color(0.73, 0.9, 0.88, 1)
+shader_parameter/horizon_height = 0.24
+shader_parameter/horizon_softness = 0.26
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_goodbye"]
+animation = &"Goodbye"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ugn2o"]
 animation = &"Idle"
@@ -76,9 +99,6 @@ animation = &"Sitting"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_l0v2w"]
 animation = &"SittingToStanding"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_goodbye"]
-animation = &"Goodbye"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_pw4oi"]
 advance_mode = 2
@@ -168,18 +188,32 @@ graph_offset = Vector2(-108, -4)
 environment = SubResource("Environment_v0m3n")
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=749947347]
-transform = Transform3D(0.807541, 0.514136, -0.289848, 0, 0.491803, 0.870707, 0.589813, -0.702987, 0.396969, 0, 5.56353, 0)
-light_color = Color(1, 0.952941, 0.858824, 1)
-light_energy = 0.65
-light_angular_distance = 2.2
+transform = Transform3D(0.742138, 0.473615, -0.474679, 0, 0.707047, 0.707167, 0.670246, -0.524818, 0.524729, 0, 5.56353, 0)
+light_color = Color(1, 0.898039, 0.72549, 1)
+light_energy = 0.88
+light_angular_distance = 2.8
 shadow_enabled = true
 shadow_bias = 0.02
 shadow_normal_bias = 0.12
-shadow_opacity = 0.65
+shadow_opacity = 0.78
 directional_shadow_blend_splits = true
 directional_shadow_fade_start = 0.75
 directional_shadow_max_distance = 150.0
 directional_shadow_pancake_size = 0.1
+
+[node name="SkyFill" type="DirectionalLight3D" parent="." unique_id=170001002]
+transform = Transform3D(-0.978148, 0.0773604, -0.192532, 0, 0.928368, 0.371662, 0.207912, 0.36354, -0.908088, 0, 3.17936, 0)
+light_color = Color(0.705882, 0.839216, 1, 1)
+light_energy = 0.08
+light_specular = 0.0
+
+[node name="CharacterFill" type="OmniLight3D" parent="." unique_id=170001003]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.996, 2.648, 4.604)
+light_color = Color(1, 0.92549, 0.815686, 1)
+light_energy = 0.18
+light_specular = 0.35
+omni_range = 14.0
+omni_attenuation = 1.2
 
 [node name="bench2" parent="." unique_id=437807775 instance=ExtResource("1_8aat6")]
 
@@ -190,7 +224,7 @@ near = 0.05
 far = 4000.0
 
 [node name="SkyBackdrop" type="MeshInstance3D" parent="bench2/Camera" index="0" unique_id=100761358]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -42, -250)
+transform = Transform3D(1, 0, 2.9802322e-08, 0, 1, -2.9802322e-08, 0, 0, 1, 3.2901764e-05, -6.0946956, -244.44162)
 cast_shadow = 0
 mesh = SubResource("QuadMesh_nwe8m")
 surface_material_override/0 = SubResource("ShaderMaterial_8f2v2")
@@ -198,55 +232,55 @@ surface_material_override/0 = SubResource("ShaderMaterial_8f2v2")
 [node name="character" parent="." unique_id=529611624 instance=ExtResource("2_ugn2o")]
 script = ExtResource("3_xuqax")
 
-[node name="Skeleton3D" parent="character/Rig" parent_id_path=PackedInt32Array(529611624, 1617534080) index="0" unique_id=1001129209]
+[node name="Skeleton3D" parent="character/Rig" parent_id_path=PackedInt32Array(529611624, 631016927) index="0" unique_id=1302635700]
 transform = Transform3D(0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
 bones/0/position = Vector3(3.5527137e-14, -3.6064699, -2.757546)
 bones/1/position = Vector3(0.003718836, -0.17532344, -1.5893912)
 bones/1/rotation = Quaternion(-0.5130054, 0.48703897, -0.5126735, 0.48660493)
-bones/3/rotation = Quaternion(0.20315135, 0.6417037, 0.68878174, -0.2693061)
-bones/4/rotation = Quaternion(-0.2943559, -0.010841434, 0.28461075, 0.9122685)
+bones/3/rotation = Quaternion(0.23520967, 0.65589094, 0.6813743, -0.22408184)
+bones/4/rotation = Quaternion(-0.18741114, -0.011472322, 0.18120657, 0.9653547)
 bones/5/rotation = Quaternion(0.043536115, 0.69632345, -0.2892777, 0.65540576)
-bones/7/rotation = Quaternion(0.68309855, -0.24577335, 0.2268469, 0.64923996)
-bones/8/rotation = Quaternion(-0.21397206, 0.95137537, 0.2212987, -0.011306177)
+bones/7/rotation = Quaternion(0.69076365, -0.28550184, 0.18636806, 0.637653)
+bones/8/rotation = Quaternion(-0.32753372, 0.8819644, 0.3387489, -0.0104813045)
 bones/9/rotation = Quaternion(0.043536097, -0.69632334, 0.2892778, 0.6554059)
 bones/10/rotation = Quaternion(1.9329853e-05, 0.00016351107, -0.20205328, 0.9793745)
-bones/11/rotation = Quaternion(-0.011672144, -0.0051533477, 0.049195785, 0.99870765)
+bones/11/rotation = Quaternion(0.015959637, 0.006847319, 0.04919959, 0.998638)
 bones/13/position = Vector3(0.014173147, 0.26441514, 0.048959997)
 bones/13/rotation = Quaternion(-0.02140963, 0.6937462, 0.71958137, -0.02145996)
-bones/14/rotation = Quaternion(-0.54012966, 0.085890554, 0.17220235, 0.8192858)
+bones/14/rotation = Quaternion(-0.5303457, 0.11357787, 0.15237533, 0.82620543)
 bones/15/rotation = Quaternion(-0.001631237, 0.0011987643, -0.0029288044, 0.9999937)
 bones/17/position = Vector3(0.014173218, 0.26441497, -0.048960004)
-bones/18/rotation = Quaternion(-0.54252815, -0.12996042, -0.1434915, 0.81742513)
+bones/18/rotation = Quaternion(-0.5519827, -0.10109349, -0.16416438, 0.81126153)
 bones/19/rotation = Quaternion(-0.0016235696, -0.0011987519, 0.0029150555, 0.99999374)
-bones/21/rotation = Quaternion(-0.023506392, -0.008334946, 0.0546982, 0.9981915)
+bones/21/rotation = Quaternion(0.023147242, 0.008207145, 0.054712284, 0.9982001)
 bones/22/rotation = Quaternion(0.009666363, -0.007941529, 0.7868128, 0.617065)
 bones/23/rotation = Quaternion(0.49999997, 0.5, 0.50000006, -0.49999997)
 bones/24/scale = Vector3(1, 0.9999997, 0)
 bones/25/scale = Vector3(1.0000001, 0.99999994, 0)
 bones/26/position = Vector3(4.248607e-09, 0.11478758, 0.62679654)
-bones/26/rotation = Quaternion(0.02263055, 0.0012913005, -0.025516326, 0.99941736)
+bones/26/rotation = Quaternion(0.022664944, -0.0005131269, 0.054065105, 0.99828005)
 bones/29/rotation = Quaternion(0.49999994, 0.5000002, 0.5, -0.50000006)
 bones/30/rotation = Quaternion(0.49999994, 0.5000002, 0.5, -0.50000006)
 bones/33/position = Vector3(-1.6762627, -0.04000151, -0.0005618808)
 bones/33/rotation = Quaternion(0.010253614, -0.0070506, 0.84339535, 0.5371494)
-bones/34/position = Vector3(0.35872006, 0.9294687, -0.6924437)
-bones/34/rotation = Quaternion(0.0030942624, 0.8890837, 0.0015930797, 0.45773154)
+bones/34/position = Vector3(0.35872015, 1.1584547, -0.83916247)
+bones/34/rotation = Quaternion(0.0029934486, 0.86011523, 0.0017752914, 0.51008797)
 bones/35/position = Vector3(0.781606, 0.49115577, -0.040587)
-bones/36/position = Vector3(-0.35872036, 1.0782248, -0.7740961)
-bones/36/rotation = Quaternion(0.0030324156, -0.8713117, -0.0017078781, 0.4907177)
+bones/36/position = Vector3(-0.35872024, 0.82735264, -0.6592642)
+bones/36/rotation = Quaternion(0.0031291274, -0.8991016, -0.0015234567, 0.43772638)
 bones/37/position = Vector3(-0.78160584, 0.49115536, -0.040586554)
 bones/38/position = Vector3(0.65265083, -0.69192594, -1.705002)
 bones/39/position = Vector3(0.48740414, 0.21616471, -0.14989354)
 bones/40/position = Vector3(-0.62390125, -0.691926, -1.7107518)
 bones/41/position = Vector3(-0.48740417, 0.21616483, -0.1498935)
 
-[node name="hat_2" parent="character/Rig/Skeleton3D" index="0" unique_id=1468740649]
-transform = Transform3D(1.3595561, -0.10722328, -0.084499724, 0.13647678, 1.0468568, 0.8674667, -0.00333252, -0.87156653, 1.0523298, -0.13337219, 0.36598462, -3.5803936)
+[node name="hat_2" parent="character/Rig/Skeleton3D" index="0" unique_id=493438719]
+transform = Transform3D(1.3639946, 0.060153875, 0.05414158, -0.08086198, 1.0506068, 0.8698963, -0.00333281, -0.8715737, 1.0523239, 0.090027265, 0.3702007, -3.580405)
 
-[node name="hat" parent="character/Rig/Skeleton3D/hat_2" index="0" unique_id=562585729]
+[node name="hat" parent="character/Rig/Skeleton3D/hat_2" index="0" unique_id=1977106650]
 transform = Transform3D(0.99968886, 0.02494508, -0.00032679713, -0.020696668, 0.8219749, -0.5691469, -0.01392881, 0.5689771, 0.8222344, -0.054496896, -2.533786, -1.7157384)
 
-[node name="AnimationTree" type="AnimationTree" parent="character/AnimationPlayer" parent_id_path=PackedInt32Array(529611624, 1973788001) index="0" unique_id=1429176821]
+[node name="AnimationTree" type="AnimationTree" parent="character/AnimationPlayer" parent_id_path=PackedInt32Array(529611624, 985897381) index="0" unique_id=1429176821]
 root_node = NodePath("../..")
 tree_root = SubResource("AnimationNodeStateMachine_pw4oi")
 anim_player = NodePath("..")

@@ -8,7 +8,6 @@ const MAIN_MENU_SCENE_PATH := "res://assets/scenes/menu/menu_main.tscn"
 @onready var dialogue_camera_right: Camera3D = $DialoguePivotRight/DialogueCameraRight
 @onready var dialogue_camera_left: Camera3D = $DialoguePivotLeft/DialogueCameraLeft
 @onready var player := $character
-@onready var npc := $npc
 @onready var interaction_source: InteractionSource = $character/InteractionSource
 @onready var pause_menu: Control = $PauseMenu
 @onready var dialogue_manager: Node = Engine.get_singleton("DialogueManager")
@@ -120,10 +119,12 @@ func _exit_dialogue_mode() -> void:
 			_active_dialogue_balloon.queue_free()
 	_active_dialogue_balloon = null
 	_active_dialogue_resource = null
+	_restore_dialogue_animation_mode(player)
+	_restore_dialogue_animation_mode(_dialogue_target_actor)
 	player.global_transform = _saved_player_transform
 	player.set_character_visible(true)
-	if is_instance_valid(npc):
-		npc.set_character_visible(true)
+	if is_instance_valid(_dialogue_target_actor) and _dialogue_target_actor.has_method("set_character_visible"):
+		_dialogue_target_actor.call("set_character_visible", true)
 	_set_dialogue_pivots_active(false)
 	camera_rig.activate_game_camera()
 	player.set_controls_enabled(true)
@@ -228,6 +229,7 @@ func _set_dialogue_speaker(speaker: Node3D) -> void:
 		return
 
 	_current_dialogue_speaker = speaker
+	_apply_dialogue_animation_roles(speaker)
 	player.set_character_visible(speaker == player)
 	if is_instance_valid(_dialogue_target_actor) and _dialogue_target_actor.has_method("set_character_visible"):
 		_dialogue_target_actor.call("set_character_visible", speaker == _dialogue_target_actor)
@@ -324,3 +326,22 @@ func _refresh_cursor_mode() -> void:
 
 	if Input.mouse_mode != desired_mode:
 		Input.mouse_mode = desired_mode
+
+
+func _apply_dialogue_animation_roles(speaker: Node3D) -> void:
+	_set_dialogue_animation_mode(player, speaker == player)
+	_set_dialogue_animation_mode(_dialogue_target_actor, speaker == _dialogue_target_actor)
+
+
+func _set_dialogue_animation_mode(actor: Node3D, is_talking: bool) -> void:
+	if actor == null or not actor.has_method("enter_dialogue_animation_mode"):
+		return
+
+	actor.call("enter_dialogue_animation_mode", is_talking)
+
+
+func _restore_dialogue_animation_mode(actor: Node3D) -> void:
+	if actor == null or not actor.has_method("exit_dialogue_animation_mode"):
+		return
+
+	actor.call("exit_dialogue_animation_mode")

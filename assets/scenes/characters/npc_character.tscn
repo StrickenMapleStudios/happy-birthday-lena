@@ -10,11 +10,29 @@
 radius = 6.24
 height = 3.2
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dialogue_idle"]
+animation = &"Idle"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_dialogue_start"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_dialogue"]
+states/Idle/node = SubResource("AnimationNodeAnimation_dialogue_idle")
+states/Idle/position = Vector2(366, 117)
+states/Start/position = Vector2(160, 116)
+transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_dialogue_start")]
+graph_offset = Vector2(-72, -6)
+
 [node name="NpcCharacter" instance=ExtResource("1_glb")]
 script = ExtResource("4_script")
 
 [node name="AnimationPlayer" parent="." index="1"]
 autoplay = "Idle"
+
+[node name="DialogueAnimationTree" type="AnimationTree" parent="AnimationPlayer" index="0"]
+active = false
+tree_root = SubResource("AnimationNodeStateMachine_dialogue")
+anim_player = NodePath("..")
 
 [node name="hat_2" parent="Rig/Skeleton3D" index="0"]
 visible = false

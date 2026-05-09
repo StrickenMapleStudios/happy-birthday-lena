@@ -1,14 +1,55 @@
 extends Node3D
 
+const ANIMATION_IDLE := "Idle"
+
 @export var visual_root_path: NodePath = ^"Rig"
 @export var player_dialogue_anchor_path: NodePath = ^"PlayerDialogueAnchor"
 @export var dialogue_speaker_name := "Villager"
+
+@onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var dialogue_animation_tree: AnimationTree = $AnimationPlayer/DialogueAnimationTree
+
+var _dialogue_animation_mode_active := false
+var _saved_animation_tree: AnimationTree
+
+
+func _ready() -> void:
+	if dialogue_animation_tree != null:
+		dialogue_animation_tree.active = false
 
 
 func set_character_visible(value: bool) -> void:
 	var visual_root := get_node_or_null(visual_root_path) as Node3D
 	if visual_root != null:
 		visual_root.visible = value
+
+
+func enter_dialogue_animation_mode(_is_talking: bool) -> void:
+	if dialogue_animation_tree == null:
+		return
+
+	if not _dialogue_animation_mode_active:
+		_saved_animation_tree = _get_active_animation_tree(dialogue_animation_tree)
+		if _saved_animation_tree != null:
+			_saved_animation_tree.active = false
+		_dialogue_animation_mode_active = true
+
+	dialogue_animation_tree.active = true
+
+
+func exit_dialogue_animation_mode() -> void:
+	if dialogue_animation_tree == null or not _dialogue_animation_mode_active:
+		return
+
+	dialogue_animation_tree.active = false
+
+	if _saved_animation_tree != null:
+		_saved_animation_tree.active = true
+	elif animation_player != null and animation_player.has_animation(ANIMATION_IDLE):
+		animation_player.play(ANIMATION_IDLE)
+
+	_saved_animation_tree = null
+	_dialogue_animation_mode_active = false
 
 
 func face_towards_position(target_position: Vector3) -> void:
@@ -33,3 +74,14 @@ func get_dialogue_camera_mount() -> Node3D:
 
 func get_dialogue_speaker_name() -> String:
 	return dialogue_speaker_name
+
+
+func _get_active_animation_tree(excluded_tree: AnimationTree) -> AnimationTree:
+	for child in animation_player.get_children():
+		var tree := child as AnimationTree
+		if tree == null or tree == excluded_tree:
+			continue
+		if tree.active:
+			return tree
+
+	return null
