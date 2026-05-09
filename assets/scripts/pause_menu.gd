@@ -10,6 +10,7 @@ const ACTION_QUIT := &"quit"
 const GEAR_ICON := preload("res://assets/art/sprites/gear-icon.png")
 const EXIT_ICON := preload("res://assets/art/sprites/exit-icon.png")
 const HOME_ICON := preload("res://assets/art/sprites/home.png")
+const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
 
 @export var allow_exit_dialogue := false
 
@@ -61,15 +62,26 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if bool(confirm_dialog.call("is_open")):
+		if confirm_dialog.call("handle_navigation_input", event):
+			get_viewport().set_input_as_handled()
+			return
 		if event.is_action_pressed("ui_cancel"):
 			get_viewport().set_input_as_handled()
 			_on_confirm_canceled()
+		return
+
+	if options_panel.visible and options_panel.call("handle_navigation_input", event):
+		get_viewport().set_input_as_handled()
 		return
 
 	if options_panel.visible:
 		if event.is_action_pressed("ui_cancel"):
 			get_viewport().set_input_as_handled()
 			_hide_options()
+		return
+
+	if UINavigation.handle_linear_navigation_input(event, menu_buttons):
+		get_viewport().set_input_as_handled()
 		return
 
 	if event.is_action_pressed("ui_cancel"):

@@ -1,6 +1,7 @@
 extends Control
 
 const NEW_GAME_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
+const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
 
 @onready var menu_character: Node = get_parent().get_node_or_null("menuEnvironment/character")
 @onready var sidebar: VBoxContainer = $SafeMargin/Sidebar
@@ -57,9 +58,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if bool(confirm_dialog.call("is_open")):
+		if confirm_dialog.call("handle_navigation_input", event):
+			get_viewport().set_input_as_handled()
+			return
 		if event.is_action_pressed("ui_cancel"):
 			get_viewport().set_input_as_handled()
 			_hide_confirm_dialog()
+		return
+
+	if save_slot_screen.visible and UINavigation.handle_linear_navigation_input(event, save_slot_screen_buttons):
+		get_viewport().set_input_as_handled()
 		return
 
 	if save_slot_screen.visible and event.is_action_pressed("ui_cancel"):
@@ -67,9 +75,17 @@ func _unhandled_input(event: InputEvent) -> void:
 		_hide_save_slot_screen()
 		return
 
+	if options_screen.visible and options_screen.call("handle_navigation_input", event):
+		get_viewport().set_input_as_handled()
+		return
+
 	if options_screen.visible and event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
 		_hide_options_screen()
+		return
+
+	if UINavigation.handle_linear_navigation_input(event, menu_buttons):
+		get_viewport().set_input_as_handled()
 		return
 
 	if event.is_action_pressed("ui_cancel"):

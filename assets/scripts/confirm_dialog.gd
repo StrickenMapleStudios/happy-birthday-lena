@@ -38,3 +38,21 @@ func hide_dialog() -> void:
 
 func is_open() -> bool:
 	return visible
+
+
+func handle_navigation_input(event: InputEvent) -> bool:
+	if not visible:
+		return false
+
+	if not (event is InputEventKey) or not event.is_pressed() or event.is_echo():
+		return false
+
+	match event.keycode:
+		KEY_W, KEY_A:
+			confirm_button.grab_focus()
+			return true
+		KEY_S, KEY_D:
+			cancel_button.grab_focus()
+			return true
+
+	return false
