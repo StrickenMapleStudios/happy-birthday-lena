@@ -151,6 +151,8 @@ func _open_pause_menu() -> void:
 		return
 
 	_pause_active = true
+	if camera_rig != null and camera_rig.has_method("begin_pause_focus"):
+		camera_rig.call("begin_pause_focus")
 	get_tree().paused = true
 	_refresh_cursor_mode()
 	pause_menu.call("open")
@@ -164,6 +166,8 @@ func _resume_from_pause() -> void:
 	_pause_active = false
 	if pause_menu != null:
 		pause_menu.call("close")
+	if camera_rig != null and camera_rig.has_method("end_pause_focus"):
+		camera_rig.call("end_pause_focus")
 	_refresh_cursor_mode()
 
 
@@ -172,6 +176,8 @@ func _return_to_main_menu() -> void:
 		return
 
 	_pause_transition_locked = true
+	if camera_rig != null and camera_rig.has_method("reset_pause_focus_immediately"):
+		camera_rig.call("reset_pause_focus_immediately")
 	get_tree().paused = false
 	_pause_active = false
 	if pause_menu != null:
@@ -185,6 +191,8 @@ func _quit_from_pause() -> void:
 		return
 
 	_pause_transition_locked = true
+	if camera_rig != null and camera_rig.has_method("reset_pause_focus_immediately"):
+		camera_rig.call("reset_pause_focus_immediately")
 	get_tree().paused = false
 	_pause_active = false
 	if pause_menu != null:

@@ -10,6 +10,9 @@ const RUN_AWAY_TILT_MULTIPLIER := 0.65
 const TILT_BOOST_START_SPEED := 1.5
 const TILT_BOOST_MAX_SPEED := 6.0
 const RUN_TOWARD_FOV_BOOST := 6.0
+const PAUSE_FOCUS_DURATION := 0.5
+const PAUSE_FOCUS_OFFSET := Vector3(0.0, 3.6, 6.7)
+const PAUSE_FOCUS_FOV_OFFSET := -3.0
 
 @export var target_path: NodePath = ^"../character"
 
@@ -18,11 +21,15 @@ var _game_camera: Camera3D
 var _last_target_position := Vector3.ZERO
 var _look_height_offset: float = 0.0
 var _fov_offset: float = 0.0
+var _pause_fov_offset: float = 0.0
 var _smoothed_target_position := Vector3.ZERO
 var _smoothed_focus_point := Vector3.ZERO
+var _default_camera_local_position := Vector3.ZERO
+var _pause_focus_tween: Tween
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_target = get_node_or_null(target_path) as Node3D
 	_game_camera = $GameCamera
 
@@ -31,6 +38,7 @@ func _ready() -> void:
 	if _target == null or _game_camera == null:
 		return
 
+	_default_camera_local_position = _game_camera.position
 	_smoothed_target_position = _target.global_position
 	_last_target_position = _target.global_position
 	_smoothed_focus_point = _target.global_position + Vector3(0.0, FOCUS_HEIGHT, 0.0)
@@ -83,7 +91,7 @@ func _update_camera(delta: float) -> void:
 
 	var focus_point: Vector3 = target_position + Vector3(0.0, FOCUS_HEIGHT + _look_height_offset, 0.0)
 	_smoothed_focus_point = _smoothed_focus_point.lerp(focus_point, look_weight)
-	_game_camera.fov = BASE_FOV + _fov_offset
+	_game_camera.fov = BASE_FOV + _fov_offset + _pause_fov_offset
 	_game_camera.look_at(_smoothed_focus_point, Vector3.UP)
 
 
@@ -92,3 +100,49 @@ func activate_game_camera() -> void:
 		return
 
 	_game_camera.current = true
+
+
+func begin_pause_focus() -> void:
+	if _game_camera == null:
+		return
+
+	_kill_pause_focus_tween()
+	_pause_focus_tween = create_tween()
+	_pause_focus_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_pause_focus_tween.set_trans(Tween.TRANS_CUBIC)
+	_pause_focus_tween.set_ease(Tween.EASE_OUT)
+	_pause_focus_tween.parallel().tween_property(_game_camera, "position", PAUSE_FOCUS_OFFSET, PAUSE_FOCUS_DURATION)
+	_pause_focus_tween.parallel().tween_property(self, "_pause_fov_offset", PAUSE_FOCUS_FOV_OFFSET, PAUSE_FOCUS_DURATION)
+
+
+func end_pause_focus() -> void:
+	if _game_camera == null:
+		return
+
+	_kill_pause_focus_tween()
+	_pause_focus_tween = create_tween()
+	_pause_focus_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_pause_focus_tween.set_trans(Tween.TRANS_CUBIC)
+	_pause_focus_tween.set_ease(Tween.EASE_OUT)
+	_pause_focus_tween.parallel().tween_property(
+		_game_camera,
+		"position",
+		_default_camera_local_position,
+		PAUSE_FOCUS_DURATION
+	)
+	_pause_focus_tween.parallel().tween_property(self, "_pause_fov_offset", 0.0, PAUSE_FOCUS_DURATION)
+
+
+func reset_pause_focus_immediately() -> void:
+	if _game_camera == null:
+		return
+
+	_kill_pause_focus_tween()
+	_game_camera.position = _default_camera_local_position
+	_pause_fov_offset = 0.0
+
+
+func _kill_pause_focus_tween() -> void:
+	if _pause_focus_tween != null and _pause_focus_tween.is_valid():
+		_pause_focus_tween.kill()
+	_pause_focus_tween = null
