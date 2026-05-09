@@ -8,7 +8,7 @@ const NEW_GAME_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
 @onready var options_button: Button = $SafeMargin/Sidebar/ButtonStack/OptionsButton
 @onready var exit_button: Button = $SafeMargin/Sidebar/ButtonStack/ExitButton
 @onready var back_button: Button = $BackButton
-@onready var options_screen: VBoxContainer = $SafeMargin/OptionsPanel
+@onready var options_screen: Control = $SafeMargin/OptionsPanel
 @onready var save_slot_screen: VBoxContainer = $SafeMargin/SaveSlotScreen
 @onready var save_slot_buttons: Array[Button] = [
 	$SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton01,

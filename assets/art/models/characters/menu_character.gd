@@ -16,6 +16,7 @@ const GOODBYE_FINISH_PADDING := 0.02
 const IDLE_TO_SITTING_SPEED_SCALE := 1.3
 const LEG_SWINGING_SPEED_SCALE := 1.7
 const SITTING_TO_STANDING_SPEED_SCALE := 1.8
+const PREPARED_SPEED_SCALE_META := &"prepared_speed_scale"
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var animation_tree: AnimationTree = $AnimationPlayer/AnimationTree
@@ -100,6 +101,9 @@ func _retime_animation(animation_name: StringName, speed_scale: float) -> void:
 	if source_animation == null:
 		return
 
+	if source_animation.has_meta(PREPARED_SPEED_SCALE_META):
+		return
+
 	var animation: Animation = source_animation.duplicate(true) as Animation
 	if animation == null:
 		return
@@ -111,6 +115,7 @@ func _retime_animation(animation_name: StringName, speed_scale: float) -> void:
 			animation.track_set_key_time(track_index, key_index, key_time / speed_scale)
 
 	animation.length = source_animation.length / speed_scale
+	animation.set_meta(PREPARED_SPEED_SCALE_META, speed_scale)
 	library.remove_animation(animation_key)
 	library.add_animation(animation_key, animation)
 

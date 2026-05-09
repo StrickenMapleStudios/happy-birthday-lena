@@ -1,8 +1,8 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene format=3 uid="uid://dg0bme6fjsjwv"]
 
-[ext_resource type="Script" path="res://assets/scripts/options_panel.gd" id="1_script"]
-[ext_resource type="FontFile" path="res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf" id="2_title_font"]
-[ext_resource type="FontFile" path="res://assets/art/fonts/Paytone_One/PaytoneOne-Regular.ttf" id="3_body_font"]
+[ext_resource type="Script" uid="uid://bljt240kvmx21" path="res://assets/scripts/options_panel.gd" id="1_script"]
+[ext_resource type="FontFile" uid="uid://dkrxonksevp7k" path="res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf" id="2_title_font"]
+[ext_resource type="FontFile" uid="uid://cmykgjkhr31m3" path="res://assets/art/fonts/Paytone_One/PaytoneOne-Regular.ttf" id="3_body_font"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 content_margin_left = 24.0
@@ -19,6 +19,20 @@ corner_radius_top_left = 18
 corner_radius_top_right = 18
 corner_radius_bottom_right = 18
 corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_arrow"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0, 0, 0, 0)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="Theme" id="Theme_buttons"]
+Button/fonts/font = ExtResource("3_body_font")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_dark"]
 content_margin_left = 18.0
@@ -52,28 +66,22 @@ corner_radius_top_right = 14
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_arrow"]
-content_margin_left = 8.0
-content_margin_top = 8.0
-content_margin_right = 8.0
-content_margin_bottom = 8.0
-bg_color = Color(0, 0, 0, 0)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-
-[sub_resource type="Theme" id="Theme_buttons"]
-Button/fonts/font = ExtResource("3_body_font")
-
-[node name="OptionsPanel" type="VBoxContainer"]
+[node name="OptionsPanel" type="Control" unique_id=1923349714]
 visible = false
-custom_minimum_size = Vector2(900, 0)
+custom_minimum_size = Vector2(900, 888)
+layout_mode = 3
+anchors_preset = 0
 size_flags_horizontal = 0
-theme_override_constants/separation = 12
 script = ExtResource("1_script")
 
-[node name="OptionsTitle" type="Label" parent="."]
+[node name="Content" type="VBoxContainer" parent="." unique_id=937816504]
+layout_mode = 0
+offset_right = 900.0
+offset_bottom = 888.0
+theme_override_constants/separation = 12
+
+[node name="OptionsTitle" type="Label" parent="Content" unique_id=1571976418]
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
 theme_override_constants/outline_size = 10
@@ -82,124 +90,144 @@ theme_override_font_sizes/font_size = 96
 text = "OPTIONS"
 uppercase = true
 
-[node name="OptionsBody" type="VBoxContainer" parent="."]
+[node name="OptionsBody" type="VBoxContainer" parent="Content" unique_id=436268897]
+layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="AudioPanel" type="PanelContainer" parent="OptionsBody"]
+[node name="AudioPanel" type="PanelContainer" parent="Content/OptionsBody" unique_id=1872762333]
 custom_minimum_size = Vector2(830, 0)
+layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="AudioContent" type="VBoxContainer" parent="OptionsBody/AudioPanel"]
+[node name="AudioContent" type="VBoxContainer" parent="Content/OptionsBody/AudioPanel" unique_id=1802506217]
+layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="AudioHeader" type="Label" parent="OptionsBody/AudioPanel/AudioContent"]
+[node name="AudioHeader" type="Label" parent="Content/OptionsBody/AudioPanel/AudioContent" unique_id=1502080686]
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.97)
 theme_override_fonts/font = ExtResource("3_body_font")
 theme_override_font_sizes/font_size = 24
 text = "AUDIO"
 uppercase = true
 
-[node name="MasterVolumeRow" type="HBoxContainer" parent="OptionsBody/AudioPanel/AudioContent"]
+[node name="MasterVolumeRow" type="HBoxContainer" parent="Content/OptionsBody/AudioPanel/AudioContent" unique_id=1238996650]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="MasterVolumeLabel" type="Label" parent="OptionsBody/AudioPanel/AudioContent/MasterVolumeRow"]
+[node name="MasterVolumeLabel" type="Label" parent="Content/OptionsBody/AudioPanel/AudioContent/MasterVolumeRow" unique_id=257893200]
 custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
 theme_override_font_sizes/font_size = 22
 text = "MASTER VOLUME"
 
-[node name="MasterVolumeSlider" type="HSlider" parent="OptionsBody/AudioPanel/AudioContent/MasterVolumeRow"]
+[node name="MasterVolumeSlider" type="HSlider" parent="Content/OptionsBody/AudioPanel/AudioContent/MasterVolumeRow" unique_id=1301996555]
 custom_minimum_size = Vector2(360, 28)
+layout_mode = 2
 size_flags_horizontal = 3
-max_value = 100.0
 value = 100.0
 
-[node name="MasterVolumeValue" type="Label" parent="OptionsBody/AudioPanel/AudioContent/MasterVolumeRow"]
+[node name="MasterVolumeValue" type="Label" parent="Content/OptionsBody/AudioPanel/AudioContent/MasterVolumeRow" unique_id=1229951794]
 custom_minimum_size = Vector2(84, 0)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
 theme_override_font_sizes/font_size = 22
 text = "100%"
 horizontal_alignment = 2
 
-[node name="MusicVolumeRow" type="HBoxContainer" parent="OptionsBody/AudioPanel/AudioContent"]
+[node name="MusicVolumeRow" type="HBoxContainer" parent="Content/OptionsBody/AudioPanel/AudioContent" unique_id=1588549733]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="MusicVolumeLabel" type="Label" parent="OptionsBody/AudioPanel/AudioContent/MusicVolumeRow"]
+[node name="MusicVolumeLabel" type="Label" parent="Content/OptionsBody/AudioPanel/AudioContent/MusicVolumeRow" unique_id=1016341035]
 custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
 theme_override_font_sizes/font_size = 22
 text = "MUSIC VOLUME"
 
-[node name="MusicVolumeSlider" type="HSlider" parent="OptionsBody/AudioPanel/AudioContent/MusicVolumeRow"]
+[node name="MusicVolumeSlider" type="HSlider" parent="Content/OptionsBody/AudioPanel/AudioContent/MusicVolumeRow" unique_id=140821615]
 custom_minimum_size = Vector2(360, 28)
+layout_mode = 2
 size_flags_horizontal = 3
-max_value = 100.0
 value = 80.0
 
-[node name="MusicVolumeValue" type="Label" parent="OptionsBody/AudioPanel/AudioContent/MusicVolumeRow"]
+[node name="MusicVolumeValue" type="Label" parent="Content/OptionsBody/AudioPanel/AudioContent/MusicVolumeRow" unique_id=1363151488]
 custom_minimum_size = Vector2(84, 0)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
 theme_override_font_sizes/font_size = 22
 text = "80%"
 horizontal_alignment = 2
 
-[node name="SfxVolumeRow" type="HBoxContainer" parent="OptionsBody/AudioPanel/AudioContent"]
+[node name="SfxVolumeRow" type="HBoxContainer" parent="Content/OptionsBody/AudioPanel/AudioContent" unique_id=1584475053]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="SfxVolumeLabel" type="Label" parent="OptionsBody/AudioPanel/AudioContent/SfxVolumeRow"]
+[node name="SfxVolumeLabel" type="Label" parent="Content/OptionsBody/AudioPanel/AudioContent/SfxVolumeRow" unique_id=1742952028]
 custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
 theme_override_font_sizes/font_size = 22
 text = "SFX VOLUME"
 
-[node name="SfxVolumeSlider" type="HSlider" parent="OptionsBody/AudioPanel/AudioContent/SfxVolumeRow"]
+[node name="SfxVolumeSlider" type="HSlider" parent="Content/OptionsBody/AudioPanel/AudioContent/SfxVolumeRow" unique_id=438693592]
 custom_minimum_size = Vector2(360, 28)
+layout_mode = 2
 size_flags_horizontal = 3
-max_value = 100.0
 value = 90.0
 
-[node name="SfxVolumeValue" type="Label" parent="OptionsBody/AudioPanel/AudioContent/SfxVolumeRow"]
+[node name="SfxVolumeValue" type="Label" parent="Content/OptionsBody/AudioPanel/AudioContent/SfxVolumeRow" unique_id=1970989371]
 custom_minimum_size = Vector2(84, 0)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
 theme_override_font_sizes/font_size = 22
 text = "90%"
 horizontal_alignment = 2
 
-[node name="DisplayPanel" type="PanelContainer" parent="OptionsBody"]
+[node name="DisplayPanel" type="PanelContainer" parent="Content/OptionsBody" unique_id=1238280256]
 custom_minimum_size = Vector2(830, 0)
+layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="DisplayContent" type="VBoxContainer" parent="OptionsBody/DisplayPanel"]
+[node name="DisplayContent" type="VBoxContainer" parent="Content/OptionsBody/DisplayPanel" unique_id=1390979578]
+layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="DisplayHeader" type="Label" parent="OptionsBody/DisplayPanel/DisplayContent"]
+[node name="DisplayHeader" type="Label" parent="Content/OptionsBody/DisplayPanel/DisplayContent" unique_id=147979551]
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.97)
 theme_override_fonts/font = ExtResource("3_body_font")
 theme_override_font_sizes/font_size = 24
 text = "DISPLAY"
 uppercase = true
 
-[node name="ResolutionRow" type="HBoxContainer" parent="OptionsBody/DisplayPanel/DisplayContent"]
+[node name="ResolutionRow" type="HBoxContainer" parent="Content/OptionsBody/DisplayPanel/DisplayContent" unique_id=315314321]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="ResolutionLabel" type="Label" parent="OptionsBody/DisplayPanel/DisplayContent/ResolutionRow"]
+[node name="ResolutionLabel" type="Label" parent="Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow" unique_id=686223586]
 custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
 theme_override_font_sizes/font_size = 22
 text = "RESOLUTION"
 
-[node name="ResolutionPicker" type="HBoxContainer" parent="OptionsBody/DisplayPanel/DisplayContent/ResolutionRow"]
+[node name="ResolutionPicker" type="HBoxContainer" parent="Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow" unique_id=720790978]
+layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ResolutionLeftButton" type="Button" parent="OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker"]
+[node name="ResolutionLeftButton" type="Button" parent="Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker" unique_id=483409329]
 custom_minimum_size = Vector2(42, 38)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
@@ -208,12 +236,13 @@ theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/hover = SubResource("StyleBoxFlat_arrow")
-theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_arrow")
+theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 text = "<"
 
-[node name="ResolutionValueLabel" type="Label" parent="OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker"]
+[node name="ResolutionValueLabel" type="Label" parent="Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker" unique_id=177118773]
 custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.819608, 0.239216, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
@@ -222,8 +251,9 @@ text = "1920 x 1080"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ResolutionRightButton" type="Button" parent="OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker"]
+[node name="ResolutionRightButton" type="Button" parent="Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker" unique_id=1381412326]
 custom_minimum_size = Vector2(42, 38)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
@@ -232,25 +262,29 @@ theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/hover = SubResource("StyleBoxFlat_arrow")
-theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_arrow")
+theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 text = ">"
 
-[node name="FullscreenRow" type="HBoxContainer" parent="OptionsBody/DisplayPanel/DisplayContent"]
+[node name="FullscreenRow" type="HBoxContainer" parent="Content/OptionsBody/DisplayPanel/DisplayContent" unique_id=642236498]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="FullscreenLabel" type="Label" parent="OptionsBody/DisplayPanel/DisplayContent/FullscreenRow"]
+[node name="FullscreenLabel" type="Label" parent="Content/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow" unique_id=1970569395]
 custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
 theme_override_font_sizes/font_size = 22
 text = "FULLSCREEN"
 
-[node name="FullscreenPicker" type="HBoxContainer" parent="OptionsBody/DisplayPanel/DisplayContent/FullscreenRow"]
+[node name="FullscreenPicker" type="HBoxContainer" parent="Content/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow" unique_id=11687901]
+layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="FullscreenLeftButton" type="Button" parent="OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker"]
+[node name="FullscreenLeftButton" type="Button" parent="Content/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker" unique_id=380302965]
 custom_minimum_size = Vector2(42, 38)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
@@ -259,12 +293,13 @@ theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/hover = SubResource("StyleBoxFlat_arrow")
-theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_arrow")
+theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 text = "<"
 
-[node name="FullscreenValueLabel" type="Label" parent="OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker"]
+[node name="FullscreenValueLabel" type="Label" parent="Content/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker" unique_id=1842635758]
 custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.819608, 0.239216, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
@@ -273,8 +308,9 @@ text = "ON"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="FullscreenRightButton" type="Button" parent="OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker"]
+[node name="FullscreenRightButton" type="Button" parent="Content/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker" unique_id=1486251208]
 custom_minimum_size = Vector2(42, 38)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
@@ -283,25 +319,29 @@ theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/hover = SubResource("StyleBoxFlat_arrow")
-theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_arrow")
+theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 text = ">"
 
-[node name="VsyncRow" type="HBoxContainer" parent="OptionsBody/DisplayPanel/DisplayContent"]
+[node name="VsyncRow" type="HBoxContainer" parent="Content/OptionsBody/DisplayPanel/DisplayContent" unique_id=1904418646]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="VsyncLabel" type="Label" parent="OptionsBody/DisplayPanel/DisplayContent/VsyncRow"]
+[node name="VsyncLabel" type="Label" parent="Content/OptionsBody/DisplayPanel/DisplayContent/VsyncRow" unique_id=2109650970]
 custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
 theme_override_font_sizes/font_size = 22
 text = "VSYNC"
 
-[node name="VsyncPicker" type="HBoxContainer" parent="OptionsBody/DisplayPanel/DisplayContent/VsyncRow"]
+[node name="VsyncPicker" type="HBoxContainer" parent="Content/OptionsBody/DisplayPanel/DisplayContent/VsyncRow" unique_id=722651156]
+layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="VsyncLeftButton" type="Button" parent="OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker"]
+[node name="VsyncLeftButton" type="Button" parent="Content/OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker" unique_id=1048965393]
 custom_minimum_size = Vector2(42, 38)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
@@ -310,12 +350,13 @@ theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/hover = SubResource("StyleBoxFlat_arrow")
-theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_arrow")
+theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 text = "<"
 
-[node name="VsyncValueLabel" type="Label" parent="OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker"]
+[node name="VsyncValueLabel" type="Label" parent="Content/OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker" unique_id=873725094]
 custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.819608, 0.239216, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
@@ -324,8 +365,9 @@ text = "ON"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VsyncRightButton" type="Button" parent="OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker"]
+[node name="VsyncRightButton" type="Button" parent="Content/OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker" unique_id=1579632682]
 custom_minimum_size = Vector2(42, 38)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
@@ -334,39 +376,46 @@ theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/hover = SubResource("StyleBoxFlat_arrow")
-theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_arrow")
+theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 text = ">"
 
-[node name="GameplayPanel" type="PanelContainer" parent="OptionsBody"]
+[node name="GameplayPanel" type="PanelContainer" parent="Content/OptionsBody" unique_id=1010784662]
 custom_minimum_size = Vector2(830, 0)
+layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="GameplayContent" type="VBoxContainer" parent="OptionsBody/GameplayPanel"]
+[node name="GameplayContent" type="VBoxContainer" parent="Content/OptionsBody/GameplayPanel" unique_id=1669403340]
+layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="GameplayHeader" type="Label" parent="OptionsBody/GameplayPanel/GameplayContent"]
+[node name="GameplayHeader" type="Label" parent="Content/OptionsBody/GameplayPanel/GameplayContent" unique_id=849080284]
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.97)
 theme_override_fonts/font = ExtResource("3_body_font")
 theme_override_font_sizes/font_size = 24
 text = "GAMEPLAY"
 uppercase = true
 
-[node name="LanguageRow" type="HBoxContainer" parent="OptionsBody/GameplayPanel/GameplayContent"]
+[node name="LanguageRow" type="HBoxContainer" parent="Content/OptionsBody/GameplayPanel/GameplayContent" unique_id=925829953]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="LanguageLabel" type="Label" parent="OptionsBody/GameplayPanel/GameplayContent/LanguageRow"]
+[node name="LanguageLabel" type="Label" parent="Content/OptionsBody/GameplayPanel/GameplayContent/LanguageRow" unique_id=437395831]
 custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
 theme_override_font_sizes/font_size = 22
 text = "LANGUAGE"
 
-[node name="LanguagePicker" type="HBoxContainer" parent="OptionsBody/GameplayPanel/GameplayContent/LanguageRow"]
+[node name="LanguagePicker" type="HBoxContainer" parent="Content/OptionsBody/GameplayPanel/GameplayContent/LanguageRow" unique_id=1195154547]
+layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="LanguageLeftButton" type="Button" parent="OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker"]
+[node name="LanguageLeftButton" type="Button" parent="Content/OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker" unique_id=1838714870]
 custom_minimum_size = Vector2(42, 38)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
@@ -375,12 +424,13 @@ theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/hover = SubResource("StyleBoxFlat_arrow")
-theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_arrow")
+theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 text = "<"
 
-[node name="LanguageValueLabel" type="Label" parent="OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker"]
+[node name="LanguageValueLabel" type="Label" parent="Content/OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker" unique_id=769724010]
 custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
@@ -389,8 +439,9 @@ text = "ENGLISH"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="LanguageRightButton" type="Button" parent="OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker"]
+[node name="LanguageRightButton" type="Button" parent="Content/OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker" unique_id=2111499279]
 custom_minimum_size = Vector2(42, 38)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
@@ -399,25 +450,29 @@ theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/hover = SubResource("StyleBoxFlat_arrow")
-theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_arrow")
+theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 text = ">"
 
-[node name="HintsRow" type="HBoxContainer" parent="OptionsBody/GameplayPanel/GameplayContent"]
+[node name="HintsRow" type="HBoxContainer" parent="Content/OptionsBody/GameplayPanel/GameplayContent" unique_id=107268902]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="HintsLabel" type="Label" parent="OptionsBody/GameplayPanel/GameplayContent/HintsRow"]
+[node name="HintsLabel" type="Label" parent="Content/OptionsBody/GameplayPanel/GameplayContent/HintsRow" unique_id=144370316]
 custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
 theme_override_font_sizes/font_size = 22
 text = "TUTORIAL HINTS"
 
-[node name="HintsPicker" type="HBoxContainer" parent="OptionsBody/GameplayPanel/GameplayContent/HintsRow"]
+[node name="HintsPicker" type="HBoxContainer" parent="Content/OptionsBody/GameplayPanel/GameplayContent/HintsRow" unique_id=1031722220]
+layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="HintsLeftButton" type="Button" parent="OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker"]
+[node name="HintsLeftButton" type="Button" parent="Content/OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker" unique_id=213189014]
 custom_minimum_size = Vector2(42, 38)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
@@ -426,12 +481,13 @@ theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/hover = SubResource("StyleBoxFlat_arrow")
-theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_arrow")
+theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 text = "<"
 
-[node name="HintsValueLabel" type="Label" parent="OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker"]
+[node name="HintsValueLabel" type="Label" parent="Content/OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker" unique_id=715299817]
 custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.819608, 0.239216, 1)
 theme_override_fonts/font = ExtResource("3_body_font")
@@ -440,8 +496,9 @@ text = "ON"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="HintsRightButton" type="Button" parent="OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker"]
+[node name="HintsRightButton" type="Button" parent="Content/OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker" unique_id=1158697832]
 custom_minimum_size = Vector2(42, 38)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_colors/font_pressed_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_hover_color = Color(1, 0.741176, 0, 1)
@@ -450,16 +507,18 @@ theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/hover = SubResource("StyleBoxFlat_arrow")
-theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_arrow")
+theme_override_styles/focus = SubResource("StyleBoxFlat_arrow")
 text = ">"
 
-[node name="OptionsFooter" type="HBoxContainer" parent="."]
+[node name="OptionsFooter" type="HBoxContainer" parent="Content" unique_id=1459108007]
+layout_mode = 2
 theme = SubResource("Theme_buttons")
 theme_override_constants/separation = 22
 
-[node name="ResetDefaultsButton" type="Button" parent="OptionsFooter"]
+[node name="ResetDefaultsButton" type="Button" parent="Content/OptionsFooter" unique_id=1438377352]
 custom_minimum_size = Vector2(320, 78)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
 theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
@@ -470,8 +529,9 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
 theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
 text = "RESET TO DEFAULTS"
 
-[node name="ApplyButton" type="Button" parent="OptionsFooter"]
+[node name="ApplyButton" type="Button" parent="Content/OptionsFooter" unique_id=1009905025]
 custom_minimum_size = Vector2(180, 78)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
 theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)

@@ -1,48 +1,48 @@
-extends VBoxContainer
+extends Control
 
 signal settings_applied(settings: Dictionary)
 
-@onready var resolution_left_button: Button = $OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionLeftButton
-@onready var resolution_right_button: Button = $OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionRightButton
-@onready var resolution_value_label: Label = $OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionValueLabel
-@onready var fullscreen_left_button: Button = $OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker/FullscreenLeftButton
-@onready var fullscreen_right_button: Button = $OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker/FullscreenRightButton
-@onready var fullscreen_value_label: Label = $OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker/FullscreenValueLabel
-@onready var vsync_left_button: Button = $OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker/VsyncLeftButton
-@onready var vsync_right_button: Button = $OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker/VsyncRightButton
-@onready var vsync_value_label: Label = $OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker/VsyncValueLabel
-@onready var language_left_button: Button = $OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker/LanguageLeftButton
-@onready var language_right_button: Button = $OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker/LanguageRightButton
-@onready var language_value_label: Label = $OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker/LanguageValueLabel
-@onready var hints_left_button: Button = $OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker/HintsLeftButton
-@onready var hints_right_button: Button = $OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker/HintsRightButton
-@onready var hints_value_label: Label = $OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker/HintsValueLabel
-@onready var reset_defaults_button: Button = $OptionsFooter/ResetDefaultsButton
-@onready var apply_button: Button = $OptionsFooter/ApplyButton
+@onready var resolution_left_button: Button = $Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionLeftButton
+@onready var resolution_right_button: Button = $Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionRightButton
+@onready var resolution_value_label: Label = $Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionValueLabel
+@onready var fullscreen_left_button: Button = $Content/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker/FullscreenLeftButton
+@onready var fullscreen_right_button: Button = $Content/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker/FullscreenRightButton
+@onready var fullscreen_value_label: Label = $Content/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker/FullscreenValueLabel
+@onready var vsync_left_button: Button = $Content/OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker/VsyncLeftButton
+@onready var vsync_right_button: Button = $Content/OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker/VsyncRightButton
+@onready var vsync_value_label: Label = $Content/OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker/VsyncValueLabel
+@onready var language_left_button: Button = $Content/OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker/LanguageLeftButton
+@onready var language_right_button: Button = $Content/OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker/LanguageRightButton
+@onready var language_value_label: Label = $Content/OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker/LanguageValueLabel
+@onready var hints_left_button: Button = $Content/OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker/HintsLeftButton
+@onready var hints_right_button: Button = $Content/OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker/HintsRightButton
+@onready var hints_value_label: Label = $Content/OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker/HintsValueLabel
+@onready var reset_defaults_button: Button = $Content/OptionsFooter/ResetDefaultsButton
+@onready var apply_button: Button = $Content/OptionsFooter/ApplyButton
 
 @onready var volume_sliders: Array[HSlider] = [
-	$OptionsBody/AudioPanel/AudioContent/MasterVolumeRow/MasterVolumeSlider,
-	$OptionsBody/AudioPanel/AudioContent/MusicVolumeRow/MusicVolumeSlider,
-	$OptionsBody/AudioPanel/AudioContent/SfxVolumeRow/SfxVolumeSlider,
+	$Content/OptionsBody/AudioPanel/AudioContent/MasterVolumeRow/MasterVolumeSlider,
+	$Content/OptionsBody/AudioPanel/AudioContent/MusicVolumeRow/MusicVolumeSlider,
+	$Content/OptionsBody/AudioPanel/AudioContent/SfxVolumeRow/SfxVolumeSlider,
 ]
 @onready var volume_value_labels: Array[Label] = [
-	$OptionsBody/AudioPanel/AudioContent/MasterVolumeRow/MasterVolumeValue,
-	$OptionsBody/AudioPanel/AudioContent/MusicVolumeRow/MusicVolumeValue,
-	$OptionsBody/AudioPanel/AudioContent/SfxVolumeRow/SfxVolumeValue,
+	$Content/OptionsBody/AudioPanel/AudioContent/MasterVolumeRow/MasterVolumeValue,
+	$Content/OptionsBody/AudioPanel/AudioContent/MusicVolumeRow/MusicVolumeValue,
+	$Content/OptionsBody/AudioPanel/AudioContent/SfxVolumeRow/SfxVolumeValue,
 ]
 @onready var focusable_buttons: Array[Button] = [
-	$OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionLeftButton,
-	$OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionRightButton,
-	$OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker/FullscreenLeftButton,
-	$OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker/FullscreenRightButton,
-	$OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker/VsyncLeftButton,
-	$OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker/VsyncRightButton,
-	$OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker/LanguageLeftButton,
-	$OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker/LanguageRightButton,
-	$OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker/HintsLeftButton,
-	$OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker/HintsRightButton,
-	$OptionsFooter/ResetDefaultsButton,
-	$OptionsFooter/ApplyButton,
+	$Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionLeftButton,
+	$Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionRightButton,
+	$Content/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker/FullscreenLeftButton,
+	$Content/OptionsBody/DisplayPanel/DisplayContent/FullscreenRow/FullscreenPicker/FullscreenRightButton,
+	$Content/OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker/VsyncLeftButton,
+	$Content/OptionsBody/DisplayPanel/DisplayContent/VsyncRow/VsyncPicker/VsyncRightButton,
+	$Content/OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker/LanguageLeftButton,
+	$Content/OptionsBody/GameplayPanel/GameplayContent/LanguageRow/LanguagePicker/LanguageRightButton,
+	$Content/OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker/HintsLeftButton,
+	$Content/OptionsBody/GameplayPanel/GameplayContent/HintsRow/HintsPicker/HintsRightButton,
+	$Content/OptionsFooter/ResetDefaultsButton,
+	$Content/OptionsFooter/ApplyButton,
 ]
 
 var _pending_settings: Dictionary = {}

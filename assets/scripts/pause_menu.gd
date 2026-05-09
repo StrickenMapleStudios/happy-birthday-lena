@@ -8,13 +8,14 @@ const ACTION_MAIN_MENU := &"main_menu"
 const ACTION_QUIT := &"quit"
 
 @onready var button_stack: VBoxContainer = $SafeMargin/Layout/MenuColumn/ButtonStack
+@onready var layout: HBoxContainer = $SafeMargin/Layout
 @onready var menu_column: VBoxContainer = $SafeMargin/Layout/MenuColumn
 @onready var resume_button: Button = $SafeMargin/Layout/MenuColumn/ButtonStack/ResumeButton
 @onready var options_button: Button = $SafeMargin/Layout/MenuColumn/ButtonStack/OptionsButton
 @onready var main_menu_button: Button = $SafeMargin/Layout/MenuColumn/ButtonStack/MainMenuButton
 @onready var exit_button: Button = $SafeMargin/Layout/MenuColumn/ButtonStack/ExitButton
 @onready var back_button: Button = $BackButton
-@onready var options_panel: VBoxContainer = $SafeMargin/Layout/OptionsPanel
+@onready var options_panel: Control = $SafeMargin/OptionsPanel
 @onready var confirm_dialog = $ConfirmDialog
 
 @onready var menu_buttons: Array[Button] = [
@@ -75,14 +76,14 @@ func close() -> void:
 	_pending_action = &""
 	confirm_dialog.call("hide_dialog")
 	options_panel.visible = false
-	menu_column.visible = true
+	layout.visible = true
 	back_button.visible = false
 	options_panel.call("set_focus_enabled", false)
 	_set_button_focus_enabled(menu_buttons, false)
 
 
 func _show_options() -> void:
-	menu_column.visible = false
+	layout.visible = false
 	back_button.visible = true
 	options_panel.visible = true
 	options_panel.call("refresh_from_settings")
@@ -141,7 +142,7 @@ func _on_confirmed() -> void:
 
 
 func _show_main_buttons() -> void:
-	menu_column.visible = true
+	layout.visible = true
 	back_button.visible = false
 	options_panel.visible = false
 	_set_button_focus_enabled(menu_buttons, true)
