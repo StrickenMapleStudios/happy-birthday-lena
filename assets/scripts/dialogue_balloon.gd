@@ -66,6 +66,10 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(_event: InputEvent) -> void:
+	if _response_selection_active and _handle_response_navigation_input(_event):
+		get_viewport().set_input_as_handled()
+		return
+
 	if will_block_other_input:
 		get_viewport().set_input_as_handled()
 
@@ -201,3 +205,67 @@ func _set_response_selection_active(value: bool) -> void:
 
 	_response_selection_active = value
 	response_selection_state_changed.emit(value)
+
+
+func _handle_response_navigation_input(event: InputEvent) -> bool:
+	if not (event is InputEventKey) or not event.is_pressed() or event.is_echo():
+		return false
+
+	var items: Array = responses_menu.get_menu_items()
+	if items.is_empty():
+		return false
+
+	var current_index := _get_focused_response_index(items)
+	if current_index < 0:
+		current_index = 0
+
+	match event.keycode:
+		KEY_W, KEY_A:
+			items[maxi(current_index - 1, 0)].grab_focus()
+			return true
+		KEY_S, KEY_D:
+			items[mini(current_index + 1, items.size() - 1)].grab_focus()
+			return true
+		KEY_1, KEY_KP_1:
+			return _select_response_by_index(items, 0)
+		KEY_2, KEY_KP_2:
+			return _select_response_by_index(items, 1)
+		KEY_3, KEY_KP_3:
+			return _select_response_by_index(items, 2)
+		KEY_4, KEY_KP_4:
+			return _select_response_by_index(items, 3)
+		KEY_5, KEY_KP_5:
+			return _select_response_by_index(items, 4)
+		KEY_6, KEY_KP_6:
+			return _select_response_by_index(items, 5)
+		KEY_7, KEY_KP_7:
+			return _select_response_by_index(items, 6)
+		KEY_8, KEY_KP_8:
+			return _select_response_by_index(items, 7)
+		KEY_9, KEY_KP_9:
+			return _select_response_by_index(items, 8)
+
+	return false
+
+
+func _get_focused_response_index(items: Array) -> int:
+	var focus_owner := get_viewport().gui_get_focus_owner()
+	for index in items.size():
+		if items[index] == focus_owner:
+			return index
+
+	return -1
+
+
+func _select_response_by_index(items: Array, index: int) -> bool:
+	if index < 0 or index >= items.size():
+		return false
+
+	var item: Control = items[index]
+	item.grab_focus()
+	var response = item.get_meta("response", null)
+	if response == null:
+		return false
+
+	_on_responses_menu_response_selected(response)
+	return true
