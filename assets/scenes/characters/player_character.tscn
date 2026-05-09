@@ -1,9 +1,9 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene format=3 uid="uid://dmb72unyvr0t3"]
 
-[ext_resource type="PackedScene" path="res://assets/art/models/characters/character.glb" id="1_glb"]
-[ext_resource type="Script" path="res://assets/scripts/test_movement_character.gd" id="2_script"]
+[ext_resource type="PackedScene" uid="uid://cuvqsplyq6dy6" path="res://assets/art/models/characters/character.glb" id="1_glb"]
+[ext_resource type="Script" uid="uid://uhnj7b0665k6" path="res://assets/scripts/test_movement_character.gd" id="2_script"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/dialogue_camera_mount.tscn" id="3_mount"]
-[ext_resource type="Script" path="res://assets/scripts/interaction_source.gd" id="4_interaction"]
+[ext_resource type="Script" uid="uid://r1enyepipbe2" path="res://assets/scripts/interaction_source.gd" id="4_interaction"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_idle"]
 animation = &"Idle"
@@ -64,13 +64,13 @@ states/Walking/position = Vector2(660, 170)
 transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_start"), "Idle", "Walking", SubResource("AnimationNodeStateMachineTransition_idle_to_walking"), "Idle", "Running", SubResource("AnimationNodeStateMachineTransition_idle_to_running"), "Walking", "Idle", SubResource("AnimationNodeStateMachineTransition_walking_to_idle"), "Walking", "Running", SubResource("AnimationNodeStateMachineTransition_walking_to_running"), "Running", "Idle", SubResource("AnimationNodeStateMachineTransition_running_to_idle"), "Running", "Walking", SubResource("AnimationNodeStateMachineTransition_running_to_walking"), "Running", "NarutoRunning", SubResource("AnimationNodeStateMachineTransition_running_to_naruto"), "NarutoRunning", "Idle", SubResource("AnimationNodeStateMachineTransition_naruto_to_idle"), "NarutoRunning", "Walking", SubResource("AnimationNodeStateMachineTransition_naruto_to_walking"), "NarutoRunning", "Running", SubResource("AnimationNodeStateMachineTransition_naruto_to_running")]
 graph_offset = Vector2(36, 17)
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_interaction"]
-radius = 1.8
+[sub_resource type="BoxShape3D" id="BoxShape3D_interaction"]
+size = Vector3(2.8, 2.8, 2.4)
 
-[node name="PlayerCharacter" instance=ExtResource("1_glb")]
+[node name="PlayerCharacter" unique_id=77292897 instance=ExtResource("1_glb")]
 script = ExtResource("2_script")
 
-[node name="Skeleton3D" parent="Rig" index="0"]
+[node name="Skeleton3D" parent="Rig" parent_id_path=PackedInt32Array(1617534080) index="0" unique_id=1001129209]
 bones/0/position = Vector3(0, -4.286089, -1.7575461)
 bones/1/position = Vector3(0.003718821, -0.0594041, -1.6887507)
 bones/1/rotation = Quaternion(-0.47282243, 0.526142, -0.47245717, 0.5257356)
@@ -111,26 +111,25 @@ bones/39/position = Vector3(0.48740414, 0.21616471, -0.14989355)
 bones/40/position = Vector3(-0.6239013, -0.03892064, -1.9292506)
 bones/41/position = Vector3(-0.48740417, 0.21616483, -0.14989355)
 
-[node name="hat_2" parent="Rig/Skeleton3D" index="0"]
+[node name="hat_2" parent="Rig/Skeleton3D" index="0" unique_id=1468740649]
 transform = Transform3D(1.3659678, -0.028279578, -0.019032495, 0.034084756, 1.1231414, 0.77744734, -0.00044637822, -0.7776808, 1.1234988, -0.029868808, -0.104537845, -1.8004179)
 
-[node name="AnimationTree" type="AnimationTree" parent="AnimationPlayer" index="0"]
+[node name="AnimationTree" type="AnimationTree" parent="AnimationPlayer" parent_id_path=PackedInt32Array(1973788001) index="0" unique_id=1309974918]
 root_node = NodePath("../..")
 tree_root = SubResource("AnimationNodeStateMachine_test_movement")
 anim_player = NodePath("..")
 
-[node name="DialogueSpeakerPivot" type="Marker3D" parent="."]
+[node name="DialogueSpeakerPivot" type="Marker3D" parent="." index="2" unique_id=941024673]
 
-[node name="DialogueCameraMount" parent="." instance=ExtResource("3_mount")]
-
-[node name="InteractionSource" type="Area3D" parent="." index="3"]
+[node name="InteractionSource" type="Area3D" parent="." index="3" unique_id=1045049301]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.1)
 collision_layer = 2
 collision_mask = 4
-monitoring = true
 monitorable = false
 script = ExtResource("4_interaction")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionSource" index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
-shape = SubResource("SphereShape3D_interaction")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionSource" index="0" unique_id=1186098225]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 1.35)
+shape = SubResource("BoxShape3D_interaction")
+
+[node name="DialogueCameraMount" parent="." index="4" unique_id=1623063665 instance=ExtResource("3_mount")]
