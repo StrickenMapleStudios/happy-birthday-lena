@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 signal speaker_changed(character_name: String, dialogue_line: DialogueLine)
+signal response_selection_state_changed(is_active: bool)
 
 @export var dialogue_resource: DialogueResource
 @export var start_from_title: String = ""
@@ -15,6 +16,7 @@ var temporary_game_states: Array = []
 var is_waiting_for_input := false
 var will_hide_balloon := false
 var locals: Dictionary = {}
+var _response_selection_active := false
 
 var _locale: String = TranslationServer.get_locale()
 
@@ -80,6 +82,7 @@ func _notification(what: int) -> void:
 func start(with_dialogue_resource: DialogueResource = null, title: String = "", extra_game_states: Array = []) -> void:
 	temporary_game_states = [self] + extra_game_states
 	is_waiting_for_input = false
+	_set_response_selection_active(false)
 	if is_instance_valid(with_dialogue_resource):
 		dialogue_resource = with_dialogue_resource
 	if not title.is_empty():
@@ -93,6 +96,7 @@ func apply_dialogue_line() -> void:
 
 	progress_indicator.hide()
 	is_waiting_for_input = false
+	_set_response_selection_active(false)
 	balloon.focus_mode = Control.FOCUS_ALL
 	balloon.grab_focus()
 
@@ -122,6 +126,7 @@ func apply_dialogue_line() -> void:
 		next(dialogue_line.next_id)
 	elif dialogue_line.responses.size() > 0:
 		balloon.focus_mode = Control.FOCUS_NONE
+		_set_response_selection_active(true)
 		responses_menu.show()
 	elif dialogue_line.time != "":
 		var time: float = dialogue_line.text.length() * 0.02 if dialogue_line.time == "auto" else dialogue_line.time.to_float()
@@ -143,6 +148,7 @@ func close_balloon() -> void:
 
 func _lock_visual_state_for_exit() -> void:
 	is_waiting_for_input = false
+	_set_response_selection_active(false)
 	progress_indicator.hide()
 	balloon.focus_mode = Control.FOCUS_NONE
 	responses_menu.hide()
@@ -185,4 +191,13 @@ func _on_balloon_gui_input(event: InputEvent) -> void:
 
 
 func _on_responses_menu_response_selected(response: DialogueResponse) -> void:
+	_set_response_selection_active(false)
 	next(response.next_id)
+
+
+func _set_response_selection_active(value: bool) -> void:
+	if _response_selection_active == value:
+		return
+
+	_response_selection_active = value
+	response_selection_state_changed.emit(value)

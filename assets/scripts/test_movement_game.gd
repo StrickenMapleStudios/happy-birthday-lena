@@ -16,8 +16,12 @@ const MAIN_MENU_SCENE_PATH := "res://assets/scenes/menu/menu_main.tscn"
 const DIALOGUE_BALLOON_SCENE := preload("res://assets/scenes/ui/dialogue_balloon.tscn")
 const DIALOGUE_PIVOT_YAW_OFFSET := PI
 
+const CURSOR_MODE_INGAME := Input.MOUSE_MODE_CAPTURED
+const CURSOR_MODE_UI := Input.MOUSE_MODE_VISIBLE
+
 var _interaction_locked := false
 var _dialogue_active := false
+var _dialogue_response_selection_active := false
 var _dialogue_target: InteractionTarget
 var _dialogue_target_actor: Node3D
 var _current_dialogue_speaker: Node3D
@@ -39,6 +43,7 @@ func _ready() -> void:
 		pause_menu.connect("resume_requested", Callable(self, "_resume_from_pause"))
 		pause_menu.connect("main_menu_requested", Callable(self, "_return_to_main_menu"))
 		pause_menu.connect("quit_requested", Callable(self, "_quit_from_pause"))
+	_refresh_cursor_mode()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -93,7 +98,9 @@ func _on_interaction_requested(target: InteractionTarget) -> void:
 		_dialogue_target_actor.call("face_towards_position", player.global_position)
 	_dialogue_target = target
 	_dialogue_active = true
+	_dialogue_response_selection_active = false
 	_set_dialogue_speaker(_dialogue_target_actor)
+	_refresh_cursor_mode()
 	_start_dialogue_balloon(dialogue_resource, target.get_dialogue_start_title())
 	await get_tree().process_frame
 	await SceneTransition.fade_in()
@@ -122,9 +129,11 @@ func _exit_dialogue_mode() -> void:
 	player.set_controls_enabled(true)
 	interaction_source.set_interaction_enabled(true)
 	_dialogue_active = false
+	_dialogue_response_selection_active = false
 	_dialogue_target = null
 	_dialogue_target_actor = null
 	_current_dialogue_speaker = null
+	_refresh_cursor_mode()
 	await get_tree().process_frame
 	await SceneTransition.fade_in()
 	_interaction_locked = false
@@ -143,6 +152,7 @@ func _open_pause_menu() -> void:
 
 	_pause_active = true
 	get_tree().paused = true
+	_refresh_cursor_mode()
 	pause_menu.call("open")
 
 
@@ -154,6 +164,7 @@ func _resume_from_pause() -> void:
 	_pause_active = false
 	if pause_menu != null:
 		pause_menu.call("close")
+	_refresh_cursor_mode()
 
 
 func _return_to_main_menu() -> void:
@@ -165,6 +176,7 @@ func _return_to_main_menu() -> void:
 	_pause_active = false
 	if pause_menu != null:
 		pause_menu.call("close")
+	_refresh_cursor_mode()
 	await SceneTransition.change_scene_to_file(MAIN_MENU_SCENE_PATH)
 
 
@@ -177,6 +189,7 @@ func _quit_from_pause() -> void:
 	_pause_active = false
 	if pause_menu != null:
 		pause_menu.call("close")
+	_refresh_cursor_mode()
 	get_tree().quit.call_deferred()
 
 
@@ -195,6 +208,11 @@ func _start_dialogue_balloon(dialogue_resource: DialogueResource, start_title: S
 
 	if _active_dialogue_balloon != null and _active_dialogue_balloon.has_signal("speaker_changed"):
 		_active_dialogue_balloon.connect("speaker_changed", Callable(self, "_on_balloon_speaker_changed"))
+	if _active_dialogue_balloon != null and _active_dialogue_balloon.has_signal("response_selection_state_changed"):
+		_active_dialogue_balloon.connect(
+			"response_selection_state_changed",
+			Callable(self, "_on_balloon_response_selection_state_changed")
+		)
 
 
 func _set_dialogue_speaker(speaker: Node3D) -> void:
@@ -254,6 +272,11 @@ func _on_balloon_speaker_changed(character_name: String, _dialogue_line: Dialogu
 		_set_dialogue_speaker(speaker)
 
 
+func _on_balloon_response_selection_state_changed(is_active: bool) -> void:
+	_dialogue_response_selection_active = is_active
+	_refresh_cursor_mode()
+
+
 func _resolve_speaker_for_character_name(character_name: String) -> Node3D:
 	var normalized_name := character_name.strip_edges().to_lower()
 	if normalized_name.is_empty():
@@ -284,3 +307,12 @@ func _get_dialogue_pivot_transform(mount: Node3D) -> Transform3D:
 	var pivot_transform := mount.global_transform
 	pivot_transform.basis = pivot_transform.basis * Basis.from_euler(Vector3(0.0, DIALOGUE_PIVOT_YAW_OFFSET, 0.0))
 	return pivot_transform
+
+
+func _refresh_cursor_mode() -> void:
+	var desired_mode := CURSOR_MODE_INGAME
+	if _pause_active or _dialogue_response_selection_active:
+		desired_mode = CURSOR_MODE_UI
+
+	if Input.mouse_mode != desired_mode:
+		Input.mouse_mode = desired_mode
