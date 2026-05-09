@@ -1,7 +1,6 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://assets/scripts/dialogue_response_option.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/art/sprites/plus-icon.png" id="2_plus"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_normal"]
 bg_color = Color(0, 0, 0, 0)
@@ -76,12 +75,12 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 2.0
 offset_top = 2.0
-offset_right = -2.0
+offset_right = -18.0
 offset_bottom = -2.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 10
 
 [node name="TextLabel" type="Label" parent="Content" unique_name_in_owner=true]
 layout_mode = 2
@@ -96,10 +95,13 @@ clip_text = true
 horizontal_alignment = 0
 vertical_alignment = 1
 
-[node name="Marker" type="TextureRect" parent="Content" unique_name_in_owner=true]
-custom_minimum_size = Vector2(22, 22)
+[node name="Marker" type="Label" parent="Content" unique_name_in_owner=true]
+custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
+size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("2_plus")
-expand_mode = 1
-stretch_mode = 5
+text = "•"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_colors/font_color = Color(0.972549, 0.972549, 0.972549, 1)
+theme_override_font_sizes/font_size = 28

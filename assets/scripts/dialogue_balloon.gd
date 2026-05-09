@@ -35,10 +35,14 @@ var mutation_cooldown: Timer = Timer.new()
 @onready var character_label: RichTextLabel = $Balloon/BottomBar/DialogueFrame/DialogueContent/CharacterLabel
 @onready var dialogue_label: DialogueLabel = $Balloon/BottomBar/DialogueFrame/DialogueContent/DialogueLabel
 @onready var responses_menu: DialogueResponsesMenu = $Balloon/ResponsesPanel/ResponsesMenu
-@onready var progress_indicator: CanvasItem = $Balloon/BottomBar/DialogueFrame/ProgressIndicator
+@onready var progress_indicator: CanvasItem = $Balloon/BottomBar/ProgressIndicator
 
 
 func _ready() -> void:
+	if balloon == null or character_label == null or dialogue_label == null or responses_menu == null or progress_indicator == null:
+		push_error("Dialogue balloon UI is missing required child nodes.")
+		return
+
 	balloon.hide()
 	Engine.get_singleton("DialogueManager").mutated.connect(_on_mutated)
 
