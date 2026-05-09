@@ -91,7 +91,10 @@ func _exit_dialogue_mode() -> void:
 	_interaction_locked = true
 	await SceneTransition.fade_out()
 	if is_instance_valid(_active_dialogue_balloon):
-		_active_dialogue_balloon.queue_free()
+		if _active_dialogue_balloon.has_method("close_balloon"):
+			_active_dialogue_balloon.call("close_balloon")
+		else:
+			_active_dialogue_balloon.queue_free()
 	_active_dialogue_balloon = null
 	_active_dialogue_resource = null
 	player.global_transform = _saved_player_transform
@@ -115,10 +118,6 @@ func _cancel_active_dialogue() -> void:
 	if _interaction_locked or not _dialogue_active:
 		return
 
-	if is_instance_valid(_active_dialogue_balloon):
-		_active_dialogue_balloon.queue_free()
-	_active_dialogue_balloon = null
-	_active_dialogue_resource = null
 	await _exit_dialogue_mode()
 
 
@@ -187,8 +186,6 @@ func _on_dialogue_ended(resource: DialogueResource) -> void:
 	if _active_dialogue_resource != null and resource != _active_dialogue_resource:
 		return
 
-	_active_dialogue_balloon = null
-	_active_dialogue_resource = null
 	await _exit_dialogue_mode()
 
 

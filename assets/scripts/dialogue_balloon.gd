@@ -24,10 +24,8 @@ var dialogue_line: DialogueLine:
 			dialogue_line = value
 			apply_dialogue_line()
 		else:
-			if owner == null:
-				queue_free()
-			else:
-				hide()
+			dialogue_line = null
+			_lock_visual_state_for_exit()
 	get:
 		return dialogue_line
 
@@ -133,6 +131,17 @@ func apply_dialogue_line() -> void:
 
 func next(next_id: String) -> void:
 	dialogue_line = await dialogue_resource.get_next_dialogue_line(next_id, temporary_game_states)
+
+
+func close_balloon() -> void:
+	queue_free()
+
+
+func _lock_visual_state_for_exit() -> void:
+	is_waiting_for_input = false
+	progress_indicator.hide()
+	balloon.focus_mode = Control.FOCUS_NONE
+	responses_menu.hide()
 
 
 func _on_mutation_cooldown_timeout() -> void:
