@@ -14,7 +14,7 @@ const RUN_TOWARD_FOV_BOOST := 6.0
 @export var target_path: NodePath = ^"../character"
 
 var _target: Node3D
-var _camera: Camera3D
+var _game_camera: Camera3D
 var _last_target_position := Vector3.ZERO
 var _look_height_offset: float = 0.0
 var _fov_offset: float = 0.0
@@ -24,8 +24,11 @@ var _smoothed_focus_point := Vector3.ZERO
 
 func _ready() -> void:
 	_target = get_node_or_null(target_path) as Node3D
-	_camera = $Camera3D
-	if _target == null:
+	_game_camera = $GameCamera
+
+	activate_game_camera()
+
+	if _target == null or _game_camera == null:
 		return
 
 	_smoothed_target_position = _target.global_position
@@ -58,8 +61,8 @@ func _update_camera(delta: float) -> void:
 		var planar_speed := planar_delta.length() / maxf(delta, 0.000001)
 		var move_direction: Vector2 = planar_delta.normalized()
 		var to_camera: Vector2 = Vector2(
-			_camera.global_position.x - target_position.x,
-			_camera.global_position.z - target_position.z
+			_game_camera.global_position.x - target_position.x,
+			_game_camera.global_position.z - target_position.z
 		).normalized()
 		var move_toward_camera: float = move_direction.dot(to_camera)
 		var speed_weight := inverse_lerp(
@@ -80,5 +83,12 @@ func _update_camera(delta: float) -> void:
 
 	var focus_point: Vector3 = target_position + Vector3(0.0, FOCUS_HEIGHT + _look_height_offset, 0.0)
 	_smoothed_focus_point = _smoothed_focus_point.lerp(focus_point, look_weight)
-	_camera.fov = BASE_FOV + _fov_offset
-	_camera.look_at(_smoothed_focus_point, Vector3.UP)
+	_game_camera.fov = BASE_FOV + _fov_offset
+	_game_camera.look_at(_smoothed_focus_point, Vector3.UP)
+
+
+func activate_game_camera() -> void:
+	if _game_camera == null:
+		return
+
+	_game_camera.current = true

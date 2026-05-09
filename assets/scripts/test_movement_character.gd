@@ -30,6 +30,7 @@ var _current_state := StringName()
 var _running_loops := 0
 var _previous_running_play_position := 0.0
 var _root_motion_track_path := NodePath()
+var _controls_enabled := true
 
 
 func _ready() -> void:
@@ -45,6 +46,11 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if not _controls_enabled:
+		_sync_animation_flags(false, false)
+		_update_animation_state(false, false)
+		return
+
 	var input := Input.get_vector(
 		ACTION_MOVE_LEFT,
 		ACTION_MOVE_RIGHT,
@@ -193,6 +199,33 @@ func _apply_root_motion() -> void:
 		return
 
 	global_position += global_transform.basis * root_motion
+
+
+func set_controls_enabled(value: bool) -> void:
+	_controls_enabled = value
+	if not value:
+		_sync_animation_flags(false, false)
+		_update_animation_state(false, false)
+
+
+func set_character_visible(value: bool) -> void:
+	$Rig.visible = value
+
+
+func get_dialogue_camera_mount() -> Node3D:
+	return $DialogueSpeakerPivot
+
+
+func face_towards_position(target_position: Vector3) -> void:
+	var offset := target_position - global_position
+	offset.y = 0.0
+	if offset.is_zero_approx():
+		return
+
+	var target_rotation := atan2(offset.x, offset.z)
+	var current_transform := global_transform
+	current_transform.basis = Basis.from_euler(Vector3(0.0, target_rotation, 0.0))
+	global_transform = current_transform
 
 
 func _ensure_input_map() -> void:

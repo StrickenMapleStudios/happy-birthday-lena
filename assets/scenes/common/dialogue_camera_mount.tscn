@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[node name="DialogueCameraMount" type="Node3D"]
+
+[node name="CameraMount" type="Marker3D" parent="."]
+transform = Transform3D(-0.93123394, 0.05815129, -0.35975242, 9.713252e-09, 0.9871864, 0.15957128, 0.36442196, 0.1485982, -0.9193014, -1.2970997, 3.3030784, -2.917794)

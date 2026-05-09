@@ -51,6 +51,19 @@ func change_scene_to_file(
 	_finish_transition()
 
 
+func fade_out(duration: float = default_fade_out_duration) -> void:
+	if _is_transitioning:
+		await transition_finished
+
+	_is_transitioning = true
+	await _fade_to(1.0, duration, Control.MOUSE_FILTER_STOP)
+
+
+func fade_in(duration: float = default_fade_in_duration) -> void:
+	await _fade_to(0.0, duration, Control.MOUSE_FILTER_IGNORE)
+	_finish_transition()
+
+
 func preload_scene(scene_path: String, use_sub_threads: bool = true) -> void:
 	var load_status := ResourceLoader.load_threaded_get_status(scene_path)
 	if load_status == ResourceLoader.THREAD_LOAD_IN_PROGRESS or load_status == ResourceLoader.THREAD_LOAD_LOADED:
