@@ -8,7 +8,7 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_blur"]
 shader = ExtResource("4_blur_shader")
 
-[node name="PauseMenu" type="CanvasLayer"]
+[node name="DialoguePauseMenu" type="CanvasLayer"]
 layer = 200
 script = ExtResource("1_script")
 
@@ -41,18 +41,14 @@ grow_vertical = 2
 material = SubResource("ShaderMaterial_blur")
 color = Color(1, 1, 1, 1)
 
-[node name="SafeMargin" type="MarginContainer" parent="MenuRoot"]
+[node name="CenterContainer" type="CenterContainer" parent="MenuRoot"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 96
-theme_override_constants/margin_top = 72
-theme_override_constants/margin_right = 56
-theme_override_constants/margin_bottom = 44
 
-[node name="Content" parent="MenuRoot/SafeMargin" instance=ExtResource("2_content")]
+[node name="Content" parent="MenuRoot/CenterContainer" instance=ExtResource("2_content")]
 
 [node name="ConfirmDialog" parent="MenuRoot" instance=ExtResource("3_confirm")]

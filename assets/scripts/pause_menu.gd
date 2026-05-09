@@ -1,4 +1,4 @@
-extends Control
+extends CanvasLayer
 
 signal resume_requested
 signal main_menu_requested
@@ -7,22 +7,23 @@ signal quit_requested
 const ACTION_MAIN_MENU := &"main_menu"
 const ACTION_QUIT := &"quit"
 
-@onready var button_stack: VBoxContainer = $SafeMargin/Layout/MenuColumn/ButtonStack
-@onready var layout: HBoxContainer = $SafeMargin/Layout
-@onready var menu_column: VBoxContainer = $SafeMargin/Layout/MenuColumn
-@onready var resume_button: Button = $SafeMargin/Layout/MenuColumn/ButtonStack/ResumeButton
-@onready var options_button: Button = $SafeMargin/Layout/MenuColumn/ButtonStack/OptionsButton
-@onready var main_menu_button: Button = $SafeMargin/Layout/MenuColumn/ButtonStack/MainMenuButton
-@onready var exit_button: Button = $SafeMargin/Layout/MenuColumn/ButtonStack/ExitButton
-@onready var back_button: Button = $BackButton
-@onready var options_panel: Control = $SafeMargin/OptionsPanel
-@onready var confirm_dialog = $ConfirmDialog
+@onready var menu_root: Control = $MenuRoot
+@onready var button_stack: VBoxContainer = %ButtonStack
+@onready var layout: HBoxContainer = %Layout
+@onready var menu_column: VBoxContainer = %MenuColumn
+@onready var resume_button: Button = %ResumeButton
+@onready var options_button: Button = %OptionsButton
+@onready var main_menu_button: Button = %MainMenuButton
+@onready var exit_button: Button = %ExitButton
+@onready var back_button: Button = %BackButton
+@onready var options_panel: Control = %OptionsPanel
+@onready var confirm_dialog = $MenuRoot/ConfirmDialog
 
 @onready var menu_buttons: Array[Button] = [
-	$SafeMargin/Layout/MenuColumn/ButtonStack/ResumeButton,
-	$SafeMargin/Layout/MenuColumn/ButtonStack/OptionsButton,
-	$SafeMargin/Layout/MenuColumn/ButtonStack/MainMenuButton,
-	$SafeMargin/Layout/MenuColumn/ButtonStack/ExitButton,
+	%ResumeButton,
+	%OptionsButton,
+	%MainMenuButton,
+	%ExitButton,
 ]
 
 var _pending_action: StringName = &""
@@ -30,7 +31,7 @@ var _pending_action: StringName = &""
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	visible = false
+	menu_root.visible = false
 	resume_button.pressed.connect(func() -> void: resume_requested.emit())
 	options_button.pressed.connect(_show_options)
 	main_menu_button.pressed.connect(_prompt_main_menu)
@@ -44,7 +45,7 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not visible:
+	if not menu_root.visible:
 		return
 
 	if bool(confirm_dialog.call("is_open")):
@@ -65,14 +66,14 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func open() -> void:
-	visible = true
+	menu_root.visible = true
 	_pending_action = &""
 	confirm_dialog.call("hide_dialog")
 	_show_main_buttons()
 
 
 func close() -> void:
-	visible = false
+	menu_root.visible = false
 	_pending_action = &""
 	confirm_dialog.call("hide_dialog")
 	options_panel.visible = false

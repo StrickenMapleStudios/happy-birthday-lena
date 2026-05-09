@@ -1,0 +1,169 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/scenes/ui/options_panel.tscn" id="1_options"]
+[ext_resource type="FontFile" path="res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf" id="2_title_font"]
+[ext_resource type="FontFile" path="res://assets/art/fonts/Paytone_One/PaytoneOne-Regular.ttf" id="3_body_font"]
+[ext_resource type="Texture2D" path="res://assets/art/sprites/play-button-arrowhead.png" id="4_play_icon"]
+[ext_resource type="Texture2D" path="res://assets/art/sprites/gear-icon.png" id="5_gear_icon"]
+[ext_resource type="Texture2D" path="res://assets/art/sprites/exit-icon.png" id="6_exit_icon"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_dark"]
+content_margin_left = 42.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+bg_color = Color(0.235294, 0.235294, 0.235294, 0.65)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.631373, 0.631373, 0.631373, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_gold"]
+content_margin_left = 42.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+bg_color = Color(0.623529, 0.423529, 0, 0.65)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.960784, 0, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="Theme" id="Theme_buttons"]
+Button/fonts/font = ExtResource("3_body_font")
+
+[node name="PauseMenuContent" type="Control"]
+custom_minimum_size = Vector2(900, 888)
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="Layout" type="HBoxContainer" parent="." unique_name_in_owner=true]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 56
+
+[node name="MenuColumn" type="VBoxContainer" parent="Layout" unique_name_in_owner=true]
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 28
+
+[node name="PausedLabel" type="Label" parent="Layout/MenuColumn"]
+theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_fonts/font = ExtResource("2_title_font")
+theme_override_font_sizes/font_size = 82
+text = "PAUSED"
+uppercase = true
+
+[node name="ButtonStack" type="VBoxContainer" parent="Layout/MenuColumn" unique_name_in_owner=true]
+layout_mode = 2
+theme = SubResource("Theme_buttons")
+theme_override_constants/separation = 14
+
+[node name="ResumeButton" type="Button" parent="Layout/MenuColumn/ButtonStack" unique_name_in_owner=true]
+custom_minimum_size = Vector2(500, 82)
+theme_override_constants/h_separation = 18
+theme_override_constants/icon_max_width = 30
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_dark")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
+icon_alignment = 0
+icon = ExtResource("4_play_icon")
+text = "RESUME"
+alignment = 0
+
+[node name="OptionsButton" type="Button" parent="Layout/MenuColumn/ButtonStack" unique_name_in_owner=true]
+custom_minimum_size = Vector2(500, 82)
+theme_override_constants/h_separation = 18
+theme_override_constants/icon_max_width = 28
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
+icon_alignment = 0
+icon = ExtResource("5_gear_icon")
+text = "OPTIONS"
+alignment = 0
+
+[node name="MainMenuButton" type="Button" parent="Layout/MenuColumn/ButtonStack" unique_name_in_owner=true]
+custom_minimum_size = Vector2(500, 82)
+theme_override_constants/h_separation = 18
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
+text = "MAIN MENU"
+alignment = 0
+
+[node name="ExitButton" type="Button" parent="Layout/MenuColumn/ButtonStack" unique_name_in_owner=true]
+custom_minimum_size = Vector2(500, 82)
+theme_override_constants/h_separation = 18
+theme_override_constants/icon_max_width = 28
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
+icon_alignment = 0
+icon = ExtResource("6_exit_icon")
+text = "EXIT GAME"
+alignment = 0
+
+[node name="OptionsPanel" parent="." unique_name_in_owner=true instance=ExtResource("1_options")]
+visible = false
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 900.0
+offset_bottom = 888.0
+
+[node name="BackButton" type="Button" parent="." unique_name_in_owner=true]
+visible = false
+custom_minimum_size = Vector2(168, 52)
+offset_left = 12.0
+offset_top = 0.0
+offset_right = 180.0
+offset_bottom = 52.0
+theme = SubResource("Theme_buttons")
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
+text = "< BACK"
+alignment = 0

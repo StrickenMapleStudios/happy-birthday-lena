@@ -2,6 +2,7 @@ extends CanvasLayer
 
 signal speaker_changed(character_name: String, dialogue_line: DialogueLine)
 signal response_selection_state_changed(is_active: bool)
+signal pause_requested
 
 @export var dialogue_resource: DialogueResource
 @export var start_from_title: String = ""
@@ -66,6 +67,11 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(_event: InputEvent) -> void:
+	if _event.is_action_pressed(skip_action) and not dialogue_label.is_typing:
+		pause_requested.emit()
+		get_viewport().set_input_as_handled()
+		return
+
 	if _response_selection_active and _handle_response_navigation_input(_event):
 		get_viewport().set_input_as_handled()
 		return
