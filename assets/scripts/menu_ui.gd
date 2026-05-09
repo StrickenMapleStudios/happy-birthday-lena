@@ -8,7 +8,6 @@ const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
 @onready var new_game_button: Button = $SafeMargin/Sidebar/ButtonStack/NewGameButton
 @onready var options_button: Button = $SafeMargin/Sidebar/ButtonStack/OptionsButton
 @onready var exit_button: Button = $SafeMargin/Sidebar/ButtonStack/ExitButton
-@onready var back_button: Button = $BackButton
 @onready var options_screen: Control = $SafeMargin/OptionsPanel
 @onready var save_slot_screen: VBoxContainer = $SafeMargin/SaveSlotScreen
 @onready var save_slot_buttons: Array[Button] = [
@@ -23,12 +22,7 @@ const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
 	$SafeMargin/Sidebar/ButtonStack/OptionsButton,
 	$SafeMargin/Sidebar/ButtonStack/ExitButton,
 ]
-@onready var save_slot_screen_buttons: Array[Button] = [
-	$BackButton,
-	$SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton01,
-	$SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton02,
-	$SafeMargin/SaveSlotScreen/SlotList/SaveSlotButton03,
-]
+@onready var save_slot_screen_buttons: Array[Button] = save_slot_buttons
 
 var _exit_in_progress := false
 var _slot_selection_locked := false
@@ -39,7 +33,6 @@ func _ready() -> void:
 	new_game_button.pressed.connect(_on_new_game_pressed)
 	options_button.pressed.connect(_show_options_screen)
 	exit_button.pressed.connect(_on_exit_pressed)
-	back_button.pressed.connect(_on_back_pressed)
 
 	for index in save_slot_buttons.size():
 		save_slot_buttons[index].pressed.connect(_on_save_slot_pressed.bind(index))
@@ -156,7 +149,6 @@ func _confirm_exit() -> void:
 func _show_options_screen() -> void:
 	sidebar.visible = false
 	save_slot_screen.visible = false
-	back_button.visible = true
 	options_screen.visible = true
 	options_screen.call("refresh_from_settings")
 	_set_character_standing(false)
@@ -167,7 +159,6 @@ func _show_options_screen() -> void:
 
 
 func _hide_options_screen() -> void:
-	back_button.visible = false
 	options_screen.visible = false
 	sidebar.visible = true
 	_set_character_standing(false)
@@ -181,7 +172,6 @@ func _show_save_slot_screen() -> void:
 	_ui_transition_locked = false
 	sidebar.visible = false
 	options_screen.visible = false
-	back_button.visible = true
 	save_slot_screen.visible = true
 	_set_character_standing(false)
 	_restore_menu_interactivity()
@@ -194,7 +184,6 @@ func _show_save_slot_screen() -> void:
 func _hide_save_slot_screen() -> void:
 	_slot_selection_locked = false
 	_ui_transition_locked = false
-	back_button.visible = false
 	save_slot_screen.visible = false
 	sidebar.visible = true
 	_set_character_standing(false)
@@ -202,14 +191,6 @@ func _hide_save_slot_screen() -> void:
 	_set_button_focus_enabled(save_slot_screen_buttons, false)
 	_set_button_focus_enabled(menu_buttons, true)
 	new_game_button.grab_focus()
-
-
-func _on_back_pressed() -> void:
-	if save_slot_screen.visible:
-		_hide_save_slot_screen()
-		return
-
-	_hide_options_screen()
 
 
 func _set_button_focus_enabled(buttons: Array[Button], enabled: bool) -> void:
@@ -239,7 +220,6 @@ func _lock_save_slot_selection() -> void:
 	for button in save_slot_buttons:
 		button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	back_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	get_viewport().gui_release_focus()
 
 
@@ -251,14 +231,12 @@ func _begin_ui_transition_lock() -> void:
 	_set_button_focus_enabled(save_slot_screen_buttons, false)
 	_set_button_mouse_filter(menu_buttons, Control.MOUSE_FILTER_IGNORE)
 	_set_button_mouse_filter(save_slot_buttons, Control.MOUSE_FILTER_IGNORE)
-	back_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	get_viewport().gui_release_focus()
 
 
 func _restore_menu_interactivity() -> void:
 	_set_button_mouse_filter(menu_buttons, Control.MOUSE_FILTER_STOP)
 	_set_button_mouse_filter(save_slot_buttons, Control.MOUSE_FILTER_STOP)
-	back_button.mouse_filter = Control.MOUSE_FILTER_STOP
 
 
 func _set_button_mouse_filter(buttons: Array, filter: Control.MouseFilter) -> void:

@@ -11,23 +11,20 @@ const GEAR_ICON := preload("res://assets/art/sprites/gear-icon.png")
 const EXIT_ICON := preload("res://assets/art/sprites/exit-icon.png")
 const HOME_ICON := preload("res://assets/art/sprites/home.png")
 const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
+const VERTICAL_OFFSET_FROM_CENTER := 56.0
 
 @export var allow_exit_dialogue := false
 
 @onready var menu_root: Control = $MenuRoot
-@onready var content_root: Control = (
-	$MenuRoot.get_node("SafeMargin/Content")
-	if $MenuRoot.has_node("SafeMargin/Content")
-	else $MenuRoot.get_node("SafeMargin/VerticalCenter/Content")
-)
-@onready var button_stack: VBoxContainer = content_root.get_node("Layout/MenuColumn/ButtonStack")
-@onready var layout: HBoxContainer = content_root.get_node("Layout")
-@onready var menu_column: VBoxContainer = content_root.get_node("Layout/MenuColumn")
-@onready var resume_button: Button = content_root.get_node("Layout/MenuColumn/ButtonStack/ResumeButton")
-@onready var context_button: Button = content_root.get_node("Layout/MenuColumn/ButtonStack/ContextButton")
-@onready var main_menu_button: Button = content_root.get_node("Layout/MenuColumn/ButtonStack/MainMenuButton")
-@onready var exit_button: Button = content_root.get_node("Layout/MenuColumn/ButtonStack/ExitButton")
-@onready var options_panel: Control = content_root.get_node("OptionsPanel")
+@onready var vertical_center: Control = $MenuRoot.get_node("SafeMargin/VerticalCenter")
+@onready var content_root: Control = $MenuRoot.get_node("SafeMargin/VerticalCenter/Content")
+@onready var button_stack: VBoxContainer = content_root.get_node("MenuColumn/ButtonStack")
+@onready var menu_column: VBoxContainer = content_root.get_node("MenuColumn")
+@onready var resume_button: Button = content_root.get_node("MenuColumn/ButtonStack/ResumeButton")
+@onready var context_button: Button = content_root.get_node("MenuColumn/ButtonStack/ContextButton")
+@onready var main_menu_button: Button = content_root.get_node("MenuColumn/ButtonStack/MainMenuButton")
+@onready var exit_button: Button = content_root.get_node("MenuColumn/ButtonStack/ExitButton")
+@onready var options_panel: Control = $MenuRoot.get_node("SafeMargin/VerticalCenter/OptionsPanel")
 @onready var confirm_dialog = $MenuRoot/ConfirmDialog
 
 @onready var menu_buttons: Array[Button] = [
@@ -95,6 +92,7 @@ func open() -> void:
 	confirm_dialog.call("hide_dialog")
 	_configure_context_button()
 	_show_main_buttons()
+	call_deferred("_update_vertical_layout")
 
 
 func close() -> void:
@@ -102,18 +100,19 @@ func close() -> void:
 	_pending_action = &""
 	confirm_dialog.call("hide_dialog")
 	options_panel.visible = false
-	layout.visible = true
+	content_root.visible = true
 	options_panel.call("set_focus_enabled", false)
 	_set_button_focus_enabled(menu_buttons, false)
 
 
 func _show_options() -> void:
-	layout.visible = false
+	content_root.visible = false
 	options_panel.visible = true
 	options_panel.call("refresh_from_settings")
 	_set_button_focus_enabled(menu_buttons, false)
 	options_panel.call("set_focus_enabled", true)
 	options_panel.call("grab_default_focus")
+	call_deferred("_update_vertical_layout")
 
 
 func _hide_options() -> void:
@@ -168,11 +167,12 @@ func _on_confirm_canceled() -> void:
 
 
 func _show_main_buttons() -> void:
-	layout.visible = true
+	content_root.visible = true
 	options_panel.visible = false
 	_set_button_focus_enabled(menu_buttons, true)
 	options_panel.call("set_focus_enabled", false)
 	resume_button.grab_focus()
+	call_deferred("_update_vertical_layout")
 
 
 func _set_button_focus_enabled(buttons: Array[Button], enabled: bool) -> void:
@@ -199,3 +199,20 @@ func _make_mirrored_texture(source: Texture2D) -> ImageTexture:
 	var image := source.get_image()
 	image.flip_x()
 	return ImageTexture.create_from_image(image)
+
+
+func _update_vertical_layout() -> void:
+	_center_panel_vertically(content_root)
+	_center_panel_vertically(options_panel)
+
+
+func _center_panel_vertically(panel: Control) -> void:
+	if panel == null:
+		return
+
+	var target_size := panel.get_combined_minimum_size()
+	panel.size = target_size
+	panel.position = Vector2(
+		0.0,
+		maxf(((vertical_center.size.y - target_size.y) * 0.5) - VERTICAL_OFFSET_FROM_CENTER, 0.0)
+	)

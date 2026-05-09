@@ -43,27 +43,18 @@ corner_radius_bottom_left = 18
 Button/fonts/font = ExtResource("3_body_font")
 
 [node name="PauseMenuContent" type="Control"]
-custom_minimum_size = Vector2(900, 888)
+custom_minimum_size = Vector2(520, 470)
 layout_mode = 3
 anchors_preset = 0
 mouse_filter = 2
 
-[node name="Layout" type="HBoxContainer" parent="." unique_name_in_owner=true]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 56
-
-[node name="MenuColumn" type="VBoxContainer" parent="Layout" unique_name_in_owner=true]
-custom_minimum_size = Vector2(520, 0)
+[node name="MenuColumn" type="VBoxContainer" parent="." unique_name_in_owner=true]
+custom_minimum_size = Vector2(520, 470)
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_constants/separation = 28
 
-[node name="PausedLabel" type="Label" parent="Layout/MenuColumn"]
+[node name="PausedLabel" type="Label" parent="MenuColumn"]
 theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
 theme_override_constants/outline_size = 8
@@ -72,12 +63,12 @@ theme_override_font_sizes/font_size = 82
 text = "PAUSED"
 uppercase = true
 
-[node name="ButtonStack" type="VBoxContainer" parent="Layout/MenuColumn" unique_name_in_owner=true]
+[node name="ButtonStack" type="VBoxContainer" parent="MenuColumn" unique_name_in_owner=true]
 layout_mode = 2
 theme = SubResource("Theme_buttons")
 theme_override_constants/separation = 14
 
-[node name="ResumeButton" type="Button" parent="Layout/MenuColumn/ButtonStack" unique_name_in_owner=true]
+[node name="ResumeButton" type="Button" parent="MenuColumn/ButtonStack" unique_name_in_owner=true]
 custom_minimum_size = Vector2(500, 82)
 theme_override_constants/h_separation = 18
 theme_override_constants/icon_max_width = 30
@@ -94,7 +85,7 @@ icon = ExtResource("4_play_icon")
 text = "RESUME"
 alignment = 0
 
-[node name="ContextButton" type="Button" parent="Layout/MenuColumn/ButtonStack" unique_name_in_owner=true]
+[node name="ContextButton" type="Button" parent="MenuColumn/ButtonStack" unique_name_in_owner=true]
 custom_minimum_size = Vector2(500, 82)
 theme_override_constants/h_separation = 18
 theme_override_constants/icon_max_width = 28
@@ -111,7 +102,7 @@ icon = ExtResource("5_gear_icon")
 text = "OPTIONS"
 alignment = 0
 
-[node name="MainMenuButton" type="Button" parent="Layout/MenuColumn/ButtonStack" unique_name_in_owner=true]
+[node name="MainMenuButton" type="Button" parent="MenuColumn/ButtonStack" unique_name_in_owner=true]
 custom_minimum_size = Vector2(500, 82)
 theme_override_constants/h_separation = 18
 theme_override_constants/icon_max_width = 28
@@ -127,7 +118,7 @@ icon_alignment = 0
 text = "MAIN MENU"
 alignment = 0
 
-[node name="ExitButton" type="Button" parent="Layout/MenuColumn/ButtonStack" unique_name_in_owner=true]
+[node name="ExitButton" type="Button" parent="MenuColumn/ButtonStack" unique_name_in_owner=true]
 custom_minimum_size = Vector2(500, 82)
 theme_override_constants/h_separation = 18
 theme_override_constants/icon_max_width = 28
@@ -143,10 +134,3 @@ icon_alignment = 0
 icon = ExtResource("6_exit_icon")
 text = "EXIT GAME"
 alignment = 0
-
-[node name="OptionsPanel" parent="." unique_name_in_owner=true instance=ExtResource("1_options")]
-visible = false
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 900.0
-offset_bottom = 888.0

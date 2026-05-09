@@ -230,23 +230,4 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
 text = "03  EMPTY SLOT          START A NEW ADVENTURE FROM SLOT 03"
 alignment = 0
 
-[node name="BackButton" type="Button" parent="."]
-visible = false
-custom_minimum_size = Vector2(168, 52)
-offset_left = 108.0
-offset_top = 16.0
-offset_right = 276.0
-offset_bottom = 68.0
-theme = SubResource("Theme_buttons")
-theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
-theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 24
-theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
-theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
-theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
-text = "< BACK"
-alignment = 0
-
 [node name="ConfirmDialog" parent="." instance=ExtResource("3_confirm")]

@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/pause_menu_content.tscn" id="2_content"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/confirm_dialog.tscn" id="3_confirm"]
 [ext_resource type="Shader" path="res://assets/shaders/ui_background_blur.gdshader" id="4_blur_shader"]
+[ext_resource type="PackedScene" path="res://assets/scenes/ui/options_panel.tscn" id="5_options"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_blur"]
 shader = ExtResource("4_blur_shader")
@@ -54,11 +55,16 @@ theme_override_constants/margin_top = 72
 theme_override_constants/margin_right = 56
 theme_override_constants/margin_bottom = 44
 
-[node name="VerticalCenter" type="VBoxContainer" parent="MenuRoot/SafeMargin"]
-layout_mode = 2
-size_flags_vertical = 4
-alignment = 1
+[node name="VerticalCenter" type="Control" parent="MenuRoot/SafeMargin"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Content" parent="MenuRoot/SafeMargin/VerticalCenter" instance=ExtResource("2_content")]
+
+[node name="OptionsPanel" parent="MenuRoot/SafeMargin/VerticalCenter" instance=ExtResource("5_options")]
 
 [node name="ConfirmDialog" parent="MenuRoot" instance=ExtResource("3_confirm")]
