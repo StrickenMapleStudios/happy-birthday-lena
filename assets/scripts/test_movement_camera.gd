@@ -108,24 +108,32 @@ func begin_pause_focus() -> void:
 	if _game_camera == null:
 		return
 
-	_kill_pause_focus_tween()
-	_pause_focus_tween = create_tween()
-	_pause_focus_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	_pause_focus_tween.set_trans(Tween.TRANS_CUBIC)
-	_pause_focus_tween.set_ease(Tween.EASE_OUT)
-	_pause_focus_tween.tween_property(self, "_pause_focus_weight", 1.0, PAUSE_FOCUS_DURATION)
+	_start_pause_focus_tween(1.0)
 
 
 func end_pause_focus() -> void:
 	if _game_camera == null:
 		return
 
+	_start_pause_focus_tween(0.0)
+
+
+func end_pause_focus_and_wait() -> void:
+	if _game_camera == null:
+		return
+
+	_start_pause_focus_tween(0.0)
+	if _pause_focus_tween != null and _pause_focus_tween.is_valid():
+		await _pause_focus_tween.finished
+
+
+func _start_pause_focus_tween(target_weight: float) -> void:
 	_kill_pause_focus_tween()
 	_pause_focus_tween = create_tween()
 	_pause_focus_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	_pause_focus_tween.set_trans(Tween.TRANS_CUBIC)
 	_pause_focus_tween.set_ease(Tween.EASE_OUT)
-	_pause_focus_tween.tween_property(self, "_pause_focus_weight", 0.0, PAUSE_FOCUS_DURATION)
+	_pause_focus_tween.tween_property(self, "_pause_focus_weight", target_weight, PAUSE_FOCUS_DURATION)
 
 
 func reset_pause_focus_immediately() -> void:
