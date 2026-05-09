@@ -1,8 +1,42 @@
 ~ start
 Villager: Glad you came over.
-Lena: I wanted to check whether the dialogue system is finally alive.
-- It looks great.
-	Villager: Then let's keep building on it.
-- Show me another line.
-	Lena: The camera and UI should now follow whoever is speaking.
-	Villager: And the background is softened by the dialogue cameras.
+Lena: I came to see whether the new dialogue flow is really alive now.
+Villager: Then let's test it properly. Pick any line you want.
+- What are you doing here?
+	Villager: Waiting for the player to inspect the UI and finally trust the dialogue files.
+	Lena: Good. Then the branching should also be visible now.
+	=> shared_follow_up
+- Show me several response variants.
+	Villager: Here they are. Same moment, different tone.
+	- Calm answer.
+		Lena: Looks clean. This version reads naturally.
+		=> shared_follow_up
+	- Neutral answer.
+		Lena: Works. Useful for a plain informational choice.
+		=> shared_follow_up
+	- Sharp answer.
+		Lena: If this breaks, I am blaming the dialogue file.
+		Villager: Fair. But at least now the branch lives in .dialogue.
+		=> shared_follow_up
+	- End the topic.
+		Villager: Then we move on.
+		=> ending
+- Check a short branch.
+	Lena: I want to see a quick answer path.
+	Villager: Then here it is. One choice, one reaction, no extra detour.
+	=> ending
+- Finish the conversation.
+	Villager: All right. We have seen enough.
+	=> ending
+
+~ shared_follow_up
+Villager: After a branch, we can return to a shared section instead of duplicating lines.
+Lena: That is the part I wanted to move into .dialogue.
+- Continue to the ending.
+	=> ending
+- Return to the choice list.
+	=> start
+
+~ ending
+Villager: The dialogue is ending now.
+Lena: Good. This should let you inspect both the UI and the choice layout in one run.
