@@ -228,9 +228,9 @@ func _set_dialogue_speaker(speaker: Node3D) -> void:
 		return
 
 	_current_dialogue_speaker = speaker
-	player.set_character_visible(true)
+	player.set_character_visible(speaker == player)
 	if is_instance_valid(_dialogue_target_actor) and _dialogue_target_actor.has_method("set_character_visible"):
-		_dialogue_target_actor.call("set_character_visible", true)
+		_dialogue_target_actor.call("set_character_visible", speaker == _dialogue_target_actor)
 
 	_sync_dialogue_pivots()
 	_activate_speaker_camera(speaker)
