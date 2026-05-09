@@ -176,6 +176,8 @@ func _return_to_main_menu() -> void:
 		return
 
 	_pause_transition_locked = true
+	player.set_controls_enabled(false)
+	interaction_source.set_interaction_enabled(false)
 	if camera_rig != null and camera_rig.has_method("reset_pause_focus_immediately"):
 		camera_rig.call("reset_pause_focus_immediately")
 	get_tree().paused = false
