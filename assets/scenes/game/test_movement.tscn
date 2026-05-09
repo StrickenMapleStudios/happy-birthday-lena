@@ -25,6 +25,7 @@ dof_blur_near_transition = 1.2
 script = ExtResource("5_game")
 
 [node name="Level" parent="." unique_id=1748344399 instance=ExtResource("1_level")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
 [node name="FarNorthColumn2" type="MeshInstance3D" parent="Level/OrientationProps" parent_id_path=PackedInt32Array(1748344399, 1223392466) index="9" unique_id=1841138750]
 transform = Transform3D(1, 0, 0, 0, 1.4, 0, 0, 0, 1, -28.53847, 2.520001, -82.090454)
@@ -37,12 +38,13 @@ mesh = SubResource("CylinderMesh_marker_column")
 surface_material_override/0 = SubResource("StandardMaterial3D_marker_yellow")
 
 [node name="character" parent="." unique_id=1465858297 instance=ExtResource("2_player")]
-transform = Transform3D(-1, 0, -8.940697e-08, 0, 1, 0, 8.940697e-08, 0, -1, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="npc" parent="." unique_id=489832762 instance=ExtResource("3_npc")]
-transform = Transform3D(0.6293204, 0, 0.7771459, 0, 1, 0, -0.7771459, 0, 0.6293204, -20.40683, 0, -75.499916)
+transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.6293204, 20.40683, 0, 75.499916)
 
 [node name="CameraRig" type="Node3D" parent="." unique_id=1843382860]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 script = ExtResource("4_camera")
 
 [node name="GameCamera" type="Camera3D" parent="CameraRig" unique_id=109099008]
@@ -52,6 +54,7 @@ fov = 60.0
 far = 200.0
 
 [node name="DialoguePivotRight" type="Node3D" parent="." unique_id=1302733744]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 process_mode = 4
 
 [node name="DialogueCameraRight" type="Camera3D" parent="DialoguePivotRight" unique_id=843857471]
@@ -61,6 +64,7 @@ fov = 60.0
 far = 200.0
 
 [node name="DialoguePivotLeft" type="Node3D" parent="." unique_id=225155647]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 process_mode = 4
 visible = false
 

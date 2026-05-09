@@ -105,7 +105,7 @@ func _is_target_in_front(target: InteractionTarget) -> bool:
 	if to_target.is_zero_approx():
 		return true
 
-	var forward := -global_transform.basis.z
+	var forward := global_transform.basis.z
 	forward.y = 0.0
 	forward = forward.normalized()
 	if forward.is_zero_approx():

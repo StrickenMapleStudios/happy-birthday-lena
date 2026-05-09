@@ -124,7 +124,7 @@ anim_player = NodePath("..")
 [node name="DialogueCameraMount" parent="." instance=ExtResource("3_mount")]
 
 [node name="InteractionSource" type="Area3D" parent="." index="3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.1)
 collision_layer = 2
 collision_mask = 4
 monitoring = true

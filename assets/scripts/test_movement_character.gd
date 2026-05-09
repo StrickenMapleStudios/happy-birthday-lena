@@ -66,7 +66,7 @@ func _process(delta: float) -> void:
 	_update_animation_state(is_moving, speed_up)
 
 	if is_moving:
-		var direction := Vector3(input.x, 0.0, input.y).normalized()
+		var direction := Vector3(-input.x, 0.0, -input.y).normalized()
 		_rotate_towards(direction, delta)
 
 	_apply_root_motion()
