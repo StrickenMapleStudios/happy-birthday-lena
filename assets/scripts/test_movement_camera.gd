@@ -11,7 +11,7 @@ const TILT_BOOST_START_SPEED := 1.5
 const TILT_BOOST_MAX_SPEED := 6.0
 const RUN_TOWARD_FOV_BOOST := 6.0
 const PAUSE_FOCUS_DURATION := 0.5
-const PAUSE_FOCUS_OFFSET := Vector3(0.0, 3.6, 6.7)
+const PAUSE_FOCUS_OFFSET := Vector3(0.0, 4.6, 6.9)
 const PAUSE_FOCUS_FOV_OFFSET := -3.0
 
 @export var target_path: NodePath = ^"../character"
@@ -21,7 +21,7 @@ var _game_camera: Camera3D
 var _last_target_position := Vector3.ZERO
 var _look_height_offset: float = 0.0
 var _fov_offset: float = 0.0
-var _pause_fov_offset: float = 0.0
+var _pause_focus_weight: float = 0.0
 var _smoothed_target_position := Vector3.ZERO
 var _smoothed_focus_point := Vector3.ZERO
 var _default_camera_local_position := Vector3.ZERO
@@ -89,9 +89,11 @@ func _update_camera(delta: float) -> void:
 	_look_height_offset = lerpf(_look_height_offset, desired_look_height_offset, look_weight)
 	_fov_offset = lerpf(_fov_offset, desired_fov_offset, look_weight)
 
+	_game_camera.position = _default_camera_local_position.lerp(PAUSE_FOCUS_OFFSET, _pause_focus_weight)
+
 	var focus_point: Vector3 = target_position + Vector3(0.0, FOCUS_HEIGHT + _look_height_offset, 0.0)
 	_smoothed_focus_point = _smoothed_focus_point.lerp(focus_point, look_weight)
-	_game_camera.fov = BASE_FOV + _fov_offset + _pause_fov_offset
+	_game_camera.fov = BASE_FOV + _fov_offset + (PAUSE_FOCUS_FOV_OFFSET * _pause_focus_weight)
 	_game_camera.look_at(_smoothed_focus_point, Vector3.UP)
 
 
@@ -111,8 +113,7 @@ func begin_pause_focus() -> void:
 	_pause_focus_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	_pause_focus_tween.set_trans(Tween.TRANS_CUBIC)
 	_pause_focus_tween.set_ease(Tween.EASE_OUT)
-	_pause_focus_tween.parallel().tween_property(_game_camera, "position", PAUSE_FOCUS_OFFSET, PAUSE_FOCUS_DURATION)
-	_pause_focus_tween.parallel().tween_property(self, "_pause_fov_offset", PAUSE_FOCUS_FOV_OFFSET, PAUSE_FOCUS_DURATION)
+	_pause_focus_tween.tween_property(self, "_pause_focus_weight", 1.0, PAUSE_FOCUS_DURATION)
 
 
 func end_pause_focus() -> void:
@@ -124,13 +125,7 @@ func end_pause_focus() -> void:
 	_pause_focus_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	_pause_focus_tween.set_trans(Tween.TRANS_CUBIC)
 	_pause_focus_tween.set_ease(Tween.EASE_OUT)
-	_pause_focus_tween.parallel().tween_property(
-		_game_camera,
-		"position",
-		_default_camera_local_position,
-		PAUSE_FOCUS_DURATION
-	)
-	_pause_focus_tween.parallel().tween_property(self, "_pause_fov_offset", 0.0, PAUSE_FOCUS_DURATION)
+	_pause_focus_tween.tween_property(self, "_pause_focus_weight", 0.0, PAUSE_FOCUS_DURATION)
 
 
 func reset_pause_focus_immediately() -> void:
@@ -138,8 +133,8 @@ func reset_pause_focus_immediately() -> void:
 		return
 
 	_kill_pause_focus_tween()
+	_pause_focus_weight = 0.0
 	_game_camera.position = _default_camera_local_position
-	_pause_fov_offset = 0.0
 
 
 func _kill_pause_focus_tween() -> void:

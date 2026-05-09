@@ -227,23 +227,23 @@ func _handle_response_navigation_input(event: InputEvent) -> bool:
 			items[mini(current_index + 1, items.size() - 1)].grab_focus()
 			return true
 		KEY_1, KEY_KP_1:
-			return _select_response_by_index(items, 0)
+			return _focus_response_by_index(items, 0)
 		KEY_2, KEY_KP_2:
-			return _select_response_by_index(items, 1)
+			return _focus_response_by_index(items, 1)
 		KEY_3, KEY_KP_3:
-			return _select_response_by_index(items, 2)
+			return _focus_response_by_index(items, 2)
 		KEY_4, KEY_KP_4:
-			return _select_response_by_index(items, 3)
+			return _focus_response_by_index(items, 3)
 		KEY_5, KEY_KP_5:
-			return _select_response_by_index(items, 4)
+			return _focus_response_by_index(items, 4)
 		KEY_6, KEY_KP_6:
-			return _select_response_by_index(items, 5)
+			return _focus_response_by_index(items, 5)
 		KEY_7, KEY_KP_7:
-			return _select_response_by_index(items, 6)
+			return _focus_response_by_index(items, 6)
 		KEY_8, KEY_KP_8:
-			return _select_response_by_index(items, 7)
+			return _focus_response_by_index(items, 7)
 		KEY_9, KEY_KP_9:
-			return _select_response_by_index(items, 8)
+			return _focus_response_by_index(items, 8)
 
 	return false
 
@@ -257,15 +257,10 @@ func _get_focused_response_index(items: Array) -> int:
 	return -1
 
 
-func _select_response_by_index(items: Array, index: int) -> bool:
+func _focus_response_by_index(items: Array, index: int) -> bool:
 	if index < 0 or index >= items.size():
 		return false
 
 	var item: Control = items[index]
 	item.grab_focus()
-	var response = item.get_meta("response", null)
-	if response == null:
-		return false
-
-	_on_responses_menu_response_selected(response)
 	return true
