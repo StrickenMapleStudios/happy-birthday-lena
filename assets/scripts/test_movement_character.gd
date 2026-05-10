@@ -14,20 +14,11 @@ const RUNNING_LOOPS_TO_NARUTO := 10
 const EVENT_FOOTSTEP := &"footstep"
 const FOOTSTEP_SOUND_ID := &"footstep_grass"
 const PREPARED_FOOTSTEP_META := &"prepared_footstep_events"
-const FOOTSTEP_PITCH_MIN := 0.96
-const FOOTSTEP_PITCH_MAX := 1.04
-const FOOTSTEP_POOL_SIZE := 4
-const FOOTSTEP_VOLUME_DB := -3.0
 const FOOTSTEP_EVENT_TIMINGS := {
 	ANIMATION_WALKING: [0.18, 0.68],
 	ANIMATION_RUNNING: [0.16, 0.66],
 	ANIMATION_NARUTO_RUNNING: [0.14, 0.64],
 }
-const FOOTSTEP_GRASS_STREAMS := [
-	preload("res://assets/sounds/sfx/walking/grass/joentnt-walk-on-grass-1-291984.mp3"),
-	preload("res://assets/sounds/sfx/walking/grass/joentnt-walk-on-grass-2-291985.mp3"),
-	preload("res://assets/sounds/sfx/walking/grass/joentnt-walk-on-grass-3-291986.mp3"),
-]
 
 const ACTION_MOVE_LEFT := "move_left"
 const ACTION_MOVE_RIGHT := "move_right"
@@ -45,7 +36,6 @@ const CHARACTER_IDENTITY_PATH := ^"CharacterIdentity"
 @onready var animation_tree: AnimationTree = $AnimationPlayer/AnimationTree
 @onready var dialogue_animation_tree: AnimationTree = $AnimationPlayer/DialogueAnimationTree
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
-@onready var footstep_audio_pool: AudioPoolPlayer = $FootstepAudioPool
 
 var _playback: AnimationNodeStateMachinePlayback
 var _current_state := StringName()
@@ -55,13 +45,10 @@ var _root_motion_track_path := NodePath()
 var _controls_enabled := true
 var _dialogue_animation_mode_active := false
 var _saved_animation_tree: AnimationTree
-var _footstep_rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
-	_footstep_rng.randomize()
 	_ensure_input_map()
-	_configure_audio()
 	animation_tree.active = true
 	if dialogue_animation_tree != null:
 		dialogue_animation_tree.active = false
@@ -272,28 +259,12 @@ func _ensure_footstep_events(animation: Animation, animation_name: StringName) -
 
 
 func _play_footstep() -> void:
-	if footstep_audio_pool == null or not _controls_enabled or _dialogue_animation_mode_active:
+	if not _controls_enabled or _dialogue_animation_mode_active:
 		return
-	if _current_state == STATE_IDLE or FOOTSTEP_GRASS_STREAMS.is_empty():
-		return
-
-	footstep_audio_pool.play_sound(FOOTSTEP_SOUND_ID, {
-		"pitch_scale": _footstep_rng.randf_range(FOOTSTEP_PITCH_MIN, FOOTSTEP_PITCH_MAX),
-		"volume_db": FOOTSTEP_VOLUME_DB,
-	})
-
-
-func _configure_audio() -> void:
-	if footstep_audio_pool == null:
+	if _current_state == STATE_IDLE:
 		return
 
-	footstep_audio_pool.configure_sound(
-		FOOTSTEP_SOUND_ID,
-		FOOTSTEP_GRASS_STREAMS,
-		FOOTSTEP_POOL_SIZE,
-		&"SFX",
-		FOOTSTEP_VOLUME_DB
-	)
+	AudioService.play_sound(FOOTSTEP_SOUND_ID)
 
 
 func set_controls_enabled(value: bool) -> void:

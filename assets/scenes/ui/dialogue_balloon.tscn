@@ -198,6 +198,7 @@ libraries/ = SubResource("AnimationLibrary_progress")
 autoplay = &"progress"
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_name_in_owner=true]
+bus = &"Dialogue"
 
 [connection signal="gui_input" from="Balloon" to="." method="_on_balloon_gui_input"]
 [connection signal="response_selected" from="Balloon/ResponsesPanel/ResponsesMenu" to="." method="_on_responses_menu_response_selected"]

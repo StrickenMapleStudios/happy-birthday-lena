@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SoundEvent" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://assets/scripts/sound_event.gd" id="1_script"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx/walking/grass/joentnt-walk-on-grass-1-291984.mp3" id="2_stream1"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx/walking/grass/joentnt-walk-on-grass-2-291985.mp3" id="3_stream2"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx/walking/grass/joentnt-walk-on-grass-3-291986.mp3" id="4_stream3"]
+
+[resource]
+script = ExtResource("1_script")
+sound_id = &"footstep_grass"
+streams = Array[AudioStream]([ExtResource("2_stream1"), ExtResource("3_stream2"), ExtResource("4_stream3")])
+bus = &"Footsteps"
+base_volume_db = -14.0
+polyphony = 4
+pitch_min = 0.94
+pitch_max = 1.02
+randomization_mode = 2
+cooldown_seconds = 0.0

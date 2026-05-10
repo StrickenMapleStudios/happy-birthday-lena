@@ -18,6 +18,10 @@ const DIALOGUE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/dialogue_paus
 
 const DIALOGUE_BALLOON_SCENE := preload("res://assets/scenes/ui/dialogue_balloon.tscn")
 const DIALOGUE_PIVOT_YAW_OFFSET := PI
+const AUDIO_PRESET_GAMEPLAY := &"gameplay"
+const AUDIO_PRESET_PAUSE := &"pause"
+const AUDIO_PRESET_DIALOGUE := &"dialogue"
+const AUDIO_PRESET_FADE_DURATION := 0.15
 
 const CURSOR_MODE_INGAME := Input.MOUSE_MODE_CAPTURED
 const CURSOR_MODE_UI := Input.MOUSE_MODE_VISIBLE
@@ -51,6 +55,7 @@ var _focus_before_pause: WeakRef
 func _ready() -> void:
 	_set_dialogue_pivots_active(false)
 	_refresh_gameplay_world_ui_visibility()
+	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY)
 	if interaction_source != null:
 		interaction_source.interaction_requested.connect(_on_interaction_requested)
 		interaction_source.interaction_target_changed.connect(_on_interaction_target_changed)
@@ -118,6 +123,7 @@ func _on_interaction_requested(target: InteractionTarget) -> void:
 	_dialogue_target = target
 	_dialogue_active = true
 	_dialogue_response_selection_active = false
+	AudioService.apply_mix_preset(AUDIO_PRESET_DIALOGUE, AUDIO_PRESET_FADE_DURATION)
 	_set_dialogue_speaker(_dialogue_target_actor)
 	_sync_input_context()
 	_start_dialogue_balloon(dialogue_resource, target.get_dialogue_start_title())
@@ -163,6 +169,7 @@ func _exit_dialogue_mode() -> void:
 	_dialogue_target_actor = null
 	_current_dialogue_speaker = null
 	_right_pivot_actor = null
+	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY, AUDIO_PRESET_FADE_DURATION)
 	_sync_input_context()
 	await get_tree().process_frame
 	await SceneTransition.fade_in()
@@ -187,6 +194,7 @@ func _open_pause_menu() -> void:
 	if not _dialogue_active and camera_rig != null and camera_rig.has_method("begin_pause_focus"):
 		camera_rig.call("begin_pause_focus")
 	get_tree().paused = true
+	AudioService.apply_mix_preset(AUDIO_PRESET_PAUSE, AUDIO_PRESET_FADE_DURATION)
 	_sync_input_context()
 	if _active_pause_menu != null:
 		_active_pause_menu.call("open")
@@ -203,6 +211,10 @@ func _resume_from_pause() -> void:
 	_active_pause_menu = null
 	if not _dialogue_active and camera_rig != null and camera_rig.has_method("end_pause_focus"):
 		camera_rig.call("end_pause_focus")
+	AudioService.apply_mix_preset(
+		AUDIO_PRESET_DIALOGUE if _dialogue_active else AUDIO_PRESET_GAMEPLAY,
+		AUDIO_PRESET_FADE_DURATION
+	)
 	_sync_input_context()
 	call_deferred("_restore_focus_after_pause")
 
@@ -216,6 +228,7 @@ func _exit_dialogue_from_pause() -> void:
 	if _active_pause_menu != null:
 		_active_pause_menu.call("close")
 	_active_pause_menu = null
+	AudioService.apply_mix_preset(AUDIO_PRESET_DIALOGUE, AUDIO_PRESET_FADE_DURATION)
 	_sync_input_context()
 	await _cancel_active_dialogue()
 
@@ -235,6 +248,7 @@ func _return_to_main_menu() -> void:
 	_pause_active = false
 	_active_pause_menu = null
 	_focus_before_pause = null
+	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY, AUDIO_PRESET_FADE_DURATION)
 	_sync_input_context()
 	await SceneTransition.change_scene_to_file(MAIN_MENU_SCENE_PATH)
 
@@ -254,6 +268,7 @@ func _quit_from_pause() -> void:
 		pause_menu.call("close")
 	_active_pause_menu = null
 	_focus_before_pause = null
+	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY, AUDIO_PRESET_FADE_DURATION)
 	_sync_input_context()
 	get_tree().quit.call_deferred()
 
