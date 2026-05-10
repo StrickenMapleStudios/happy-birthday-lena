@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://b38jued6ox88u"
+path="res://.godot/imported/who_are_you_loop_break_template.dialogue-3953b3f99636386afabafed235370d51.tres"
+
+[deps]
+
+source_file="res://assets/dialogue/templates/who_are_you_loop_break_template.dialogue"
+dest_files=["res://.godot/imported/who_are_you_loop_break_template.dialogue-3953b3f99636386afabafed235370d51.tres"]
+
+[params]
+
+defaults=true

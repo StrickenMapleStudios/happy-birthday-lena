@@ -50,6 +50,11 @@ func get_dialogue_game_states() -> Array:
 	if not variables.is_empty():
 		states.append(variables)
 
+	if actor != null:
+		for child in actor.get_children():
+			if child.is_in_group(&"dialogue_state_components"):
+				states.append(child)
+
 	return states
 
 

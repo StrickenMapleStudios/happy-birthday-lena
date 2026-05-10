@@ -1,0 +1,12 @@
+# Template for "too many who-are-you loops" branches.
+# Copy this title into any dialogue file and redirect to it from your loop.
+# Replace the final "=> END" with a target title after copying, if needed.
+
+~ who_are_you_loop_break_template
+{{speaker_name}}: ...
+{{player_name}}: ...
+{{speaker_name}}: ...
+{{player_name}}: Отдохнула?
+{{speaker_name}}: Да, продолжаем.
+do reset_who_are_you_loop()
+=> END
