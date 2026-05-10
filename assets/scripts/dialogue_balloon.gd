@@ -22,19 +22,27 @@ var is_waiting_for_input := false
 var will_hide_balloon := false
 var locals: Dictionary = {}
 var _response_selection_active := false
+var _input_enabled := true
+var _dialogue_line: DialogueLine
+var _ui_ready := false
+var _preferred_focus_control: WeakRef
 
 var _locale: String = TranslationServer.get_locale()
 
 var dialogue_line: DialogueLine:
 	set(value):
 		if value:
-			dialogue_line = value
+			_dialogue_line = value
+			if not _ui_ready:
+				return
 			apply_dialogue_line()
 		else:
-			dialogue_line = null
+			_dialogue_line = null
+			if not _ui_ready:
+				return
 			_lock_visual_state_for_exit()
 	get:
-		return dialogue_line
+		return _dialogue_line
 
 var mutation_cooldown: Timer = Timer.new()
 
@@ -50,6 +58,7 @@ func _ready() -> void:
 		push_error("Dialogue balloon UI is missing required child nodes.")
 		return
 
+	_ui_ready = true
 	balloon.hide()
 	Engine.get_singleton("DialogueManager").mutated.connect(_on_mutated)
 
@@ -63,6 +72,10 @@ func _ready() -> void:
 		if not is_instance_valid(dialogue_resource):
 			assert(false, DMConstants.get_error_message(DMConstants.ERR_MISSING_RESOURCE_FOR_AUTOSTART))
 		start()
+	elif _dialogue_line != null:
+		apply_dialogue_line()
+	else:
+		_lock_visual_state_for_exit()
 
 
 func _process(_delta: float) -> void:
@@ -71,12 +84,18 @@ func _process(_delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if not _input_enabled:
+		return
+
 	if _handle_dialogue_input(event):
 		get_viewport().set_input_as_handled()
 		return
 
 
 func _unhandled_input(_event: InputEvent) -> void:
+	if not _input_enabled:
+		return
+
 	if will_block_other_input:
 		get_viewport().set_input_as_handled()
 
@@ -86,7 +105,7 @@ func _handle_dialogue_input(event: InputEvent) -> bool:
 		dialogue_label.skip_typing()
 		return true
 
-	if event.is_action_pressed(pause_action) and not dialogue_label.is_typing:
+	if event.is_action_pressed(pause_action):
 		pause_requested.emit()
 		return true
 
@@ -154,6 +173,7 @@ func apply_dialogue_line() -> void:
 		balloon.focus_mode = Control.FOCUS_NONE
 		_set_response_selection_active(true)
 		responses_menu.show()
+		_store_preferred_focus_control(_get_current_focus_owner())
 	elif dialogue_line.time != "":
 		var time: float = dialogue_line.text.length() * 0.02 if dialogue_line.time == "auto" else dialogue_line.time.to_float()
 		await get_tree().create_timer(time).timeout
@@ -162,6 +182,7 @@ func apply_dialogue_line() -> void:
 		is_waiting_for_input = true
 		balloon.focus_mode = Control.FOCUS_ALL
 		balloon.grab_focus()
+		_store_preferred_focus_control(balloon)
 
 
 func next(next_id: String) -> void:
@@ -172,9 +193,59 @@ func close_balloon() -> void:
 	queue_free()
 
 
+func set_input_enabled(value: bool) -> void:
+	if _input_enabled == value:
+		return
+
+	_input_enabled = value
+	if not _ui_ready:
+		return
+
+	if not value:
+		_lock_visual_state_for_exit()
+		balloon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		balloon.focus_mode = Control.FOCUS_NONE
+		if get_viewport().gui_get_focus_owner() != null:
+			get_viewport().gui_release_focus()
+		return
+
+	balloon.mouse_filter = Control.MOUSE_FILTER_STOP
+	if is_waiting_for_input:
+		balloon.focus_mode = Control.FOCUS_ALL
+		balloon.grab_focus()
+
+
+func restore_interaction_focus() -> void:
+	if not _ui_ready or not _input_enabled:
+		return
+
+	var preferred_focus := _get_preferred_focus_control()
+	if preferred_focus != null:
+		preferred_focus.grab_focus()
+		return
+
+	if _response_selection_active:
+		var items: Array = responses_menu.get_menu_items()
+		if not items.is_empty():
+			var first_item := items[0] as Control
+			if first_item != null:
+				first_item.grab_focus()
+				_store_preferred_focus_control(first_item)
+				return
+
+	if is_waiting_for_input:
+		balloon.focus_mode = Control.FOCUS_ALL
+		balloon.grab_focus()
+		_store_preferred_focus_control(balloon)
+
+
 func _lock_visual_state_for_exit() -> void:
 	is_waiting_for_input = false
 	_set_response_selection_active(false)
+	_preferred_focus_control = null
+	if not _ui_ready:
+		return
+
 	progress_indicator.hide()
 	balloon.focus_mode = Control.FOCUS_NONE
 	responses_menu.hide()
@@ -194,6 +265,9 @@ func _on_mutated(mutation: Dictionary) -> void:
 
 
 func _on_balloon_gui_input(event: InputEvent) -> void:
+	if not _input_enabled:
+		return
+
 	if dialogue_label.is_typing:
 		var mouse_was_clicked: bool = event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed()
 		var skip_button_was_pressed: bool = event.is_action_pressed(skip_action)
@@ -240,6 +314,36 @@ func _handle_response_navigation_input(event: InputEvent) -> bool:
 		return false
 
 	if UINavigation.handle_linear_navigation_input(event, items):
+		_store_preferred_focus_control(_get_current_focus_owner())
 		return true
 
-	return UINavigation.handle_digit_focus_input(event, items)
+	if UINavigation.handle_digit_focus_input(event, items):
+		_store_preferred_focus_control(_get_current_focus_owner())
+		return true
+
+	return false
+
+
+func _get_current_focus_owner() -> Control:
+	return get_viewport().gui_get_focus_owner()
+
+
+func _store_preferred_focus_control(control: Control) -> void:
+	if control == null or not is_instance_valid(control):
+		return
+
+	_preferred_focus_control = weakref(control)
+
+
+func _get_preferred_focus_control() -> Control:
+	if _preferred_focus_control == null:
+		return null
+
+	var control := _preferred_focus_control.get_ref() as Control
+	if control == null or not is_instance_valid(control) or not control.visible:
+		return null
+
+	if control.focus_mode == Control.FOCUS_NONE:
+		return null
+
+	return control

@@ -20,6 +20,14 @@ const DIALOGUE_PIVOT_YAW_OFFSET := PI
 const CURSOR_MODE_INGAME := Input.MOUSE_MODE_CAPTURED
 const CURSOR_MODE_UI := Input.MOUSE_MODE_VISIBLE
 
+enum InputContext {
+	GAMEPLAY,
+	DIALOGUE,
+	DIALOGUE_RESPONSE_SELECTION,
+	PAUSE,
+	TRANSITION,
+}
+
 var _interaction_locked := false
 var _dialogue_active := false
 var _dialogue_response_selection_active := false
@@ -33,6 +41,8 @@ var _pause_active := false
 var _pause_transition_locked := false
 var _dialogue_pause_menu: Node
 var _active_pause_menu: Node
+var _input_context := InputContext.GAMEPLAY
+var _focus_before_pause: WeakRef
 
 
 func _ready() -> void:
@@ -91,6 +101,7 @@ func _on_interaction_requested(target: InteractionTarget) -> void:
 		return
 
 	_interaction_locked = true
+	_set_input_context(InputContext.TRANSITION)
 	_saved_player_transform = player.global_transform
 	await SceneTransition.fade_out()
 	player.set_controls_enabled(false)
@@ -104,11 +115,12 @@ func _on_interaction_requested(target: InteractionTarget) -> void:
 	_dialogue_active = true
 	_dialogue_response_selection_active = false
 	_set_dialogue_speaker(_dialogue_target_actor)
-	_refresh_cursor_mode()
+	_sync_input_context()
 	_start_dialogue_balloon(dialogue_resource, target.get_dialogue_start_title())
 	await get_tree().process_frame
 	await SceneTransition.fade_in()
 	_interaction_locked = false
+	_sync_input_context()
 
 
 func _on_interaction_target_changed(target: InteractionTarget) -> void:
@@ -121,6 +133,8 @@ func _exit_dialogue_mode() -> void:
 		return
 
 	_interaction_locked = true
+	_set_input_context(InputContext.TRANSITION)
+	_set_active_dialogue_input_enabled(false)
 	await SceneTransition.fade_out()
 	if is_instance_valid(_active_dialogue_balloon):
 		if _active_dialogue_balloon.has_method("close_balloon"):
@@ -144,10 +158,11 @@ func _exit_dialogue_mode() -> void:
 	_dialogue_target = null
 	_dialogue_target_actor = null
 	_current_dialogue_speaker = null
-	_refresh_cursor_mode()
+	_sync_input_context()
 	await get_tree().process_frame
 	await SceneTransition.fade_in()
 	_interaction_locked = false
+	_sync_input_context()
 
 
 func _cancel_active_dialogue() -> void:
@@ -162,11 +177,12 @@ func _open_pause_menu() -> void:
 		return
 
 	_pause_active = true
+	_capture_focus_before_pause()
 	_active_pause_menu = _get_pause_menu_for_current_context()
 	if not _dialogue_active and camera_rig != null and camera_rig.has_method("begin_pause_focus"):
 		camera_rig.call("begin_pause_focus")
 	get_tree().paused = true
-	_refresh_cursor_mode()
+	_sync_input_context()
 	if _active_pause_menu != null:
 		_active_pause_menu.call("open")
 
@@ -182,7 +198,8 @@ func _resume_from_pause() -> void:
 	_active_pause_menu = null
 	if not _dialogue_active and camera_rig != null and camera_rig.has_method("end_pause_focus"):
 		camera_rig.call("end_pause_focus")
-	_refresh_cursor_mode()
+	_sync_input_context()
+	call_deferred("_restore_focus_after_pause")
 
 
 func _exit_dialogue_from_pause() -> void:
@@ -194,7 +211,7 @@ func _exit_dialogue_from_pause() -> void:
 	if _active_pause_menu != null:
 		_active_pause_menu.call("close")
 	_active_pause_menu = null
-	_refresh_cursor_mode()
+	_sync_input_context()
 	await _cancel_active_dialogue()
 
 
@@ -212,7 +229,8 @@ func _return_to_main_menu() -> void:
 	get_tree().paused = false
 	_pause_active = false
 	_active_pause_menu = null
-	_refresh_cursor_mode()
+	_focus_before_pause = null
+	_sync_input_context()
 	await SceneTransition.change_scene_to_file(MAIN_MENU_SCENE_PATH)
 
 
@@ -230,7 +248,8 @@ func _quit_from_pause() -> void:
 	elif pause_menu != null:
 		pause_menu.call("close")
 	_active_pause_menu = null
-	_refresh_cursor_mode()
+	_focus_before_pause = null
+	_sync_input_context()
 	get_tree().quit.call_deferred()
 
 
@@ -256,6 +275,7 @@ func _start_dialogue_balloon(dialogue_resource: DialogueResource, start_title: S
 		)
 	if _active_dialogue_balloon != null and _active_dialogue_balloon.has_signal("pause_requested"):
 		_active_dialogue_balloon.connect("pause_requested", Callable(self, "_on_balloon_pause_requested"))
+	_set_active_dialogue_input_enabled(_input_context != InputContext.TRANSITION)
 
 
 func _set_dialogue_speaker(speaker: Node3D) -> void:
@@ -318,7 +338,7 @@ func _on_balloon_speaker_changed(character_name: String, _dialogue_line: Dialogu
 
 func _on_balloon_response_selection_state_changed(is_active: bool) -> void:
 	_dialogue_response_selection_active = is_active
-	_refresh_cursor_mode()
+	_sync_input_context()
 
 
 func _on_balloon_pause_requested() -> void:
@@ -381,11 +401,70 @@ func _get_dialogue_pivot_transform(mount: Node3D) -> Transform3D:
 
 func _refresh_cursor_mode() -> void:
 	var desired_mode := CURSOR_MODE_INGAME
-	if _pause_active or _dialogue_response_selection_active:
+	if _input_context == InputContext.PAUSE or _input_context == InputContext.DIALOGUE_RESPONSE_SELECTION:
 		desired_mode = CURSOR_MODE_UI
 
 	if Input.mouse_mode != desired_mode:
 		Input.mouse_mode = desired_mode
+
+
+func _sync_input_context() -> void:
+	if _interaction_locked:
+		_set_input_context(InputContext.TRANSITION)
+		return
+
+	if _pause_active:
+		_set_input_context(InputContext.PAUSE)
+		return
+
+	if _dialogue_active:
+		if _dialogue_response_selection_active:
+			_set_input_context(InputContext.DIALOGUE_RESPONSE_SELECTION)
+		else:
+			_set_input_context(InputContext.DIALOGUE)
+		return
+
+	_set_input_context(InputContext.GAMEPLAY)
+
+
+func _set_input_context(value: int) -> void:
+	if _input_context == value:
+		return
+
+	_input_context = value
+	_set_active_dialogue_input_enabled(value != InputContext.TRANSITION)
+	_refresh_cursor_mode()
+
+
+func _set_active_dialogue_input_enabled(enabled: bool) -> void:
+	if not is_instance_valid(_active_dialogue_balloon):
+		return
+
+	if _active_dialogue_balloon.has_method("set_input_enabled"):
+		_active_dialogue_balloon.call("set_input_enabled", enabled)
+
+
+func _capture_focus_before_pause() -> void:
+	var focus_owner := get_viewport().gui_get_focus_owner()
+	if focus_owner == null or not is_instance_valid(focus_owner):
+		_focus_before_pause = null
+		return
+
+	_focus_before_pause = weakref(focus_owner)
+
+
+func _restore_focus_after_pause() -> void:
+	var focus_owner: Control = null
+	if _focus_before_pause != null:
+		focus_owner = _focus_before_pause.get_ref() as Control
+
+	_focus_before_pause = null
+	if focus_owner != null and is_instance_valid(focus_owner) and focus_owner.visible and focus_owner.focus_mode != Control.FOCUS_NONE:
+		focus_owner.grab_focus()
+		return
+
+	if is_instance_valid(_active_dialogue_balloon) and _active_dialogue_balloon.has_method("restore_interaction_focus"):
+		_active_dialogue_balloon.call("restore_interaction_focus")
 
 
 func _apply_dialogue_animation_roles(speaker: Node3D) -> void:
