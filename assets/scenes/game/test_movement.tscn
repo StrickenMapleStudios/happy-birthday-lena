@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cf5y77c0aowei"]
+[gd_scene load_steps=9 format=3 uid="uid://cf5y77c0aowei"]
 
 [ext_resource type="PackedScene" uid="uid://cgbqg1ajsh5ut" path="res://assets/scenes/game/test_movement_level.tscn" id="1_level"]
 [ext_resource type="PackedScene" uid="uid://dmb72unyvr0t3" path="res://assets/scenes/characters/player_character.tscn" id="2_player"]
@@ -8,7 +8,6 @@
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/pause_menu.tscn" id="6_pause_menu"]
 [ext_resource type="Script" uid="uid://cb0ogsdv1ev5t" path="res://assets/scripts/interaction_prompt_controller.gd" id="7_prompt_controller"]
 [ext_resource type="Script" uid="uid://csmvxjritgblu" path="res://assets/scripts/gameplay_ui_layer.gd" id="8_gameplay_ui"]
-[ext_resource type="PackedScene" path="res://assets/scenes/ui/interaction_prompt_debug_top_view.tscn" id="9_prompt_debug"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_marker_column"]
 top_radius = 0.8
@@ -106,8 +105,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-
-[node name="InteractionPromptDebugTopView" parent="GameplayUI" instance=ExtResource("9_prompt_debug")]
 
 [node name="PauseMenu" parent="." unique_id=1516564974 instance=ExtResource("6_pause_menu")]
 

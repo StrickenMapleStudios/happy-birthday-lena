@@ -107,11 +107,3 @@ func _get_prompt_screen_position(camera: Camera3D, prompt_position: Vector3) -> 
 		side_amount = to_camera.normalized().dot(camera_right)
 
 	return world_screen_position + Vector2(side_amount * screen_side_offset, screen_vertical_offset)
-
-
-func has_active_prompt() -> bool:
-	return _current_target != null and is_instance_valid(_current_target)
-
-
-func get_debug_prompt_world_position() -> Vector3:
-	return _get_prompt_world_position()
