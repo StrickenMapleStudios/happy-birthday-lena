@@ -2,6 +2,8 @@ extends CanvasLayer
 
 signal transition_finished
 
+const TRANSITION_LAYER := 1000
+
 @export_range(0.0, 5.0, 0.01, "or_greater") var default_fade_out_duration: float = 0.45
 @export_range(0.0, 5.0, 0.01, "or_greater") var default_fade_in_duration: float = 0.35
 
@@ -10,7 +12,7 @@ var _is_transitioning := false
 
 
 func _ready() -> void:
-	layer = 100
+	layer = TRANSITION_LAYER
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 	_overlay = ColorRect.new()
