@@ -9,8 +9,9 @@ signal pause_requested
 @export var auto_start: bool = false
 @export var will_block_other_input: bool = true
 @export var next_action: StringName = &"dialogue_select"
+@export var advance_action: StringName = &"dialogue_advance"
 @export var pause_action: StringName = &"ui_cancel"
-@export var skip_action: StringName = &"dialogue_skip"
+@export var skip_action: StringName = &"dialogue_advance"
 
 @onready var audio_stream_player: AudioStreamPlayer = $AudioStreamPlayer
 
@@ -54,7 +55,7 @@ func _ready() -> void:
 		responses_menu.next_action = next_action
 
 	_ensure_dialogue_select_input()
-	_ensure_dialogue_skip_input()
+	_ensure_dialogue_advance_input()
 
 	mutation_cooldown.timeout.connect(_on_mutation_cooldown_timeout)
 	add_child(mutation_cooldown)
@@ -210,7 +211,7 @@ func _on_balloon_gui_input(event: InputEvent) -> void:
 
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT:
 		next(dialogue_line.next_id)
-	elif event.is_action_pressed(next_action) and get_viewport().gui_get_focus_owner() == balloon:
+	elif event.is_action_pressed(advance_action) and get_viewport().gui_get_focus_owner() == balloon:
 		next(dialogue_line.next_id)
 
 
@@ -286,16 +287,16 @@ func _focus_response_by_index(items: Array, index: int) -> bool:
 	return true
 
 
-func _ensure_dialogue_skip_input() -> void:
-	if not InputMap.has_action(skip_action):
-		InputMap.add_action(skip_action)
+func _ensure_dialogue_advance_input() -> void:
+	if not InputMap.has_action(advance_action):
+		InputMap.add_action(advance_action)
 
-	if not InputMap.action_get_events(skip_action).is_empty():
+	if not InputMap.action_get_events(advance_action).is_empty():
 		return
 
 	var event := InputEventKey.new()
 	event.keycode = KEY_SPACE
-	InputMap.action_add_event(skip_action, event)
+	InputMap.action_add_event(advance_action, event)
 
 
 func _ensure_dialogue_select_input() -> void:
