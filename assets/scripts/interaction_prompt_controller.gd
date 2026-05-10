@@ -4,13 +4,20 @@ class_name InteractionPromptController
 
 const PROMPT_SCENE := preload("res://assets/scenes/common/interaction_prompt_3d.tscn")
 
+@export var gameplay_ui_layer_path: NodePath = ^"../GameplayUI"
+
 var _current_target: InteractionTarget
 var _prompt: InteractionPrompt3D
+var _gameplay_ui_layer: GameplayUiLayer
 
 
 func _ready() -> void:
+	_gameplay_ui_layer = get_node_or_null(gameplay_ui_layer_path) as GameplayUiLayer
 	_prompt = PROMPT_SCENE.instantiate() as InteractionPrompt3D
-	add_child(_prompt)
+	if _gameplay_ui_layer != null:
+		_gameplay_ui_layer.add_world_ui(_prompt)
+	else:
+		add_child(_prompt)
 	_prompt.hide_prompt()
 
 

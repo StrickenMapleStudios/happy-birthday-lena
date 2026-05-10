@@ -11,6 +11,7 @@ const DIALOGUE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/dialogue_paus
 @onready var player := $character
 @onready var interaction_source: InteractionSource = $character/InteractionSource
 @onready var interaction_prompt_controller: InteractionPromptController = $InteractionPromptController
+@onready var gameplay_ui_layer: GameplayUiLayer = $GameplayUI
 @onready var pause_menu: Node = $PauseMenu
 @onready var dialogue_manager: Node = Engine.get_singleton("DialogueManager")
 
@@ -47,6 +48,7 @@ var _focus_before_pause: WeakRef
 
 func _ready() -> void:
 	_set_dialogue_pivots_active(false)
+	_refresh_gameplay_world_ui_visibility()
 	if interaction_source != null:
 		interaction_source.interaction_requested.connect(_on_interaction_requested)
 		interaction_source.interaction_target_changed.connect(_on_interaction_target_changed)
@@ -434,6 +436,16 @@ func _set_input_context(value: int) -> void:
 	_input_context = value
 	_set_active_dialogue_input_enabled(value != InputContext.TRANSITION)
 	_refresh_cursor_mode()
+	_refresh_gameplay_world_ui_visibility()
+
+
+func _refresh_gameplay_world_ui_visibility() -> void:
+	_set_gameplay_world_ui_visible(_input_context != InputContext.PAUSE)
+
+
+func _set_gameplay_world_ui_visible(is_visible: bool) -> void:
+	if gameplay_ui_layer != null:
+		gameplay_ui_layer.set_world_ui_visible(is_visible)
 
 
 func _set_active_dialogue_input_enabled(enabled: bool) -> void:

@@ -1,4 +1,4 @@
-extends CanvasLayer
+extends Control
 
 class_name InteractionPrompt3D
 
@@ -12,42 +12,35 @@ const KEY_FONT := preload("res://assets/art/fonts/Paytone_One/PaytoneOne-Regular
 @export var screen_offset := Vector2(0.0, -12.0)
 @export var icon_size := Vector2(36.0, 36.0)
 
-var _root: Control
 var _panel: PanelContainer
 var _label: Label
 
 
 func _ready() -> void:
-	layer = 10
+	set_anchors_preset(Control.PRESET_TOP_LEFT)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_build_prompt()
 	hide_prompt()
 
 
 func show_prompt() -> void:
-	if _root != null:
-		_root.visible = true
+	visible = true
 
 
 func hide_prompt() -> void:
-	if _root != null:
-		_root.visible = false
+	visible = false
 
 
 func set_screen_position(screen_position: Vector2) -> void:
-	if _root == null:
+	if _panel == null:
 		return
 
-	_root.position = screen_position + screen_offset - (icon_size * 0.5)
+	position = screen_position + screen_offset - (icon_size * 0.5)
 
 
 func _build_prompt() -> void:
-	if _root != null:
+	if _panel != null:
 		return
-
-	_root = Control.new()
-	_root.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_root)
 
 	_panel = PanelContainer.new()
 	_panel.custom_minimum_size = icon_size
@@ -67,7 +60,7 @@ func _build_prompt() -> void:
 	panel_style.shadow_size = 8
 	panel_style.shadow_offset = Vector2(0, 4)
 	_panel.add_theme_stylebox_override("panel", panel_style)
-	_root.add_child(_panel)
+	add_child(_panel)
 
 	_label = Label.new()
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
