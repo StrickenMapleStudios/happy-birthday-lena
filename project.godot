@@ -29,7 +29,7 @@ window/size/viewport_height=1080
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/assetplus/plugin.cfg", "res://addons/dialogue_manager/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/godot_state_charts/plugin.cfg")
+enabled=PackedStringArray("res://addons/assetplus/plugin.cfg", "res://addons/dialogue_manager/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/godot_state_charts/plugin.cfg", "res://addons/proximity_prompt/plugin.cfg")
 
 [internationalization]
 

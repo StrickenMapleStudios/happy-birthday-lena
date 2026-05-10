@@ -44,6 +44,9 @@ visible = false
 [node name="PlayerDialogueAnchor" type="Marker3D" parent="."]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 3.35)
 
+[node name="InteractionPromptAnchor" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.45, 0)
+
 [node name="InteractionTarget" type="Area3D" parent="." index="3"]
 collision_layer = 4
 collision_mask = 2

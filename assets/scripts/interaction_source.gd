@@ -1,4 +1,4 @@
-extends Area3D
+extends Node3D
 
 class_name InteractionSource
 
@@ -7,27 +7,23 @@ signal interaction_target_changed(target: InteractionTarget)
 
 const ACTION_INTERACT := "interact"
 
-@export_range(-1.0, 1.0, 0.01) var facing_dot_threshold := 0.55
+@export_flags_3d_physics var interaction_collision_mask: int = 4
+@export_range(0.1, 50.0, 0.1) var max_interaction_distance := 5.5
+@export_range(0.1, 500.0, 0.1) var ray_length := 100.0
+@export_range(-1.0, 1.0, 0.01) var facing_dot_threshold := 0.4
 
 var _current_target: InteractionTarget
-var _targets_in_range: Array[InteractionTarget] = []
 var _interaction_enabled := true
 
 
 func _ready() -> void:
 	_ensure_input_map()
-	area_entered.connect(_on_area_entered)
-	area_exited.connect(_on_area_exited)
 
 
-func _process(_delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if not _interaction_enabled:
-		return
-
-	if _targets_in_range.is_empty():
 		if _current_target != null:
-			_current_target = null
-			interaction_target_changed.emit(null)
+			_set_current_target(null)
 		return
 
 	_refresh_current_target()
@@ -47,59 +43,61 @@ func _input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 
-func _on_area_entered(area: Area3D) -> void:
-	var target := area as InteractionTarget
-	if target == null:
-		return
-
-	if _targets_in_range.has(target):
-		return
-
-	_targets_in_range.append(target)
-	_refresh_current_target()
-
-
-func _on_area_exited(area: Area3D) -> void:
-	var target := area as InteractionTarget
-	if target == null:
-		return
-
-	_targets_in_range.erase(target)
-	_refresh_current_target()
-
-
 func _refresh_current_target() -> void:
-	var valid_targets: Array[InteractionTarget] = []
-	for target in _targets_in_range:
-		if not is_instance_valid(target):
-			continue
-		if not target.is_interaction_available():
-			continue
-		if not _is_target_in_front(target):
-			continue
-		valid_targets.append(target)
-
-	_targets_in_range = _targets_in_range.filter(func(target: InteractionTarget): return is_instance_valid(target))
-
-	var next_target: InteractionTarget
-	var best_distance_squared := INF
-	for target in valid_targets:
-		var distance_squared := global_position.distance_squared_to(target.global_position)
-		if distance_squared < best_distance_squared:
-			best_distance_squared = distance_squared
-			next_target = target
-
-	if _current_target == next_target:
+	var camera := get_viewport().get_camera_3d()
+	if camera == null:
+		_set_current_target(null)
 		return
 
-	_current_target = next_target
-	interaction_target_changed.emit(_current_target)
+	var viewport := get_viewport()
+	var viewport_center := viewport.get_visible_rect().size * 0.5
+	var ray_origin := camera.project_ray_origin(viewport_center)
+	var ray_end := ray_origin + camera.project_ray_normal(viewport_center) * ray_length
+
+	var query := PhysicsRayQueryParameters3D.create(ray_origin, ray_end)
+	query.collide_with_areas = true
+	query.collide_with_bodies = true
+	query.collision_mask = interaction_collision_mask
+	query.exclude = [self]
+
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if hit.is_empty():
+		_set_current_target(null)
+		return
+
+	var target := _extract_interaction_target(hit.get("collider"))
+	if not _is_target_valid(target):
+		_set_current_target(null)
+		return
+
+	_set_current_target(target)
+
+
+func _extract_interaction_target(collider: Variant) -> InteractionTarget:
+	var node := collider as Node
+	while node != null:
+		var target := node as InteractionTarget
+		if target != null:
+			return target
+		node = node.get_parent()
+
+	return null
+
+
+func _is_target_valid(target: InteractionTarget) -> bool:
+	if target == null or not is_instance_valid(target):
+		return false
+
+	if not target.is_interaction_available():
+		return false
+
+	if global_position.distance_to(target.global_position) > max_interaction_distance:
+		return false
+
+	return _is_target_in_front(target)
 
 
 func _is_target_in_front(target: InteractionTarget) -> bool:
-	if target == null:
-		return false
-
 	var to_target := target.global_position - global_position
 	to_target.y = 0.0
 	if to_target.is_zero_approx():
@@ -111,8 +109,15 @@ func _is_target_in_front(target: InteractionTarget) -> bool:
 	if forward.is_zero_approx():
 		return true
 
-	var alignment := forward.dot(to_target.normalized())
-	return alignment >= facing_dot_threshold
+	return forward.dot(to_target.normalized()) >= facing_dot_threshold
+
+
+func _set_current_target(target: InteractionTarget) -> void:
+	if _current_target == target:
+		return
+
+	_current_target = target
+	interaction_target_changed.emit(_current_target)
 
 
 func set_interaction_enabled(value: bool) -> void:
@@ -121,8 +126,7 @@ func set_interaction_enabled(value: bool) -> void:
 		_refresh_current_target()
 		return
 
-	_current_target = null
-	interaction_target_changed.emit(null)
+	_set_current_target(null)
 
 
 func _ensure_input_map() -> void:

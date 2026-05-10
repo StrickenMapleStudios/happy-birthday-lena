@@ -10,6 +10,7 @@ const DIALOGUE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/dialogue_paus
 @onready var dialogue_camera_left: Camera3D = $DialoguePivotLeft/DialogueCameraLeft
 @onready var player := $character
 @onready var interaction_source: InteractionSource = $character/InteractionSource
+@onready var interaction_prompt_controller: InteractionPromptController = $InteractionPromptController
 @onready var pause_menu: Node = $PauseMenu
 @onready var dialogue_manager: Node = Engine.get_singleton("DialogueManager")
 
@@ -38,6 +39,7 @@ func _ready() -> void:
 	_set_dialogue_pivots_active(false)
 	if interaction_source != null:
 		interaction_source.interaction_requested.connect(_on_interaction_requested)
+		interaction_source.interaction_target_changed.connect(_on_interaction_target_changed)
 	if dialogue_manager != null and not dialogue_manager.is_connected("dialogue_ended", Callable(self, "_on_dialogue_ended")):
 		dialogue_manager.connect("dialogue_ended", Callable(self, "_on_dialogue_ended"))
 	if pause_menu != null:
@@ -107,6 +109,11 @@ func _on_interaction_requested(target: InteractionTarget) -> void:
 	await get_tree().process_frame
 	await SceneTransition.fade_in()
 	_interaction_locked = false
+
+
+func _on_interaction_target_changed(target: InteractionTarget) -> void:
+	if interaction_prompt_controller != null:
+		interaction_prompt_controller.set_target(target)
 
 
 func _exit_dialogue_mode() -> void:

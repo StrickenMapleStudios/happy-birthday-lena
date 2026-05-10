@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://cf5y77c0aowei"]
+[gd_scene load_steps=7 format=3 uid="uid://cf5y77c0aowei"]
 
 [ext_resource type="PackedScene" uid="uid://cgbqg1ajsh5ut" path="res://assets/scenes/game/test_movement_level.tscn" id="1_level"]
 [ext_resource type="PackedScene" uid="uid://dmb72unyvr0t3" path="res://assets/scenes/characters/player_character.tscn" id="2_player"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://b84roxoxwu700" path="res://assets/scripts/test_movement_camera.gd" id="4_camera"]
 [ext_resource type="Script" uid="uid://ptlmyvnfxne6" path="res://assets/scripts/test_movement_game.gd" id="5_game"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/pause_menu.tscn" id="6_pause_menu"]
+[ext_resource type="Script" path="res://assets/scripts/interaction_prompt_controller.gd" id="7_prompt_controller"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_marker_column"]
 top_radius = 0.8
@@ -85,6 +86,9 @@ transform = Transform3D(-0.83867055, -0.08707753, 0.5376329, 0, 0.9871362, 0.159
 attributes = SubResource("CameraAttributesPractical_dialogue")
 fov = 60.0
 far = 200.0
+
+[node name="InteractionPromptController" type="Node3D" parent="."]
+script = ExtResource("7_prompt_controller")
 
 [node name="PauseMenu" parent="." unique_id=1516564974 instance=ExtResource("6_pause_menu")]
 
