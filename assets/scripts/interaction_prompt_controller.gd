@@ -5,6 +5,10 @@ class_name InteractionPromptController
 const PROMPT_SCENE := preload("res://assets/scenes/common/interaction_prompt_3d.tscn")
 
 @export var gameplay_ui_layer_path: NodePath = ^"../GameplayUI"
+@export_range(0.1, 10.0, 0.1) var near_distance := 3.0
+@export_range(0.1, 50.0, 0.1) var far_distance := 14.0
+@export_range(0.1, 4.0, 0.01) var max_prompt_scale := 1.0
+@export_range(0.1, 4.0, 0.01) var min_prompt_scale := 0.65
 
 var _current_target: InteractionTarget
 var _prompt: InteractionPrompt3D
@@ -41,6 +45,7 @@ func _process(_delta: float) -> void:
 		_prompt.hide_prompt()
 		return
 
+	_prompt.set_visual_scale(_get_prompt_scale(camera.global_position.distance_to(anchor_position)))
 	_prompt.set_screen_position(camera.unproject_position(anchor_position))
 	_prompt.show_prompt()
 
@@ -62,5 +67,14 @@ func set_target(target: InteractionTarget) -> void:
 	if camera == null or camera.is_position_behind(anchor.global_position):
 		_prompt.hide_prompt()
 		return
+	_prompt.set_visual_scale(_get_prompt_scale(camera.global_position.distance_to(anchor.global_position)))
 	_prompt.set_screen_position(camera.unproject_position(anchor.global_position))
 	_prompt.show_prompt()
+
+
+func _get_prompt_scale(distance_to_camera: float) -> float:
+	if far_distance <= near_distance:
+		return max_prompt_scale
+
+	var weight := clampf(inverse_lerp(near_distance, far_distance, distance_to_camera), 0.0, 1.0)
+	return lerpf(max_prompt_scale, min_prompt_scale, weight)

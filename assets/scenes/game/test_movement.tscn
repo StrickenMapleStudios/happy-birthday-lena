@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://cf5y77c0aowei"]
+[gd_scene format=3 uid="uid://cf5y77c0aowei"]
 
 [ext_resource type="PackedScene" uid="uid://cgbqg1ajsh5ut" path="res://assets/scenes/game/test_movement_level.tscn" id="1_level"]
 [ext_resource type="PackedScene" uid="uid://dmb72unyvr0t3" path="res://assets/scenes/characters/player_character.tscn" id="2_player"]
@@ -6,8 +6,8 @@
 [ext_resource type="Script" uid="uid://b84roxoxwu700" path="res://assets/scripts/test_movement_camera.gd" id="4_camera"]
 [ext_resource type="Script" uid="uid://ptlmyvnfxne6" path="res://assets/scripts/test_movement_game.gd" id="5_game"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/pause_menu.tscn" id="6_pause_menu"]
-[ext_resource type="Script" path="res://assets/scripts/interaction_prompt_controller.gd" id="7_prompt_controller"]
-[ext_resource type="Script" path="res://assets/scripts/gameplay_ui_layer.gd" id="8_gameplay_ui"]
+[ext_resource type="Script" uid="uid://cb0ogsdv1ev5t" path="res://assets/scripts/interaction_prompt_controller.gd" id="7_prompt_controller"]
+[ext_resource type="Script" uid="uid://csmvxjritgblu" path="res://assets/scripts/gameplay_ui_layer.gd" id="8_gameplay_ui"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_marker_column"]
 top_radius = 0.8
@@ -56,6 +56,9 @@ transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.629
 [node name="npc2" parent="." unique_id=949489206 instance=ExtResource("3_npc")]
 transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.6293204, 17.73838, -9.536743e-07, 22.134308)
 
+[node name="npc3" parent="." unique_id=865179489 instance=ExtResource("3_npc")]
+transform = Transform3D(-0.65744096, 0, 0.753506, 0, 1, 0, -0.753506, 0, -0.65744096, -4.4477897, -1.4305115e-06, 36.136303)
+
 [node name="CameraRig" type="Node3D" parent="." unique_id=1843382860]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 script = ExtResource("4_camera")
@@ -88,13 +91,13 @@ attributes = SubResource("CameraAttributesPractical_dialogue")
 fov = 60.0
 far = 200.0
 
-[node name="InteractionPromptController" type="Node3D" parent="."]
+[node name="InteractionPromptController" type="Node3D" parent="." unique_id=868489893]
 script = ExtResource("7_prompt_controller")
 
-[node name="GameplayUI" type="CanvasLayer" parent="."]
+[node name="GameplayUI" type="CanvasLayer" parent="." unique_id=1220643629]
 script = ExtResource("8_gameplay_ui")
 
-[node name="WorldUIRoot" type="Control" parent="GameplayUI"]
+[node name="WorldUIRoot" type="Control" parent="GameplayUI" unique_id=2019048967]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

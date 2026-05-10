@@ -14,6 +14,7 @@ const KEY_FONT := preload("res://assets/art/fonts/Paytone_One/PaytoneOne-Regular
 
 var _panel: PanelContainer
 var _label: Label
+var _visual_scale := 1.0
 
 
 func _ready() -> void:
@@ -35,7 +36,12 @@ func set_screen_position(screen_position: Vector2) -> void:
 	if _panel == null:
 		return
 
-	position = screen_position + screen_offset - (icon_size * 0.5)
+	position = screen_position + screen_offset - (icon_size * 0.5 * _visual_scale)
+
+
+func set_visual_scale(value: float) -> void:
+	_visual_scale = maxf(value, 0.01)
+	scale = Vector2.ONE * _visual_scale
 
 
 func _build_prompt() -> void:
