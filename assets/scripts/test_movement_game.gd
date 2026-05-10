@@ -8,6 +8,7 @@ const DIALOGUE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/dialogue_paus
 @onready var dialogue_pivot_left := $DialoguePivotLeft
 @onready var dialogue_camera_right: Camera3D = $DialoguePivotRight/DialogueCameraRight
 @onready var dialogue_camera_left: Camera3D = $DialoguePivotLeft/DialogueCameraLeft
+@onready var game_camera: Camera3D = $CameraRig/GameCamera
 @onready var player := $character
 @onready var interaction_source: InteractionSource = $character/InteractionSource
 @onready var interaction_prompt_controller: InteractionPromptController = $InteractionPromptController
@@ -35,6 +36,7 @@ var _dialogue_response_selection_active := false
 var _dialogue_target: InteractionTarget
 var _dialogue_target_actor: Node3D
 var _current_dialogue_speaker: Node3D
+var _right_pivot_actor: Node3D
 var _active_dialogue_balloon: Node
 var _active_dialogue_resource: DialogueResource
 var _saved_player_transform := Transform3D.IDENTITY
@@ -160,6 +162,7 @@ func _exit_dialogue_mode() -> void:
 	_dialogue_target = null
 	_dialogue_target_actor = null
 	_current_dialogue_speaker = null
+	_right_pivot_actor = null
 	_sync_input_context()
 	await get_tree().process_frame
 	await SceneTransition.fade_in()
@@ -305,17 +308,25 @@ func _sync_dialogue_pivots() -> void:
 	_set_dialogue_pivots_active(true)
 
 	var player_mount: Node3D = player.get_dialogue_camera_mount()
-	if player_mount != null:
-		dialogue_pivot_right.global_transform = _get_dialogue_pivot_transform(player_mount)
-
+	var target_mount: Node3D
 	if is_instance_valid(_dialogue_target_actor) and _dialogue_target_actor.has_method("get_dialogue_camera_mount"):
-		var target_mount: Node3D = _dialogue_target_actor.call("get_dialogue_camera_mount") as Node3D
-		if target_mount != null:
-			dialogue_pivot_left.global_transform = _get_dialogue_pivot_transform(target_mount)
+		target_mount = _dialogue_target_actor.call("get_dialogue_camera_mount") as Node3D
+
+	var npc_uses_right_pivot := _should_actor_use_right_pivot(_dialogue_target_actor)
+	var right_mount := target_mount if npc_uses_right_pivot else player_mount
+	var left_mount := player_mount if npc_uses_right_pivot else target_mount
+
+	_right_pivot_actor = _dialogue_target_actor if npc_uses_right_pivot else player
+
+	if right_mount != null:
+		dialogue_pivot_right.global_transform = _get_dialogue_pivot_transform(right_mount)
+
+	if left_mount != null:
+		dialogue_pivot_left.global_transform = _get_dialogue_pivot_transform(left_mount)
 
 
 func _activate_speaker_camera(speaker: Node3D) -> void:
-	if speaker == player:
+	if speaker == _right_pivot_actor:
 		dialogue_camera_right.current = true
 		return
 
@@ -399,6 +410,39 @@ func _get_dialogue_pivot_transform(mount: Node3D) -> Transform3D:
 	var pivot_transform := mount.global_transform
 	pivot_transform.basis = pivot_transform.basis * Basis.from_euler(Vector3(0.0, DIALOGUE_PIVOT_YAW_OFFSET, 0.0))
 	return pivot_transform
+
+
+func _should_actor_use_right_pivot(actor: Node3D) -> bool:
+	if actor == null or actor == player:
+		return false
+
+	var actor_forward := _get_planar_forward(actor)
+	var camera_right := _get_planar_camera_right()
+	if actor_forward.is_zero_approx() or camera_right.is_zero_approx():
+		return false
+
+	return actor_forward.dot(camera_right) > 0.0
+
+
+func _get_planar_forward(actor: Node3D) -> Vector3:
+	var forward := -actor.global_transform.basis.z
+	forward.y = 0.0
+	if forward.length_squared() <= 0.000001:
+		return Vector3.ZERO
+
+	return forward.normalized()
+
+
+func _get_planar_camera_right() -> Vector3:
+	if game_camera == null:
+		return Vector3.ZERO
+
+	var camera_right := game_camera.global_transform.basis.x
+	camera_right.y = 0.0
+	if camera_right.length_squared() <= 0.000001:
+		return Vector3.ZERO
+
+	return camera_right.normalized()
 
 
 func _refresh_cursor_mode() -> void:
