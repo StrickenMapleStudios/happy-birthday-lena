@@ -330,9 +330,12 @@ func _connect_pause_menu_signals(menu: Node) -> void:
 		return
 
 	menu.process_mode = Node.PROCESS_MODE_ALWAYS
-	menu.connect("resume_requested", Callable(self, "_resume_from_pause"))
-	menu.connect("main_menu_requested", Callable(self, "_return_to_main_menu"))
-	menu.connect("quit_requested", Callable(self, "_quit_from_pause"))
+	if menu.has_signal("resume_requested"):
+		menu.connect("resume_requested", Callable(self, "_resume_from_pause"))
+	if menu.has_signal("main_menu_requested"):
+		menu.connect("main_menu_requested", Callable(self, "_return_to_main_menu"))
+	if menu.has_signal("quit_requested"):
+		menu.connect("quit_requested", Callable(self, "_quit_from_pause"))
 	if menu.has_signal("exit_dialogue_requested"):
 		menu.connect("exit_dialogue_requested", Callable(self, "_exit_dialogue_from_pause"))
 

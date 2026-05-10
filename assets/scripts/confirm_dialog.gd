@@ -44,15 +44,12 @@ func handle_navigation_input(event: InputEvent) -> bool:
 	if not visible:
 		return false
 
-	if not (event is InputEventKey) or not event.is_pressed() or event.is_echo():
-		return false
+	if event.is_action_pressed(&"ui_up") or event.is_action_pressed(&"ui_left"):
+		confirm_button.grab_focus()
+		return true
 
-	match event.keycode:
-		KEY_W, KEY_A:
-			confirm_button.grab_focus()
-			return true
-		KEY_S, KEY_D:
-			cancel_button.grab_focus()
-			return true
+	if event.is_action_pressed(&"ui_down") or event.is_action_pressed(&"ui_right"):
+		cancel_button.grab_focus()
+		return true
 
 	return false

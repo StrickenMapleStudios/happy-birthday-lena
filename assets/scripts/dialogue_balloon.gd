@@ -54,9 +54,6 @@ func _ready() -> void:
 	if responses_menu.next_action.is_empty():
 		responses_menu.next_action = next_action
 
-	_ensure_dialogue_select_input()
-	_ensure_dialogue_advance_input()
-
 	mutation_cooldown.timeout.connect(_on_mutation_cooldown_timeout)
 	add_child(mutation_cooldown)
 
@@ -229,9 +226,6 @@ func _set_response_selection_active(value: bool) -> void:
 
 
 func _handle_response_navigation_input(event: InputEvent) -> bool:
-	if not (event is InputEventKey) or not event.is_pressed() or event.is_echo():
-		return false
-
 	var items: Array = responses_menu.get_menu_items()
 	if items.is_empty():
 		return false
@@ -240,30 +234,32 @@ func _handle_response_navigation_input(event: InputEvent) -> bool:
 	if current_index < 0:
 		current_index = 0
 
-	match event.keycode:
-		KEY_W, KEY_A:
-			items[maxi(current_index - 1, 0)].grab_focus()
-			return true
-		KEY_S, KEY_D:
-			items[mini(current_index + 1, items.size() - 1)].grab_focus()
-			return true
-		KEY_1, KEY_KP_1:
+	if event.is_action_pressed(&"ui_up") or event.is_action_pressed(&"ui_left"):
+		items[maxi(current_index - 1, 0)].grab_focus()
+		return true
+
+	if event.is_action_pressed(&"ui_down") or event.is_action_pressed(&"ui_right"):
+		items[mini(current_index + 1, items.size() - 1)].grab_focus()
+		return true
+
+	match _get_pressed_digit_index(event):
+		0:
 			return _focus_response_by_index(items, 0)
-		KEY_2, KEY_KP_2:
+		1:
 			return _focus_response_by_index(items, 1)
-		KEY_3, KEY_KP_3:
+		2:
 			return _focus_response_by_index(items, 2)
-		KEY_4, KEY_KP_4:
+		3:
 			return _focus_response_by_index(items, 3)
-		KEY_5, KEY_KP_5:
+		4:
 			return _focus_response_by_index(items, 4)
-		KEY_6, KEY_KP_6:
+		5:
 			return _focus_response_by_index(items, 5)
-		KEY_7, KEY_KP_7:
+		6:
 			return _focus_response_by_index(items, 6)
-		KEY_8, KEY_KP_8:
+		7:
 			return _focus_response_by_index(items, 7)
-		KEY_9, KEY_KP_9:
+		8:
 			return _focus_response_by_index(items, 8)
 
 	return false
@@ -287,25 +283,28 @@ func _focus_response_by_index(items: Array, index: int) -> bool:
 	return true
 
 
-func _ensure_dialogue_advance_input() -> void:
-	if not InputMap.has_action(advance_action):
-		InputMap.add_action(advance_action)
+func _get_pressed_digit_index(event: InputEvent) -> int:
+	if not (event is InputEventKey) or not event.is_pressed() or event.is_echo():
+		return -1
 
-	if not InputMap.action_get_events(advance_action).is_empty():
-		return
+	match event.keycode:
+		KEY_1, KEY_KP_1:
+			return 0
+		KEY_2, KEY_KP_2:
+			return 1
+		KEY_3, KEY_KP_3:
+			return 2
+		KEY_4, KEY_KP_4:
+			return 3
+		KEY_5, KEY_KP_5:
+			return 4
+		KEY_6, KEY_KP_6:
+			return 5
+		KEY_7, KEY_KP_7:
+			return 6
+		KEY_8, KEY_KP_8:
+			return 7
+		KEY_9, KEY_KP_9:
+			return 8
 
-	var event := InputEventKey.new()
-	event.keycode = KEY_SPACE
-	InputMap.action_add_event(advance_action, event)
-
-
-func _ensure_dialogue_select_input() -> void:
-	if not InputMap.has_action(next_action):
-		InputMap.add_action(next_action)
-
-	if not InputMap.action_get_events(next_action).is_empty():
-		return
-
-	var event := InputEventKey.new()
-	event.keycode = KEY_E
-	InputMap.action_add_event(next_action, event)
+	return -1

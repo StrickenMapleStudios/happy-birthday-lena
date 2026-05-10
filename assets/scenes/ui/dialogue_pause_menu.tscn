@@ -1,18 +1,15 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=4 format=3]
 
-[ext_resource type="Script" path="res://assets/scripts/pause_menu.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://assets/scenes/ui/pause_menu_content.tscn" id="2_content"]
-[ext_resource type="PackedScene" path="res://assets/scenes/ui/confirm_dialog.tscn" id="3_confirm"]
-[ext_resource type="Shader" path="res://assets/shaders/ui_background_blur.gdshader" id="4_blur_shader"]
-[ext_resource type="PackedScene" path="res://assets/scenes/ui/options_panel.tscn" id="5_options"]
+[ext_resource type="Script" path="res://assets/scripts/dialogue_pause_menu.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://assets/scenes/ui/dialogue_pause_menu_content.tscn" id="2_content"]
+[ext_resource type="Shader" path="res://assets/shaders/ui_background_blur.gdshader" id="3_blur_shader"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_blur"]
-shader = ExtResource("4_blur_shader")
+shader = ExtResource("3_blur_shader")
 
 [node name="DialoguePauseMenu" type="CanvasLayer"]
 layer = 200
 script = ExtResource("1_script")
-allow_exit_dialogue = true
 
 [node name="MenuRoot" type="Control" parent="."]
 visible = false
@@ -64,7 +61,3 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Content" parent="MenuRoot/SafeMargin/VerticalCenter" instance=ExtResource("2_content")]
-
-[node name="OptionsPanel" parent="MenuRoot/SafeMargin/VerticalCenter" instance=ExtResource("5_options")]
-
-[node name="ConfirmDialog" parent="MenuRoot" instance=ExtResource("3_confirm")]

@@ -3,17 +3,13 @@ extends CanvasLayer
 signal resume_requested
 signal main_menu_requested
 signal quit_requested
-signal exit_dialogue_requested
 
 const ACTION_MAIN_MENU := &"main_menu"
 const ACTION_QUIT := &"quit"
 const GEAR_ICON := preload("res://assets/art/sprites/gear-icon.png")
-const EXIT_ICON := preload("res://assets/art/sprites/exit-icon.png")
 const HOME_ICON := preload("res://assets/art/sprites/home.png")
 const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
 const VERTICAL_OFFSET_FROM_CENTER := 56.0
-
-@export var allow_exit_dialogue := false
 
 @onready var menu_root: Control = $MenuRoot
 @onready var vertical_center: Control = $MenuRoot.get_node("SafeMargin/VerticalCenter")
@@ -21,7 +17,7 @@ const VERTICAL_OFFSET_FROM_CENTER := 56.0
 @onready var button_stack: VBoxContainer = content_root.get_node("MenuColumn/ButtonStack")
 @onready var menu_column: VBoxContainer = content_root.get_node("MenuColumn")
 @onready var resume_button: Button = content_root.get_node("MenuColumn/ButtonStack/ResumeButton")
-@onready var context_button: Button = content_root.get_node("MenuColumn/ButtonStack/ContextButton")
+@onready var options_button: Button = content_root.get_node("MenuColumn/ButtonStack/ContextButton")
 @onready var main_menu_button: Button = content_root.get_node("MenuColumn/ButtonStack/MainMenuButton")
 @onready var exit_button: Button = content_root.get_node("MenuColumn/ButtonStack/ExitButton")
 @onready var options_panel: Control = $MenuRoot.get_node("SafeMargin/VerticalCenter/OptionsPanel")
@@ -29,22 +25,20 @@ const VERTICAL_OFFSET_FROM_CENTER := 56.0
 
 @onready var menu_buttons: Array[Button] = [
 	resume_button,
-	context_button,
+	options_button,
 	main_menu_button,
 	exit_button,
 ]
 
 var _pending_action: StringName = &""
-var _mirrored_exit_icon: ImageTexture
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	menu_root.visible = false
-	_mirrored_exit_icon = _make_mirrored_texture(EXIT_ICON)
 	main_menu_button.icon = HOME_ICON
 	resume_button.pressed.connect(func() -> void: resume_requested.emit())
-	context_button.pressed.connect(_on_context_button_pressed)
+	options_button.pressed.connect(_show_options)
 	main_menu_button.pressed.connect(_prompt_main_menu)
 	exit_button.pressed.connect(_prompt_quit)
 	confirm_dialog.confirmed.connect(_on_confirmed)
@@ -90,7 +84,6 @@ func open() -> void:
 	menu_root.visible = true
 	_pending_action = &""
 	confirm_dialog.call("hide_dialog")
-	_configure_context_button()
 	_show_main_buttons()
 	call_deferred("_update_vertical_layout")
 
@@ -153,14 +146,6 @@ func _on_confirmed() -> void:
 			quit_requested.emit()
 
 
-func _on_context_button_pressed() -> void:
-	if allow_exit_dialogue:
-		exit_dialogue_requested.emit()
-		return
-
-	_show_options()
-
-
 func _on_confirm_canceled() -> void:
 	confirm_dialog.call("hide_dialog")
 	_show_main_buttons()
@@ -183,22 +168,6 @@ func _set_button_focus_enabled(buttons: Array[Button], enabled: bool) -> void:
 			button.focus_mode = Control.FOCUS_NONE
 			continue
 		button.focus_mode = Control.FOCUS_ALL if enabled else Control.FOCUS_NONE
-
-
-func _configure_context_button() -> void:
-	context_button.visible = true
-	if allow_exit_dialogue:
-		context_button.icon = _mirrored_exit_icon
-		context_button.text = "EXIT DIALOGUE"
-	else:
-		context_button.icon = GEAR_ICON
-		context_button.text = "OPTIONS"
-
-
-func _make_mirrored_texture(source: Texture2D) -> ImageTexture:
-	var image := source.get_image()
-	image.flip_x()
-	return ImageTexture.create_from_image(image)
 
 
 func _update_vertical_layout() -> void:

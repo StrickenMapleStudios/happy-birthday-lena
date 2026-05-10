@@ -103,23 +103,22 @@ func handle_navigation_input(event: InputEvent) -> bool:
 	if not visible:
 		return false
 
-	if not (event is InputEventKey) or not event.is_pressed() or event.is_echo():
-		return false
-
 	var focus_position := _get_focus_position()
 	if focus_position.x < 0:
 		grab_default_focus()
 		return true
 
-	match event.keycode:
-		KEY_W:
-			return _move_focus_vertical(focus_position, -1)
-		KEY_S:
-			return _move_focus_vertical(focus_position, 1)
-		KEY_A:
-			return _move_focus_horizontal(focus_position, -1)
-		KEY_D:
-			return _move_focus_horizontal(focus_position, 1)
+	if event.is_action_pressed(&"ui_up"):
+		return _move_focus_vertical(focus_position, -1)
+
+	if event.is_action_pressed(&"ui_down"):
+		return _move_focus_vertical(focus_position, 1)
+
+	if event.is_action_pressed(&"ui_left"):
+		return _move_focus_horizontal(focus_position, -1)
+
+	if event.is_action_pressed(&"ui_right"):
+		return _move_focus_horizontal(focus_position, 1)
 
 	return false
 

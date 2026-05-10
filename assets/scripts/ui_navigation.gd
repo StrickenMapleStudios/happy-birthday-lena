@@ -4,9 +4,6 @@ class_name UINavigation
 
 
 static func handle_linear_navigation_input(event: InputEvent, controls: Array[Button]) -> bool:
-	if not (event is InputEventKey) or not event.is_pressed() or event.is_echo():
-		return false
-
 	var active_controls := _get_active_controls(controls)
 	if active_controls.is_empty():
 		return false
@@ -15,13 +12,13 @@ static func handle_linear_navigation_input(event: InputEvent, controls: Array[Bu
 	if current_index < 0:
 		current_index = 0
 
-	match event.keycode:
-		KEY_W, KEY_A:
-			active_controls[maxi(current_index - 1, 0)].grab_focus()
-			return true
-		KEY_S, KEY_D:
-			active_controls[mini(current_index + 1, active_controls.size() - 1)].grab_focus()
-			return true
+	if event.is_action_pressed(&"ui_up") or event.is_action_pressed(&"ui_left"):
+		active_controls[maxi(current_index - 1, 0)].grab_focus()
+		return true
+
+	if event.is_action_pressed(&"ui_down") or event.is_action_pressed(&"ui_right"):
+		active_controls[mini(current_index + 1, active_controls.size() - 1)].grab_focus()
+		return true
 
 	return false
 
