@@ -68,23 +68,30 @@ func _process(_delta: float) -> void:
 		progress_indicator.visible = not dialogue_label.is_typing and dialogue_line.responses.size() == 0 and not dialogue_line.has_tag("voice")
 
 
+func _input(event: InputEvent) -> void:
+	if _handle_dialogue_input(event):
+		get_viewport().set_input_as_handled()
+		return
+
+
 func _unhandled_input(_event: InputEvent) -> void:
-	if _event.is_action_pressed(skip_action) and dialogue_label.is_typing:
-		dialogue_label.skip_typing()
-		get_viewport().set_input_as_handled()
-		return
-
-	if _event.is_action_pressed(pause_action) and not dialogue_label.is_typing:
-		pause_requested.emit()
-		get_viewport().set_input_as_handled()
-		return
-
-	if _response_selection_active and _handle_response_navigation_input(_event):
-		get_viewport().set_input_as_handled()
-		return
-
 	if will_block_other_input:
 		get_viewport().set_input_as_handled()
+
+
+func _handle_dialogue_input(event: InputEvent) -> bool:
+	if event.is_action_pressed(skip_action) and dialogue_label.is_typing:
+		dialogue_label.skip_typing()
+		return true
+
+	if event.is_action_pressed(pause_action) and not dialogue_label.is_typing:
+		pause_requested.emit()
+		return true
+
+	if _response_selection_active and _handle_response_navigation_input(event):
+		return true
+
+	return false
 
 
 func _notification(what: int) -> void:
@@ -234,12 +241,12 @@ func _handle_response_navigation_input(event: InputEvent) -> bool:
 	if current_index < 0:
 		current_index = 0
 
-	if event.is_action_pressed(&"ui_up") or event.is_action_pressed(&"ui_left"):
-		items[maxi(current_index - 1, 0)].grab_focus()
+	if _is_previous_response_input(event):
+		items[posmod(current_index - 1, items.size())].grab_focus()
 		return true
 
-	if event.is_action_pressed(&"ui_down") or event.is_action_pressed(&"ui_right"):
-		items[mini(current_index + 1, items.size() - 1)].grab_focus()
+	if _is_next_response_input(event):
+		items[posmod(current_index + 1, items.size())].grab_focus()
 		return true
 
 	match _get_pressed_digit_index(event):
@@ -308,3 +315,23 @@ func _get_pressed_digit_index(event: InputEvent) -> int:
 			return 8
 
 	return -1
+
+
+func _is_previous_response_input(event: InputEvent) -> bool:
+	if event.is_action_pressed(&"ui_up") or event.is_action_pressed(&"ui_left"):
+		return true
+
+	if not (event is InputEventKey) or not event.is_pressed() or event.is_echo():
+		return false
+
+	return event.keycode == KEY_W or event.keycode == KEY_A
+
+
+func _is_next_response_input(event: InputEvent) -> bool:
+	if event.is_action_pressed(&"ui_down") or event.is_action_pressed(&"ui_right"):
+		return true
+
+	if not (event is InputEventKey) or not event.is_pressed() or event.is_echo():
+		return false
+
+	return event.keycode == KEY_S or event.keycode == KEY_D
