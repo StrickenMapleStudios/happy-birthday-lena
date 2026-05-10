@@ -3,6 +3,8 @@ extends Control
 signal confirmed
 signal canceled
 
+const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
+
 @onready var title_label: Label = $DialogCenter/DialogPanel/DialogContent/DialogTitle
 @onready var body_label: Label = $DialogCenter/DialogPanel/DialogContent/DialogBody
 @onready var confirm_button: Button = $DialogCenter/DialogPanel/DialogContent/DialogButtons/ConfirmButton
@@ -44,12 +46,4 @@ func handle_navigation_input(event: InputEvent) -> bool:
 	if not visible:
 		return false
 
-	if event.is_action_pressed(&"ui_up") or event.is_action_pressed(&"ui_left"):
-		confirm_button.grab_focus()
-		return true
-
-	if event.is_action_pressed(&"ui_down") or event.is_action_pressed(&"ui_right"):
-		cancel_button.grab_focus()
-		return true
-
-	return false
+	return UINavigation.handle_linear_navigation_input(event, [confirm_button, cancel_button])

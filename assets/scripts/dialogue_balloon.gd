@@ -4,6 +4,8 @@ signal speaker_changed(character_name: String, dialogue_line: DialogueLine)
 signal response_selection_state_changed(is_active: bool)
 signal pause_requested
 
+const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
+
 @export var dialogue_resource: DialogueResource
 @export var start_from_title: String = ""
 @export var auto_start: bool = false
@@ -237,101 +239,7 @@ func _handle_response_navigation_input(event: InputEvent) -> bool:
 	if items.is_empty():
 		return false
 
-	var current_index := _get_focused_response_index(items)
-	if current_index < 0:
-		current_index = 0
-
-	if _is_previous_response_input(event):
-		items[posmod(current_index - 1, items.size())].grab_focus()
+	if UINavigation.handle_linear_navigation_input(event, items):
 		return true
 
-	if _is_next_response_input(event):
-		items[posmod(current_index + 1, items.size())].grab_focus()
-		return true
-
-	match _get_pressed_digit_index(event):
-		0:
-			return _focus_response_by_index(items, 0)
-		1:
-			return _focus_response_by_index(items, 1)
-		2:
-			return _focus_response_by_index(items, 2)
-		3:
-			return _focus_response_by_index(items, 3)
-		4:
-			return _focus_response_by_index(items, 4)
-		5:
-			return _focus_response_by_index(items, 5)
-		6:
-			return _focus_response_by_index(items, 6)
-		7:
-			return _focus_response_by_index(items, 7)
-		8:
-			return _focus_response_by_index(items, 8)
-
-	return false
-
-
-func _get_focused_response_index(items: Array) -> int:
-	var focus_owner := get_viewport().gui_get_focus_owner()
-	for index in items.size():
-		if items[index] == focus_owner:
-			return index
-
-	return -1
-
-
-func _focus_response_by_index(items: Array, index: int) -> bool:
-	if index < 0 or index >= items.size():
-		return false
-
-	var item: Control = items[index]
-	item.grab_focus()
-	return true
-
-
-func _get_pressed_digit_index(event: InputEvent) -> int:
-	if not (event is InputEventKey) or not event.is_pressed() or event.is_echo():
-		return -1
-
-	match event.keycode:
-		KEY_1, KEY_KP_1:
-			return 0
-		KEY_2, KEY_KP_2:
-			return 1
-		KEY_3, KEY_KP_3:
-			return 2
-		KEY_4, KEY_KP_4:
-			return 3
-		KEY_5, KEY_KP_5:
-			return 4
-		KEY_6, KEY_KP_6:
-			return 5
-		KEY_7, KEY_KP_7:
-			return 6
-		KEY_8, KEY_KP_8:
-			return 7
-		KEY_9, KEY_KP_9:
-			return 8
-
-	return -1
-
-
-func _is_previous_response_input(event: InputEvent) -> bool:
-	if event.is_action_pressed(&"ui_up") or event.is_action_pressed(&"ui_left"):
-		return true
-
-	if not (event is InputEventKey) or not event.is_pressed() or event.is_echo():
-		return false
-
-	return event.keycode == KEY_W or event.keycode == KEY_A
-
-
-func _is_next_response_input(event: InputEvent) -> bool:
-	if event.is_action_pressed(&"ui_down") or event.is_action_pressed(&"ui_right"):
-		return true
-
-	if not (event is InputEventKey) or not event.is_pressed() or event.is_echo():
-		return false
-
-	return event.keycode == KEY_S or event.keycode == KEY_D
+	return UINavigation.handle_digit_focus_input(event, items)

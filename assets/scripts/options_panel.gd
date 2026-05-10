@@ -2,6 +2,8 @@ extends Control
 
 signal settings_applied(settings: Dictionary)
 
+const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
+
 @onready var resolution_left_button: Button = $Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionLeftButton
 @onready var resolution_right_button: Button = $Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionRightButton
 @onready var resolution_value_label: Label = $Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionValueLabel
@@ -103,24 +105,7 @@ func handle_navigation_input(event: InputEvent) -> bool:
 	if not visible:
 		return false
 
-	var focus_position := _get_focus_position()
-	if focus_position.x < 0:
-		grab_default_focus()
-		return true
-
-	if event.is_action_pressed(&"ui_up"):
-		return _move_focus_vertical(focus_position, -1)
-
-	if event.is_action_pressed(&"ui_down"):
-		return _move_focus_vertical(focus_position, 1)
-
-	if event.is_action_pressed(&"ui_left"):
-		return _move_focus_horizontal(focus_position, -1)
-
-	if event.is_action_pressed(&"ui_right"):
-		return _move_focus_horizontal(focus_position, 1)
-
-	return false
+	return UINavigation.handle_grid_navigation_input(event, _navigation_rows)
 
 
 func _on_volume_slider_changed(value: float, index: int) -> void:
@@ -246,45 +231,3 @@ func _make_slider_grabber(color: Color) -> ImageTexture:
 				image.set_pixel(x, y, color)
 
 	return ImageTexture.create_from_image(image)
-
-
-func _get_focus_position() -> Vector2i:
-	var focus_owner := get_viewport().gui_get_focus_owner()
-	for row_index in _navigation_rows.size():
-		var row: Array = _navigation_rows[row_index]
-		for column_index in row.size():
-			if row[column_index] == focus_owner:
-				return Vector2i(row_index, column_index)
-
-	return Vector2i(-1, -1)
-
-
-func _move_focus_vertical(focus_position: Vector2i, direction: int) -> bool:
-	var row_index := focus_position.x + direction
-	while row_index >= 0 and row_index < _navigation_rows.size():
-		var row: Array = _navigation_rows[row_index]
-		var target_column := mini(focus_position.y, row.size() - 1)
-		var target := row[target_column] as Control
-		if _can_focus_control(target):
-			target.grab_focus()
-			return true
-		row_index += direction
-
-	return false
-
-
-func _move_focus_horizontal(focus_position: Vector2i, direction: int) -> bool:
-	var row: Array = _navigation_rows[focus_position.x]
-	var column_index := focus_position.y + direction
-	while column_index >= 0 and column_index < row.size():
-		var target := row[column_index] as Control
-		if _can_focus_control(target):
-			target.grab_focus()
-			return true
-		column_index += direction
-
-	return false
-
-
-func _can_focus_control(control: Control) -> bool:
-	return control != null and is_instance_valid(control) and control.visible and control.focus_mode != Control.FOCUS_NONE
