@@ -1,10 +1,10 @@
 extends Node3D
 
 const ANIMATION_IDLE := "Idle"
+const CHARACTER_IDENTITY_PATH := ^"CharacterIdentity"
 
 @export var visual_root_path: NodePath = ^"Rig"
 @export var player_dialogue_anchor_path: NodePath = ^"PlayerDialogueAnchor"
-@export var dialogue_speaker_name := "Villager"
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var dialogue_animation_tree: AnimationTree = $AnimationPlayer/DialogueAnimationTree
@@ -73,7 +73,13 @@ func get_dialogue_camera_mount() -> Node3D:
 
 
 func get_dialogue_speaker_name() -> String:
-	return dialogue_speaker_name
+	var character_identity := get_node_or_null(CHARACTER_IDENTITY_PATH)
+	if character_identity != null and character_identity.has_method("get_dialogue_speaker_name"):
+		var dialogue_name := String(character_identity.call("get_dialogue_speaker_name")).strip_edges()
+		if not dialogue_name.is_empty():
+			return dialogue_name
+
+	return name
 
 
 func _get_active_animation_tree(excluded_tree: AnimationTree) -> AnimationTree:

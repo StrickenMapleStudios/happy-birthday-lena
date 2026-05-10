@@ -1,0 +1,28 @@
+~ start
+{{speaker_name}}: Привет, я {{speaker_name}}, а ты кто?
+- Я {{echo_name}}, а ты кто?
+	{{player_name}}: Я {{echo_name}}, а ты кто?
+	{{speaker_name}}: Я {{speaker_name}}, а ты кто?
+	=> echo_loop
+- Я {{reply_name}}, давай дружить.
+	{{player_name}}: Я {{reply_name}}, давай дружить.
+	=> new_friend
+- Неважно, я пойду дальше.
+	{{speaker_name}}: Ладно, пока.
+	=> END
+
+~ echo_loop
+- Я {{echo_name}}, а ты кто?
+	{{player_name}}: Я {{echo_name}}, а ты кто?
+	{{speaker_name}}: Я {{speaker_name}}, а ты кто?
+	=> echo_loop
+- Я {{reply_name}}, давай дружить.
+	{{player_name}}: Я {{reply_name}}, давай дружить.
+	=> new_friend
+- Неважно, я пойду дальше.
+	{{speaker_name}}: Тогда в другой раз.
+	=> END
+
+~ new_friend
+{{speaker_name}}: Ура! Давай.
+=> END

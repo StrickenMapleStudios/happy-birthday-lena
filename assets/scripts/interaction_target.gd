@@ -7,6 +7,7 @@ class_name InteractionTarget
 @export var interaction_prompt_anchor_path: NodePath = ^"../InteractionPromptAnchor"
 @export var dialogue_resource: DialogueResource
 @export var dialogue_start_title := "start"
+@export var dialogue_variables: Dictionary = {}
 @export var interaction_key_text := "E"
 @export var interaction_enabled := true
 
@@ -35,6 +36,23 @@ func get_dialogue_start_title() -> String:
 	return dialogue_start_title
 
 
+func get_dialogue_game_states() -> Array:
+	var states: Array = []
+	var variables := dialogue_variables.duplicate(true)
+	var actor := get_parent()
+
+	if actor != null:
+		if actor.has_method("get_dialogue_speaker_name"):
+			variables["speaker_name"] = actor.call("get_dialogue_speaker_name")
+		elif not variables.has("speaker_name"):
+			variables["speaker_name"] = actor.name
+
+	if not variables.is_empty():
+		states.append(variables)
+
+	return states
+
+
 func get_interaction_prompt_anchor() -> Node3D:
 	return get_node_or_null(interaction_prompt_anchor_path) as Node3D
 
@@ -45,5 +63,7 @@ func get_interaction_prompt_position() -> Vector3:
 		return anchor.global_position
 
 	return global_position
+
+
 func get_interaction_key_text() -> String:
 	return interaction_key_text

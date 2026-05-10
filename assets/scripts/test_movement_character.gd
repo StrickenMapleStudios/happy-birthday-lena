@@ -22,8 +22,7 @@ const STATE_WALKING := "Walking"
 const STATE_RUNNING := "Running"
 const STATE_NARUTO_RUNNING := "NarutoRunning"
 const PREPARED_SPEED_SCALE_META := &"prepared_speed_scale"
-
-@export var dialogue_speaker_name := "Lena"
+const CHARACTER_IDENTITY_PATH := ^"CharacterIdentity"
 
 @onready var animation_tree: AnimationTree = $AnimationPlayer/AnimationTree
 @onready var dialogue_animation_tree: AnimationTree = $AnimationPlayer/DialogueAnimationTree
@@ -259,7 +258,13 @@ func get_dialogue_camera_mount() -> Node3D:
 
 
 func get_dialogue_speaker_name() -> String:
-	return dialogue_speaker_name
+	var character_identity := get_node_or_null(CHARACTER_IDENTITY_PATH)
+	if character_identity != null and character_identity.has_method("get_dialogue_speaker_name"):
+		var dialogue_name := String(character_identity.call("get_dialogue_speaker_name")).strip_edges()
+		if not dialogue_name.is_empty():
+			return dialogue_name
+
+	return name
 
 
 func face_towards_position(target_position: Vector3) -> void:

@@ -264,11 +264,21 @@ func _start_dialogue_balloon(dialogue_resource: DialogueResource, start_title: S
 		return
 
 	_active_dialogue_resource = dialogue_resource
+	var dialogue_game_states: Array = [player, _dialogue_target_actor, self]
+	if player != null and player.has_method("get_dialogue_speaker_name"):
+		var player_dialogue_name := String(player.call("get_dialogue_speaker_name"))
+		dialogue_game_states.append({
+			"player_name": player_dialogue_name,
+			"reply_name": player_dialogue_name,
+			"echo_name": player_dialogue_name
+		})
+	if _dialogue_target != null and _dialogue_target.has_method("get_dialogue_game_states"):
+		dialogue_game_states.append_array(_dialogue_target.call("get_dialogue_game_states"))
 	_active_dialogue_balloon = dialogue_manager.show_dialogue_balloon_scene(
 		DIALOGUE_BALLOON_SCENE,
 		dialogue_resource,
 		start_title,
-		[player, _dialogue_target_actor, self]
+		dialogue_game_states
 	)
 
 	if _active_dialogue_balloon != null and _active_dialogue_balloon.has_signal("speaker_changed"):
