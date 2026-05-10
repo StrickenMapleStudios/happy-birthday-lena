@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://r1enyepipbe2" path="res://assets/scripts/interaction_source.gd" id="4_interaction"]
 [ext_resource type="Script" path="res://assets/scripts/character_identity_component.gd" id="5_identity_component"]
 [ext_resource type="Resource" path="res://assets/data/characters/player_identity.tres" id="6_identity_data"]
+[ext_resource type="Script" path="res://assets/scripts/audio_pool_player.gd" id="7_audio_pool"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_idle"]
 animation = &"Idle"
@@ -141,11 +142,14 @@ anim_player = NodePath("..")
 
 [node name="DialogueSpeakerPivot" type="Marker3D" parent="." index="2" unique_id=941024673]
 
-[node name="CharacterIdentity" type="Node" parent="." index="3"]
+[node name="FootstepAudioPool" type="Node" parent="." index="3"]
+script = ExtResource("7_audio_pool")
+
+[node name="CharacterIdentity" type="Node" parent="." index="4"]
 script = ExtResource("5_identity_component")
 identity_data = ExtResource("6_identity_data")
 
-[node name="InteractionSource" type="Area3D" parent="." index="4" unique_id=1045049301]
+[node name="InteractionSource" type="Area3D" parent="." index="5" unique_id=1045049301]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.1)
 collision_layer = 2
 collision_mask = 4
@@ -156,4 +160,4 @@ script = ExtResource("4_interaction")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 1.35)
 shape = SubResource("BoxShape3D_interaction")
 
-[node name="DialogueCameraMount" parent="." index="5" unique_id=1623063665 instance=ExtResource("3_mount")]
+[node name="DialogueCameraMount" parent="." index="6" unique_id=1623063665 instance=ExtResource("3_mount")]
