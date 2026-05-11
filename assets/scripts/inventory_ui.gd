@@ -25,6 +25,7 @@ const BUTTON_GOLD_BG := Color(0.623529, 0.423529, 0.0, 0.65)
 const BUTTON_GOLD_BORDER := Color(1.0, 0.960784, 0.0, 1.0)
 const TITLE_GOLD := Color(1.0, 0.741176, 0.0, 1.0)
 const TITLE_OUTLINE := Color(0.368627, 0.270588, 0.0, 1.0)
+const TAB_HOVER_YELLOW := Color(1.0, 0.960784, 0.0, 1.0)
 const TAB_BUTTON_SIZE := Vector2(84.0, 66.0)
 const SLOT_BUTTON_SIZE := Vector2(74.0, 74.0)
 
@@ -151,14 +152,15 @@ func _build_slot_buttons() -> void:
 		button.focus_mode = Control.FOCUS_ALL
 		button.toggle_mode = true
 		button.button_group = _slot_button_group
-		button.clip_text = true
-		button.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
-		button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		button.clip_contents = true
 		button.set_meta("slot_index", slot_index)
+		button.set_meta("icon_label", _create_slot_icon_label())
+		button.set_meta("count_label", _create_slot_count_label())
 		button.pressed.connect(_on_slot_button_pressed.bind(slot_index))
 		button.focus_entered.connect(_on_slot_button_focus_entered.bind(slot_index))
 		button.mouse_entered.connect(_on_slot_button_mouse_entered.bind(slot_index))
+		button.add_child(button.get_meta("icon_label") as Label)
+		button.add_child(button.get_meta("count_label") as Label)
 		slot_grid.add_child(button)
 		_slot_buttons.append(button)
 
@@ -177,6 +179,39 @@ func _apply_tab_button_text() -> void:
 	keys_tab_button.text = "K"
 	regular_tab_button.text = "B"
 	quest_tab_button.text = "Q"
+
+
+func _create_slot_icon_label() -> Label:
+	var label := Label.new()
+	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_override("font", BODY_FONT)
+	label.add_theme_font_size_override("font_size", 36)
+	label.add_theme_color_override("font_color", BUTTON_HOVER_FONT_COLOR)
+	label.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.55))
+	label.add_theme_constant_override("outline_size", 6)
+	return label
+
+
+func _create_slot_count_label() -> Label:
+	var label := Label.new()
+	label.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	label.offset_left = -24.0
+	label.offset_top = -22.0
+	label.offset_right = -8.0
+	label.offset_bottom = -6.0
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	label.add_theme_font_override("font", BODY_FONT)
+	label.add_theme_font_size_override("font_size", 20)
+	label.add_theme_color_override("font_color", BUTTON_HOVER_FONT_COLOR)
+	label.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.7))
+	label.add_theme_constant_override("outline_size", 5)
+	label.visible = false
+	return label
 
 
 func _refresh_from_inventory() -> void:
@@ -316,6 +351,8 @@ func _update_slot_buttons() -> void:
 
 
 func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category: bool) -> void:
+	var icon_label := button.get_meta("icon_label") as Label
+	var count_label := button.get_meta("count_label") as Label
 	var normal_style: StyleBoxFlat = StyleBoxFlat.new()
 	normal_style.bg_color = BUTTON_DARK_BG
 	normal_style.border_color = BUTTON_DARK_BORDER
@@ -341,30 +378,30 @@ func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category:
 	button.add_theme_stylebox_override("focus", focus_style)
 	button.add_theme_stylebox_override("pressed", focus_style)
 	button.add_theme_stylebox_override("hover_pressed", focus_style)
-	button.add_theme_font_size_override("font_size", 34 if is_key_category else 36)
-	button.add_theme_color_override("font_color", BUTTON_FONT_COLOR)
-	button.add_theme_color_override("font_focus_color", BUTTON_HOVER_FONT_COLOR)
-	button.add_theme_color_override("font_hover_color", BUTTON_HOVER_FONT_COLOR)
-	button.add_theme_color_override("font_pressed_color", BUTTON_HOVER_FONT_COLOR)
-	button.add_theme_color_override("font_hover_pressed_color", BUTTON_HOVER_FONT_COLOR)
-	button.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.55))
-	button.add_theme_constant_override("outline_size", 6)
-	button.add_theme_font_override("font", BODY_FONT)
+	button.text = ""
 	button.set_pressed_no_signal(false)
+	if icon_label != null:
+		icon_label.add_theme_font_size_override("font_size", 34 if is_key_category else 36)
 
 	var item: InventoryItemData = slot.get("item") as InventoryItemData
 	if item == null:
-		button.text = ""
 		button.tooltip_text = ""
 		button.disabled = false
+		if icon_label != null:
+			icon_label.text = ""
+		if count_label != null:
+			count_label.text = ""
+			count_label.visible = false
 		return
 
 	var quantity: int = int(slot.get("quantity", 1))
-	button.text = item.icon_text
-	if quantity > 1:
-		button.text += "\n%d" % quantity
 	button.tooltip_text = item.display_name
 	button.disabled = false
+	if icon_label != null:
+		icon_label.text = item.icon_text
+	if count_label != null:
+		count_label.text = str(quantity)
+		count_label.visible = quantity > 1
 
 
 func _update_visual_state() -> void:
@@ -395,12 +432,12 @@ func _update_tab_styles(active_category: StringName) -> void:
 		button.add_theme_constant_override("outline_size", 6)
 		button.add_theme_color_override(
 			"font_color",
-			TITLE_GOLD if is_active else BUTTON_FONT_COLOR
+			TAB_HOVER_YELLOW if is_active else BUTTON_FONT_COLOR
 		)
-		button.add_theme_color_override("font_hover_color", TITLE_GOLD if is_active else TITLE_GOLD)
-		button.add_theme_color_override("font_focus_color", TITLE_GOLD if is_active else TITLE_GOLD)
-		button.add_theme_color_override("font_pressed_color", TITLE_GOLD)
-		button.add_theme_color_override("font_hover_pressed_color", TITLE_GOLD)
+		button.add_theme_color_override("font_hover_color", TAB_HOVER_YELLOW)
+		button.add_theme_color_override("font_focus_color", TAB_HOVER_YELLOW)
+		button.add_theme_color_override("font_pressed_color", TAB_HOVER_YELLOW)
+		button.add_theme_color_override("font_hover_pressed_color", TAB_HOVER_YELLOW)
 		button.add_theme_color_override("font_outline_color", TITLE_OUTLINE)
 		button.set_pressed_no_signal(is_active)
 		button.tooltip_text = TAB_TITLES[category]
