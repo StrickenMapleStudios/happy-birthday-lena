@@ -37,7 +37,6 @@ func _draw() -> void:
 	_draw_tab_segment(center, radius, inner_radius, selected_tab_index)
 	_draw_side_diamond(center + Vector2.LEFT * get_diamond_radius(), GOLD_ACCENT_COLOR)
 	_draw_side_diamond(center + Vector2.RIGHT * get_diamond_radius(), GOLD_ACCENT_COLOR)
-	_draw_bottom_breaks(center, radius)
 
 
 func _draw_tab_segment(center: Vector2, outer_radius: float, inner_radius: float, tab_index: int) -> void:
@@ -72,16 +71,6 @@ func _draw_side_diamond(center: Vector2, color: Color) -> void:
 		center + Vector2(-size_offset, 0.0),
 	])
 	draw_colored_polygon(points, color)
-
-
-func _draw_bottom_breaks(center: Vector2, radius: float) -> void:
-	var left_start: float = deg_to_rad(104.0)
-	var left_end: float = deg_to_rad(128.0)
-	var right_start: float = deg_to_rad(52.0)
-	var right_end: float = deg_to_rad(76.0)
-	draw_arc(center, radius, left_start, left_end, 20, INNER_FILL_COLOR, 6.0, true)
-	draw_arc(center, radius, right_start, right_end, 20, INNER_FILL_COLOR, 6.0, true)
-
 
 func get_ring_center() -> Vector2:
 	return size * 0.5

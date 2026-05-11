@@ -74,6 +74,7 @@ func _ready() -> void:
 	hints_right_button.pressed.connect(_toggle_hints)
 	reset_defaults_button.pressed.connect(_reset_options_to_defaults)
 	apply_button.pressed.connect(_apply_options)
+	UINavigation.bind_hover_focus_controls(focusable_buttons)
 
 	for index in volume_sliders.size():
 		volume_sliders[index].value_changed.connect(_on_volume_slider_changed.bind(index))

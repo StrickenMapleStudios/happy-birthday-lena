@@ -16,8 +16,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	confirm_button.pressed.connect(func() -> void: confirmed.emit())
 	cancel_button.pressed.connect(func() -> void: canceled.emit())
-	confirm_button.mouse_entered.connect(confirm_button.grab_focus)
-	cancel_button.mouse_entered.connect(cancel_button.grab_focus)
+	UINavigation.bind_hover_focus_controls([confirm_button, cancel_button])
 
 
 func show_dialog(

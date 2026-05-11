@@ -170,6 +170,8 @@ func _configure_tab_buttons() -> void:
 		button.button_group = _tab_button_group
 		button.custom_minimum_size = TAB_BUTTON_SIZE
 
+	UINavigation.bind_hover_focus_controls(_slot_buttons)
+
 
 func _apply_tab_button_text() -> void:
 	keys_tab_button.text = "K"
@@ -395,9 +397,10 @@ func _update_tab_styles(active_category: StringName) -> void:
 			"font_color",
 			TITLE_GOLD if is_active else BUTTON_FONT_COLOR
 		)
-		button.add_theme_color_override("font_hover_color", TITLE_GOLD)
-		button.add_theme_color_override("font_focus_color", TITLE_GOLD)
+		button.add_theme_color_override("font_hover_color", TITLE_GOLD if is_active else TITLE_GOLD)
+		button.add_theme_color_override("font_focus_color", TITLE_GOLD if is_active else TITLE_GOLD)
 		button.add_theme_color_override("font_pressed_color", TITLE_GOLD)
+		button.add_theme_color_override("font_hover_pressed_color", TITLE_GOLD)
 		button.add_theme_color_override("font_outline_color", TITLE_OUTLINE)
 		button.set_pressed_no_signal(is_active)
 		button.tooltip_text = TAB_TITLES[category]

@@ -28,6 +28,7 @@ func _ready() -> void:
 	exit_conversation_button.icon = _mirrored_exit_icon
 	resume_button.pressed.connect(func() -> void: resume_requested.emit())
 	exit_conversation_button.pressed.connect(func() -> void: exit_dialogue_requested.emit())
+	UINavigation.bind_hover_focus_controls(menu_buttons)
 
 
 func _unhandled_input(event: InputEvent) -> void:

@@ -33,10 +33,11 @@ func _ready() -> void:
 	new_game_button.pressed.connect(_on_new_game_pressed)
 	options_button.pressed.connect(_show_options_screen)
 	exit_button.pressed.connect(_on_exit_pressed)
+	UINavigation.bind_hover_focus_controls(menu_buttons)
+	UINavigation.bind_hover_focus_controls(save_slot_buttons)
 
 	for index in save_slot_buttons.size():
 		save_slot_buttons[index].pressed.connect(_on_save_slot_pressed.bind(index))
-		save_slot_buttons[index].mouse_entered.connect(_sync_hover_focus.bind(save_slot_buttons[index]))
 
 	confirm_dialog.confirmed.connect(_confirm_exit)
 	confirm_dialog.canceled.connect(_hide_confirm_dialog)
@@ -200,15 +201,6 @@ func _set_button_focus_enabled(buttons: Array[Button], enabled: bool) -> void:
 			continue
 
 		button.focus_mode = Control.FOCUS_ALL if enabled else Control.FOCUS_NONE
-
-
-func _sync_hover_focus(button: Button) -> void:
-	if _slot_selection_locked or bool(confirm_dialog.call("is_open")):
-		return
-
-	if save_slot_screen.visible:
-		button.grab_focus()
-
 
 func _set_character_standing(active: bool) -> void:
 	if menu_character != null and menu_character.has_method("set_standing"):

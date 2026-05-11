@@ -3,6 +3,23 @@ extends RefCounted
 class_name UINavigation
 
 
+static func bind_hover_focus_controls(controls: Array) -> void:
+	for control_variant in controls:
+		var control := control_variant as Control
+		bind_hover_focus_control(control)
+
+
+static func bind_hover_focus_control(control: Control) -> void:
+	if control == null or not is_instance_valid(control):
+		return
+
+	var on_hover_callable := Callable(UINavigation, "_grab_hover_focus").bind(control)
+	if control.mouse_entered.is_connected(on_hover_callable):
+		return
+
+	control.mouse_entered.connect(on_hover_callable)
+
+
 static func handle_linear_navigation_input(event: InputEvent, controls: Array) -> bool:
 	var active_controls := _get_active_controls(controls)
 	if active_controls.is_empty():
@@ -123,6 +140,29 @@ static func _is_key_pressed(event: InputEvent, keycodes: Array[Key]) -> bool:
 		return false
 
 	return keycodes.has(event.keycode)
+
+
+static func _grab_hover_focus(control: Control) -> void:
+	if control == null or not is_instance_valid(control):
+		return
+	if not control.visible:
+		return
+	if control.focus_mode == Control.FOCUS_NONE:
+		return
+	if control is BaseButton and (control as BaseButton).disabled:
+		return
+
+	var viewport := control.get_viewport()
+	if viewport == null:
+		return
+
+	var focus_owner := viewport.gui_get_focus_owner()
+	if focus_owner == control:
+		return
+
+	if focus_owner != null:
+		viewport.gui_release_focus()
+	control.grab_focus()
 
 
 static func _get_active_controls(controls: Array) -> Array[Control]:

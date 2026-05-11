@@ -43,6 +43,7 @@ func _ready() -> void:
 	exit_button.pressed.connect(_prompt_quit)
 	confirm_dialog.confirmed.connect(_on_confirmed)
 	confirm_dialog.canceled.connect(_on_confirm_canceled)
+	UINavigation.bind_hover_focus_controls(menu_buttons)
 	options_panel.visible = false
 	options_panel.call("set_focus_enabled", false)
 	confirm_dialog.call("hide_dialog")

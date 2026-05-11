@@ -2,6 +2,8 @@ extends Button
 
 class_name DialogueResponseOption
 
+const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
+
 @onready var _text_label: Label = $Content/TextLabel
 @onready var _marker: Label = $Content/Marker
 
@@ -20,6 +22,7 @@ func _ready() -> void:
 	focus_exited.connect(_update_visual_state)
 	mouse_entered.connect(_update_visual_state)
 	mouse_exited.connect(_update_visual_state)
+	UINavigation.bind_hover_focus_control(self)
 	_apply_response()
 	_update_visual_state()
 
