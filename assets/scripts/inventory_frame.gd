@@ -6,16 +6,22 @@ const OUTER_RING_COLOR := Color(0.16, 0.2, 0.22, 0.84)
 const INNER_FILL_COLOR := Color(0.08, 0.11, 0.1, 0.42)
 const GOLD_LINE_COLOR := Color(0.94, 0.77, 0.18, 0.7)
 const GOLD_ACCENT_COLOR := Color(1.0, 0.83, 0.18, 1.0)
-const TAB_FILL_COLOR := Color(0.76, 0.65, 0.16, 0.78)
-const TAB_CENTER_ANGLES_DEGREES := [-130.0, -90.0, -50.0]
+const TAB_HOVER_FILL_COLOR := Color(0.76, 0.65, 0.16, 0.78)
+const TAB_ACTIVE_FILL_COLOR := Color(0.76, 0.65, 0.16, 1.0)
+const TAB_CENTER_ANGLES_DEGREES := [-122.0, -90.0, -58.0]
 
 @export_range(0.1, 0.49, 0.01) var ring_thickness_ratio: float = 0.21
 @export_range(0.1, 0.49, 0.01) var inner_gap_ratio: float = 0.08
-@export_range(8.0, 45.0, 1.0) var tab_half_span_degrees: float = 18.0
+@export_range(8.0, 45.0, 1.0) var tab_half_span_degrees: float = 16.0
 
 var selected_tab_index: int = 1:
 	set(value):
 		selected_tab_index = clampi(value, 0, 2)
+		queue_redraw()
+
+var hovered_tab_index: int = -1:
+	set(value):
+		hovered_tab_index = clampi(value, -1, 2)
 		queue_redraw()
 
 
@@ -34,30 +40,34 @@ func _draw() -> void:
 	draw_arc(center, inner_radius, 0.0, TAU, 160, GOLD_LINE_COLOR, 2.5, true)
 	draw_circle(center, content_radius, INNER_FILL_COLOR)
 
-	_draw_tab_segment(center, radius, inner_radius, selected_tab_index)
+	if hovered_tab_index >= 0 and hovered_tab_index != selected_tab_index:
+		_draw_tab_segment(center, radius, inner_radius, hovered_tab_index, TAB_HOVER_FILL_COLOR)
+	_draw_tab_segment(center, radius, inner_radius, selected_tab_index, TAB_ACTIVE_FILL_COLOR)
 	_draw_side_diamond(center + Vector2.LEFT * get_diamond_radius(), GOLD_ACCENT_COLOR)
 	_draw_side_diamond(center + Vector2.RIGHT * get_diamond_radius(), GOLD_ACCENT_COLOR)
 
 
-func _draw_tab_segment(center: Vector2, outer_radius: float, inner_radius: float, tab_index: int) -> void:
+func _draw_tab_segment(center: Vector2, outer_radius: float, inner_radius: float, tab_index: int, fill_color: Color) -> void:
 	var center_angle: float = deg_to_rad(TAB_CENTER_ANGLES_DEGREES[tab_index])
 	var segment_span: float = deg_to_rad(tab_half_span_degrees)
 	var start_angle: float = center_angle - segment_span
 	var end_angle: float = center_angle + segment_span
 	var points: PackedVector2Array = PackedVector2Array()
 	var steps: int = 24
+	var outer_fill_radius: float = outer_radius - 1.0
+	var inner_fill_radius: float = inner_radius + 1.0
 
 	for step in range(steps + 1):
 		var t: float = float(step) / float(steps)
 		var angle: float = lerpf(start_angle, end_angle, t)
-		points.append(center + Vector2.from_angle(angle) * outer_radius)
+		points.append(center + Vector2.from_angle(angle) * outer_fill_radius)
 
 	for step in range(steps, -1, -1):
 		var t: float = float(step) / float(steps)
 		var angle: float = lerpf(start_angle, end_angle, t)
-		points.append(center + Vector2.from_angle(angle) * inner_radius)
+		points.append(center + Vector2.from_angle(angle) * inner_fill_radius)
 
-	draw_colored_polygon(points, TAB_FILL_COLOR)
+	draw_colored_polygon(points, fill_color)
 	draw_arc(center, outer_radius, start_angle, end_angle, 48, GOLD_LINE_COLOR, 3.0, true)
 	draw_arc(center, inner_radius, start_angle, end_angle, 48, GOLD_LINE_COLOR, 2.5, true)
 

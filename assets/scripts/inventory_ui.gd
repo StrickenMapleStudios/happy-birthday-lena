@@ -65,6 +65,12 @@ func _ready() -> void:
 	keys_tab_button.pressed.connect(func() -> void: _select_category(InventoryData.CATEGORY_KEYS))
 	regular_tab_button.pressed.connect(func() -> void: _select_category(InventoryData.CATEGORY_REGULAR))
 	quest_tab_button.pressed.connect(func() -> void: _select_category(InventoryData.CATEGORY_QUEST))
+	keys_tab_button.mouse_entered.connect(func() -> void: _set_hovered_tab(InventoryData.CATEGORY_KEYS))
+	regular_tab_button.mouse_entered.connect(func() -> void: _set_hovered_tab(InventoryData.CATEGORY_REGULAR))
+	quest_tab_button.mouse_entered.connect(func() -> void: _set_hovered_tab(InventoryData.CATEGORY_QUEST))
+	keys_tab_button.mouse_exited.connect(_clear_hovered_tab)
+	regular_tab_button.mouse_exited.connect(_clear_hovered_tab)
+	quest_tab_button.mouse_exited.connect(_clear_hovered_tab)
 
 	_build_slot_buttons()
 	_configure_tab_buttons()
@@ -146,6 +152,7 @@ func open() -> void:
 
 func close() -> void:
 	menu_root.visible = false
+	_clear_hovered_tab()
 
 
 func _build_slot_buttons() -> void:
@@ -244,6 +251,18 @@ func _select_category(category: StringName) -> void:
 	if _inventory == null:
 		return
 	_inventory.set_selected_category(category)
+
+
+func _set_hovered_tab(category: StringName) -> void:
+	if frame == null:
+		return
+	frame.hovered_tab_index = int(CATEGORY_TO_TAB.get(category, -1))
+
+
+func _clear_hovered_tab() -> void:
+	if frame == null:
+		return
+	frame.hovered_tab_index = -1
 
 
 func _on_slot_button_pressed(slot_index: int) -> void:
@@ -451,4 +470,4 @@ func _update_tab_styles(active_category: StringName) -> void:
 		button.add_theme_color_override("font_hover_pressed_color", TAB_HOVER_YELLOW if is_active else TITLE_GOLD)
 		button.add_theme_color_override("font_outline_color", TITLE_OUTLINE)
 		button.set_pressed_no_signal(is_active)
-		button.tooltip_text = TAB_TITLES[category]
+		button.tooltip_text = ""
