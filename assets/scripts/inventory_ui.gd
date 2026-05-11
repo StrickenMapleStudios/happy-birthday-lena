@@ -185,7 +185,7 @@ func _refresh_from_inventory() -> void:
 
 
 func _on_category_changed(_category: StringName) -> void:
-	_update_visual_state()
+	_refresh_from_inventory()
 	_focus_active_slot()
 
 

@@ -92,7 +92,7 @@ func set_selected_category(category: StringName) -> void:
 		return
 
 	_selected_category = category
-	_ensure_valid_selection_for_category(category)
+	_reset_selection_for_category(category)
 	category_changed.emit(category)
 	selection_changed.emit(category, get_selected_slot_index(category))
 
@@ -151,6 +151,15 @@ func _ensure_valid_selection_for_category(category: StringName) -> void:
 	var current_index: int = clampi(get_selected_slot_index(category), 0, slots.size() - 1)
 	if slots[current_index].get("item") != null:
 		_selected_slot_by_category[category] = current_index
+		return
+
+	_selected_slot_by_category[category] = find_first_occupied_slot_index(category)
+
+
+func _reset_selection_for_category(category: StringName) -> void:
+	var slots: Array = get_slots(category)
+	if slots.is_empty():
+		_selected_slot_by_category[category] = 0
 		return
 
 	_selected_slot_by_category[category] = find_first_occupied_slot_index(category)
