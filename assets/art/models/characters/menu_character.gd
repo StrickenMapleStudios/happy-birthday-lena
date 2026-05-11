@@ -1,4 +1,4 @@
-extends Node3D
+extends CharacterBody3D
 
 signal goodbye_finished
 
@@ -18,8 +18,8 @@ const LEG_SWINGING_SPEED_SCALE := 1.7
 const SITTING_TO_STANDING_SPEED_SCALE := 1.8
 const PREPARED_SPEED_SCALE_META := &"prepared_speed_scale"
 
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
-@onready var animation_tree: AnimationTree = $AnimationPlayer/AnimationTree
+@onready var animation_player: AnimationPlayer = $Model/AnimationPlayer
+@onready var animation_tree: AnimationTree = $Model/AnimationPlayer/AnimationTree
 
 var _standing: bool = false
 var _goodbye_in_progress: bool = false

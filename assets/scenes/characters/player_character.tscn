@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://r1enyepipbe2" path="res://assets/scripts/interaction_source.gd" id="4_interaction"]
 [ext_resource type="Script" path="res://assets/scripts/character_identity_component.gd" id="5_identity_component"]
 [ext_resource type="Resource" path="res://assets/data/characters/player_identity.tres" id="6_identity_data"]
+[ext_resource type="PackedScene" path="res://assets/scenes/common/character_collision_shape.tscn" id="7_collision_shape"]
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_idle"]
 animation = &"Idle"
 
@@ -81,10 +82,15 @@ graph_offset = Vector2(-72, -6)
 [sub_resource type="BoxShape3D" id="BoxShape3D_interaction"]
 size = Vector3(2.8, 2.8, 2.4)
 
-[node name="PlayerCharacter" unique_id=77292897 instance=ExtResource("1_glb")]
+[node name="PlayerCharacter" type="CharacterBody3D" unique_id=77292897]
+motion_mode = 1
 script = ExtResource("2_script")
 
-[node name="Skeleton3D" parent="Rig" parent_id_path=PackedInt32Array(1617534080) index="0" unique_id=1001129209]
+[node name="CollisionShape3D" parent="." index="0" instance=ExtResource("7_collision_shape")]
+
+[node name="Model" parent="." index="1" instance=ExtResource("1_glb")]
+
+[node name="Skeleton3D" parent="Model/Rig" index="0" unique_id=1001129209]
 bones/0/position = Vector3(0, -4.286089, -1.7575461)
 bones/1/position = Vector3(0.003718821, -0.0594041, -1.6887507)
 bones/1/rotation = Quaternion(-0.47282243, 0.526142, -0.47245717, 0.5257356)
@@ -125,15 +131,15 @@ bones/39/position = Vector3(0.48740414, 0.21616471, -0.14989355)
 bones/40/position = Vector3(-0.6239013, -0.03892064, -1.9292506)
 bones/41/position = Vector3(-0.48740417, 0.21616483, -0.14989355)
 
-[node name="hat_2" parent="Rig/Skeleton3D" index="0" unique_id=1468740649]
+[node name="hat_2" parent="Model/Rig/Skeleton3D" index="0" unique_id=1468740649]
 transform = Transform3D(1.3659678, -0.028279578, -0.019032495, 0.034084756, 1.1231414, 0.77744734, -0.00044637822, -0.7776808, 1.1234988, -0.029868808, -0.104537845, -1.8004179)
 
-[node name="AnimationTree" type="AnimationTree" parent="AnimationPlayer" parent_id_path=PackedInt32Array(1973788001) index="0" unique_id=1309974918]
+[node name="AnimationTree" type="AnimationTree" parent="Model/AnimationPlayer" index="0" unique_id=1309974918]
 root_node = NodePath("../..")
 tree_root = SubResource("AnimationNodeStateMachine_test_movement")
 anim_player = NodePath("..")
 
-[node name="DialogueAnimationTree" type="AnimationTree" parent="AnimationPlayer" parent_id_path=PackedInt32Array(1973788001) index="1"]
+[node name="DialogueAnimationTree" type="AnimationTree" parent="Model/AnimationPlayer" index="1"]
 active = false
 tree_root = SubResource("AnimationNodeStateMachine_dialogue")
 anim_player = NodePath("..")

@@ -1,13 +1,13 @@
-extends Node3D
+extends CharacterBody3D
 
 const ANIMATION_IDLE := "Idle"
 const CHARACTER_IDENTITY_PATH := ^"CharacterIdentity"
 
-@export var visual_root_path: NodePath = ^"Rig"
+@export var visual_root_path: NodePath = ^"Model/Rig"
 @export var player_dialogue_anchor_path: NodePath = ^"PlayerDialogueAnchor"
 
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
-@onready var dialogue_animation_tree: AnimationTree = $AnimationPlayer/DialogueAnimationTree
+@onready var animation_player: AnimationPlayer = $Model/AnimationPlayer
+@onready var dialogue_animation_tree: AnimationTree = $Model/AnimationPlayer/DialogueAnimationTree
 
 var _dialogue_animation_mode_active := false
 var _saved_animation_tree: AnimationTree

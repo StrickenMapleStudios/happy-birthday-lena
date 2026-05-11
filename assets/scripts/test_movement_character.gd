@@ -1,4 +1,4 @@
-extends Node3D
+extends CharacterBody3D
 
 const WALKING_TURN_SPEED := 6.0
 const RUNNING_TURN_SPEED := 9.0
@@ -32,10 +32,12 @@ const STATE_RUNNING := "Running"
 const STATE_NARUTO_RUNNING := "NarutoRunning"
 const PREPARED_SPEED_SCALE_META := &"prepared_speed_scale"
 const CHARACTER_IDENTITY_PATH := ^"CharacterIdentity"
+const MAX_COLLISION_SLIDES := 4
 
-@onready var animation_tree: AnimationTree = $AnimationPlayer/AnimationTree
-@onready var dialogue_animation_tree: AnimationTree = $AnimationPlayer/DialogueAnimationTree
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var model: Node3D = $Model
+@onready var animation_tree: AnimationTree = $Model/AnimationPlayer/AnimationTree
+@onready var dialogue_animation_tree: AnimationTree = $Model/AnimationPlayer/DialogueAnimationTree
+@onready var animation_player: AnimationPlayer = $Model/AnimationPlayer
 
 var _playback: AnimationNodeStateMachinePlayback
 var _current_state := StringName()
@@ -224,7 +226,16 @@ func _apply_root_motion() -> void:
 	if root_motion.is_zero_approx():
 		return
 
-	global_position += global_transform.basis * root_motion
+	var remaining_motion := global_transform.basis * root_motion
+	for _slide_index in range(MAX_COLLISION_SLIDES):
+		if remaining_motion.is_zero_approx():
+			break
+
+		var collision := move_and_collide(remaining_motion)
+		if collision == null:
+			break
+
+		remaining_motion = collision.get_remainder().slide(collision.get_normal())
 
 
 func handle_event(event_name: StringName) -> void:
@@ -275,7 +286,7 @@ func set_controls_enabled(value: bool) -> void:
 
 
 func set_character_visible(value: bool) -> void:
-	$Rig.visible = value
+	model.visible = value
 
 
 func enter_dialogue_animation_mode(_is_talking: bool) -> void:

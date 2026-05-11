@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cuvqsplyq6dy6" path="res://assets/art/models/characters/character.glb" id="2_ugn2o"]
 [ext_resource type="PackedScene" uid="uid://b4vwbq1fnyglj" path="res://assets/art/models/menu/ground.glb" id="3_ugn2o"]
 [ext_resource type="Script" uid="uid://d2cshtjt3o6ep" path="res://assets/art/models/characters/menu_character.gd" id="3_xuqax"]
+[ext_resource type="PackedScene" path="res://assets/scenes/common/character_collision_shape.tscn" id="4_character_collision"]
 [ext_resource type="PackedScene" uid="uid://p8ojij8lhtbr" path="res://addons/Free Forest Nature Pack/Trees/Oak/Flat_Tree_Oak_hero_green.glb" id="5_fmrf6"]
 [ext_resource type="PackedScene" uid="uid://3uaj1uqgh8rl" path="res://addons/Free Forest Nature Pack/Trees/Pine/Flat_Tree_Pine_hero.glb" id="6_0s7ae"]
 [ext_resource type="PackedScene" uid="uid://cqv5266rqui2y" path="res://addons/Free Forest Nature Pack/Trees/Pine/Flat_Tree_Pine_large.glb" id="7_6mkww"]
@@ -229,10 +230,15 @@ cast_shadow = 0
 mesh = SubResource("QuadMesh_nwe8m")
 surface_material_override/0 = SubResource("ShaderMaterial_8f2v2")
 
-[node name="character" parent="." unique_id=529611624 instance=ExtResource("2_ugn2o")]
+[node name="character" type="CharacterBody3D" parent="." unique_id=529611624]
+motion_mode = 1
 script = ExtResource("3_xuqax")
 
-[node name="Skeleton3D" parent="character/Rig" parent_id_path=PackedInt32Array(529611624, 631016927) index="0" unique_id=1302635700]
+[node name="CollisionShape3D" parent="character" index="0" instance=ExtResource("4_character_collision")]
+
+[node name="Model" parent="character" index="1" instance=ExtResource("2_ugn2o")]
+
+[node name="Skeleton3D" parent="character/Model/Rig" index="0" unique_id=1302635700]
 transform = Transform3D(0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
 bones/0/position = Vector3(3.5527137e-14, -3.6064699, -2.757546)
 bones/1/position = Vector3(0.003718836, -0.17532344, -1.5893912)
@@ -274,13 +280,13 @@ bones/39/position = Vector3(0.48740414, 0.21616471, -0.14989354)
 bones/40/position = Vector3(-0.62390125, -0.691926, -1.7107518)
 bones/41/position = Vector3(-0.48740417, 0.21616483, -0.1498935)
 
-[node name="hat_2" parent="character/Rig/Skeleton3D" index="0" unique_id=493438719]
+[node name="hat_2" parent="character/Model/Rig/Skeleton3D" index="0" unique_id=493438719]
 transform = Transform3D(1.3639946, 0.060153875, 0.05414158, -0.08086198, 1.0506068, 0.8698963, -0.00333281, -0.8715737, 1.0523239, 0.090027265, 0.3702007, -3.580405)
 
-[node name="hat" parent="character/Rig/Skeleton3D/hat_2" index="0" unique_id=1977106650]
+[node name="hat" parent="character/Model/Rig/Skeleton3D/hat_2" index="0" unique_id=1977106650]
 transform = Transform3D(0.99968886, 0.02494508, -0.00032679713, -0.020696668, 0.8219749, -0.5691469, -0.01392881, 0.5689771, 0.8222344, -0.054496896, -2.533786, -1.7157384)
 
-[node name="AnimationTree" type="AnimationTree" parent="character/AnimationPlayer" parent_id_path=PackedInt32Array(529611624, 985897381) index="0" unique_id=1429176821]
+[node name="AnimationTree" type="AnimationTree" parent="character/Model/AnimationPlayer" index="0" unique_id=1429176821]
 root_node = NodePath("../..")
 tree_root = SubResource("AnimationNodeStateMachine_pw4oi")
 anim_player = NodePath("..")
@@ -339,5 +345,5 @@ transform = Transform3D(0.346012, 0, -0.076364, 0, 0.32, 0, 0.076364, 0, 0.34601
 transform = Transform3D(0.28198, 0, 0.080678, 0, 0.25, 0, -0.080678, 0, 0.28198, 11.421, -1.08, -4.217)
 
 [editable path="bench2"]
-[editable path="character"]
+[editable path="character/Model"]
 [editable path="ground2"]
