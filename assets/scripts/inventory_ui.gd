@@ -32,6 +32,11 @@ const TITLE_OUTLINE := Color(0.368627, 0.270588, 0.0, 1.0)
 const TAB_HOVER_YELLOW := Color(1.0, 0.960784, 0.0, 1.0)
 const TAB_BUTTON_SIZE := Vector2(84.0, 66.0)
 const SLOT_BUTTON_SIZE := Vector2(74.0, 74.0)
+const TAB_ICON_SIZE := Vector2(40.0, 40.0)
+const SLOT_NEW_BADGE_SIZE := Vector2(12.0, 12.0)
+const TAB_NEW_BADGE_SIZE := Vector2(10.0, 10.0)
+const NEW_BADGE_FILL := Color(0.2, 0.66, 1.0, 1.0)
+const NEW_BADGE_BORDER := Color(0.88, 0.96, 1.0, 1.0)
 
 @onready var menu_root: Control = $MenuRoot
 @onready var frame: InventoryFrame = $MenuRoot/Center/Frame
@@ -167,11 +172,13 @@ func _build_slot_buttons() -> void:
 		button.set_meta("slot_index", slot_index)
 		button.set_meta("icon_label", _create_slot_icon_label())
 		button.set_meta("count_label", _create_slot_count_label())
+		button.set_meta("new_badge", _create_new_badge(SLOT_NEW_BADGE_SIZE))
 		button.pressed.connect(_on_slot_button_pressed.bind(slot_index))
 		button.focus_entered.connect(_on_slot_button_focus_entered.bind(slot_index))
 		button.mouse_entered.connect(_on_slot_button_mouse_entered.bind(slot_index))
 		button.add_child(button.get_meta("icon_label") as Label)
 		button.add_child(button.get_meta("count_label") as Label)
+		button.add_child(button.get_meta("new_badge") as Control)
 		slot_grid.add_child(button)
 		_slot_buttons.append(button)
 
@@ -206,7 +213,7 @@ func _ensure_tab_icon(button: Button, texture: Texture2D) -> void:
 		icon_rect.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon_rect.custom_minimum_size = Vector2(34.0, 34.0)
+		icon_rect.custom_minimum_size = TAB_ICON_SIZE
 		icon_rect.set_anchors_preset(Control.PRESET_CENTER)
 		icon_rect.position = -icon_rect.custom_minimum_size * 0.5
 		var icon_material := ShaderMaterial.new()
@@ -216,6 +223,9 @@ func _ensure_tab_icon(button: Button, texture: Texture2D) -> void:
 		icon_rect.material = icon_material
 		button.add_child(icon_rect)
 		button.set_meta("icon_rect", icon_rect)
+		var new_badge := _create_new_badge(TAB_NEW_BADGE_SIZE)
+		button.add_child(new_badge)
+		button.set_meta("new_badge", new_badge)
 
 	icon_rect.texture = texture
 
@@ -251,6 +261,25 @@ func _create_slot_count_label() -> Label:
 	label.add_theme_constant_override("outline_size", 5)
 	label.visible = false
 	return label
+
+
+func _create_new_badge(badge_size: Vector2) -> Control:
+	var badge := Panel.new()
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	badge.custom_minimum_size = badge_size
+	badge.size = badge_size
+	badge.visible = false
+
+	var style := StyleBoxFlat.new()
+	style.bg_color = NEW_BADGE_FILL
+	style.border_color = NEW_BADGE_BORDER
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+	style.set_corner_radius_all(int(minf(badge_size.x, badge_size.y) * 0.5))
+	badge.add_theme_stylebox_override("panel", style)
+	return badge
 
 
 func _refresh_from_inventory() -> void:
@@ -342,6 +371,10 @@ func _update_layout() -> void:
 		if icon_rect != null:
 			icon_rect.size = icon_rect.custom_minimum_size
 			icon_rect.position = (button.size - icon_rect.size) * 0.5
+			var new_badge := button.get_meta("new_badge") as Control
+			if new_badge != null:
+				new_badge.size = new_badge.custom_minimum_size
+				new_badge.position = icon_rect.position + (icon_rect.size * 0.5) + Vector2(10.0, 10.0) - (new_badge.size * 0.5)
 
 	slot_grid.size = grid_size
 	slot_grid.position = circle_center - (grid_size * 0.5)
@@ -408,6 +441,7 @@ func _update_slot_buttons() -> void:
 func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category: bool) -> void:
 	var icon_label := button.get_meta("icon_label") as Label
 	var count_label := button.get_meta("count_label") as Label
+	var new_badge := button.get_meta("new_badge") as Control
 	var normal_style: StyleBoxFlat = StyleBoxFlat.new()
 	normal_style.bg_color = BUTTON_DARK_BG
 	normal_style.border_color = BUTTON_DARK_BORDER
@@ -437,6 +471,9 @@ func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category:
 	button.set_pressed_no_signal(false)
 	if icon_label != null:
 		icon_label.add_theme_font_size_override("font_size", 34 if is_key_category else 36)
+	if new_badge != null:
+		new_badge.size = new_badge.custom_minimum_size
+		new_badge.position = (button.size * 0.5) + Vector2(15.0, 15.0) - (new_badge.size * 0.5)
 
 	var item: InventoryItemData = slot.get("item") as InventoryItemData
 	if item == null:
@@ -447,6 +484,8 @@ func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category:
 		if count_label != null:
 			count_label.text = ""
 			count_label.visible = false
+		if new_badge != null:
+			new_badge.visible = false
 		return
 
 	var quantity: int = int(slot.get("quantity", 1))
@@ -457,6 +496,8 @@ func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category:
 	if count_label != null:
 		count_label.text = str(quantity)
 		count_label.visible = quantity > 1
+	if new_badge != null:
+		new_badge.visible = bool(slot.get("is_new", false))
 
 
 func _update_visual_state() -> void:
@@ -496,3 +537,6 @@ func _update_tab_styles(active_category: StringName) -> void:
 		button.add_theme_color_override("font_outline_color", TITLE_OUTLINE)
 		button.set_pressed_no_signal(is_active)
 		button.tooltip_text = ""
+		var new_badge := button.get_meta("new_badge") as Control
+		if new_badge != null:
+			new_badge.visible = _inventory != null and _inventory.has_new_items(category)

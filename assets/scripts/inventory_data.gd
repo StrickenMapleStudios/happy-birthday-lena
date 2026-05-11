@@ -41,7 +41,8 @@ func add_item(item: InventoryItemData, quantity: int = 1) -> bool:
 
 	var remaining: int = quantity
 	if item.stackable:
-		for slot in slots:
+		for slot_index in range(slots.size()):
+			var slot: Dictionary = slots[slot_index]
 			if slot.get("item") != item:
 				continue
 			if int(slot.get("quantity", 0)) >= item.max_stack:
@@ -50,11 +51,13 @@ func add_item(item: InventoryItemData, quantity: int = 1) -> bool:
 			var space_left: int = item.max_stack - int(slot.get("quantity", 0))
 			var to_add: int = mini(space_left, remaining)
 			slot["quantity"] = int(slot.get("quantity", 0)) + to_add
+			_mark_slot_as_new(category, slot_index)
 			remaining -= to_add
 			if remaining <= 0:
 				break
 
-	for slot in slots:
+	for slot_index in range(slots.size()):
+		var slot: Dictionary = slots[slot_index]
 		if remaining <= 0:
 			break
 		if slot.get("item") != null:
@@ -66,6 +69,7 @@ func add_item(item: InventoryItemData, quantity: int = 1) -> bool:
 
 		slot["item"] = item
 		slot["quantity"] = stack_size
+		_mark_slot_as_new(category, slot_index)
 		remaining -= stack_size
 
 	if remaining == quantity:
@@ -93,6 +97,7 @@ func set_selected_category(category: StringName) -> void:
 
 	_selected_category = category
 	_reset_selection_for_category(category)
+	mark_selected_slot_viewed()
 	category_changed.emit(category)
 	selection_changed.emit(category, get_selected_slot_index(category))
 
@@ -115,6 +120,7 @@ func select_slot(slot_index: int, category: StringName = &"") -> void:
 	if _selected_category != category:
 		_selected_category = category
 		category_changed.emit(category)
+	mark_slot_viewed(clamped_index, category)
 	selection_changed.emit(category, clamped_index)
 
 
@@ -138,7 +144,46 @@ func find_first_occupied_slot_index(category: StringName) -> int:
 	return 0
 
 
+func is_slot_new(slot_index: int, category: StringName = &"") -> bool:
+	if category == &"":
+		category = _selected_category
+	var slots: Array = get_slots(category)
+	if slot_index < 0 or slot_index >= slots.size():
+		return false
+
+	return bool(slots[slot_index].get("is_new", false))
+
+
+func has_new_items(category: StringName) -> bool:
+	var slots: Array = get_slots(category)
+	for slot in slots:
+		if bool(slot.get("is_new", false)):
+			return true
+
+	return false
+
+
+func mark_selected_slot_viewed() -> void:
+	mark_slot_viewed(get_selected_slot_index(), _selected_category)
+
+
+func mark_slot_viewed(slot_index: int, category: StringName = &"") -> void:
+	if category == &"":
+		category = _selected_category
+	var slots: Array = get_slots(category)
+	if slot_index < 0 or slot_index >= slots.size():
+		return
+	if slots[slot_index].get("item") == null:
+		return
+	if not bool(slots[slot_index].get("is_new", false)):
+		return
+
+	slots[slot_index]["is_new"] = false
+	inventory_changed.emit()
+
+
 func emit_current_selection() -> void:
+	mark_selected_slot_viewed()
 	selection_changed.emit(_selected_category, get_selected_slot_index())
 
 
@@ -172,5 +217,14 @@ func _build_empty_slots() -> Array:
 			"index": slot_index,
 			"item": null,
 			"quantity": 0,
+			"is_new": false,
 		})
 	return slots
+
+
+func _mark_slot_as_new(category: StringName, slot_index: int) -> void:
+	var slots: Array = get_slots(category)
+	if slot_index < 0 or slot_index >= slots.size():
+		return
+
+	slots[slot_index]["is_new"] = true
