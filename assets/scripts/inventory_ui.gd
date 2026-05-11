@@ -7,6 +7,7 @@ signal close_requested
 const TITLE_FONT := preload("res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf")
 const BODY_FONT := preload("res://assets/art/fonts/Paytone_One/PaytoneOne-Regular.ttf")
 const UINavigation := preload("res://assets/scripts/ui_navigation.gd")
+const ICON_OUTLINE_SHADER := preload("res://assets/shaders/ui_icon_outline.gdshader")
 const KEY_ICON := preload("res://assets/art/sprites/key.png")
 const BACKPACK_ICON := preload("res://assets/art/sprites/backpack.png")
 const SCROLL_ICON := preload("res://assets/art/sprites/scroll.png")
@@ -181,11 +182,8 @@ func _configure_tab_buttons() -> void:
 		button.toggle_mode = true
 		button.button_group = _tab_button_group
 		button.custom_minimum_size = TAB_BUTTON_SIZE
-		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		button.expand_icon = false
-		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
-		button.add_theme_constant_override("icon_max_width", 34)
 		button.theme_type_variation = &""
+		button.clip_contents = false
 
 	UINavigation.bind_hover_focus_controls(_slot_buttons)
 
@@ -194,9 +192,32 @@ func _apply_tab_button_text() -> void:
 	keys_tab_button.text = ""
 	regular_tab_button.text = ""
 	quest_tab_button.text = ""
-	keys_tab_button.icon = KEY_ICON
-	regular_tab_button.icon = BACKPACK_ICON
-	quest_tab_button.icon = SCROLL_ICON
+	_ensure_tab_icon(keys_tab_button, KEY_ICON)
+	_ensure_tab_icon(regular_tab_button, BACKPACK_ICON)
+	_ensure_tab_icon(quest_tab_button, SCROLL_ICON)
+
+
+func _ensure_tab_icon(button: Button, texture: Texture2D) -> void:
+	var icon_rect := button.get_meta("icon_rect") as TextureRect
+	if icon_rect == null:
+		icon_rect = TextureRect.new()
+		icon_rect.name = "TabIcon"
+		icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon_rect.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon_rect.custom_minimum_size = Vector2(34.0, 34.0)
+		icon_rect.set_anchors_preset(Control.PRESET_CENTER)
+		icon_rect.position = -icon_rect.custom_minimum_size * 0.5
+		var icon_material := ShaderMaterial.new()
+		icon_material.shader = ICON_OUTLINE_SHADER
+		icon_material.set_shader_parameter("outline_color", Color(0.26, 0.18, 0.02, 0.92))
+		icon_material.set_shader_parameter("outline_size", 1.0)
+		icon_rect.material = icon_material
+		button.add_child(icon_rect)
+		button.set_meta("icon_rect", icon_rect)
+
+	icon_rect.texture = texture
 
 
 func _create_slot_icon_label() -> Label:
@@ -317,6 +338,10 @@ func _update_layout() -> void:
 		var button: Button = tab_buttons[tab_index]
 		button.size = TAB_BUTTON_SIZE
 		button.position = frame.get_tab_button_center(tab_index) - (TAB_BUTTON_SIZE * 0.5)
+		var icon_rect := button.get_meta("icon_rect") as TextureRect
+		if icon_rect != null:
+			icon_rect.size = icon_rect.custom_minimum_size
+			icon_rect.position = (button.size - icon_rect.size) * 0.5
 
 	slot_grid.size = grid_size
 	slot_grid.position = circle_center - (grid_size * 0.5)
