@@ -48,29 +48,7 @@ func _refresh_current_target() -> void:
 	if camera == null:
 		_set_current_target(null)
 		return
-
-	var viewport := get_viewport()
-	var viewport_center := viewport.get_visible_rect().size * 0.5
-	var ray_origin := camera.project_ray_origin(viewport_center)
-	var ray_end := ray_origin + camera.project_ray_normal(viewport_center) * ray_length
-
-	var query := PhysicsRayQueryParameters3D.create(ray_origin, ray_end)
-	query.collide_with_areas = true
-	query.collide_with_bodies = true
-	query.collision_mask = interaction_collision_mask
-	query.exclude = [self]
-
-	var hit := get_world_3d().direct_space_state.intersect_ray(query)
-	if hit.is_empty():
-		_set_current_target(null)
-		return
-
-	var target := _extract_interaction_target(hit.get("collider"))
-	if not _is_target_valid(target):
-		_set_current_target(null)
-		return
-
-	_set_current_target(target)
+	_set_current_target(_find_best_target(camera))
 
 
 func _extract_interaction_target(collider: Variant) -> InteractionTarget:
@@ -82,6 +60,37 @@ func _extract_interaction_target(collider: Variant) -> InteractionTarget:
 		node = node.get_parent()
 
 	return null
+
+
+func _find_best_target(camera: Camera3D) -> InteractionTarget:
+	var candidates := get_tree().get_nodes_in_group(&"interaction_targets")
+	if candidates.is_empty():
+		return null
+
+	var viewport_center := get_viewport().get_visible_rect().size * 0.5
+	var best_target: InteractionTarget
+	var best_score := INF
+
+	for candidate_variant in candidates:
+		var target := candidate_variant as InteractionTarget
+		if not _is_target_valid(target):
+			continue
+
+		var prompt_position := target.get_interaction_prompt_position()
+		if camera.is_position_behind(prompt_position):
+			continue
+
+		var screen_position := camera.unproject_position(prompt_position)
+		var screen_distance := screen_position.distance_to(viewport_center)
+		var world_distance := global_position.distance_to(target.global_position)
+		var score := screen_distance + (world_distance * 20.0)
+		if score >= best_score:
+			continue
+
+		best_score = score
+		best_target = target
+
+	return best_target
 
 
 func _is_target_valid(target: InteractionTarget) -> bool:
