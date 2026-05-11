@@ -7,6 +7,9 @@ signal close_requested
 const TITLE_FONT := preload("res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf")
 const BODY_FONT := preload("res://assets/art/fonts/Paytone_One/PaytoneOne-Regular.ttf")
 const UINavigation := preload("res://assets/scripts/ui_navigation.gd")
+const KEY_ICON := preload("res://assets/art/sprites/key.png")
+const BACKPACK_ICON := preload("res://assets/art/sprites/backpack.png")
+const SCROLL_ICON := preload("res://assets/art/sprites/scroll.png")
 const CATEGORY_TO_TAB := {
 	InventoryData.CATEGORY_KEYS: 0,
 	InventoryData.CATEGORY_REGULAR: 1,
@@ -171,14 +174,22 @@ func _configure_tab_buttons() -> void:
 		button.toggle_mode = true
 		button.button_group = _tab_button_group
 		button.custom_minimum_size = TAB_BUTTON_SIZE
+		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		button.expand_icon = false
+		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+		button.add_theme_constant_override("icon_max_width", 34)
+		button.theme_type_variation = &""
 
 	UINavigation.bind_hover_focus_controls(_slot_buttons)
 
 
 func _apply_tab_button_text() -> void:
-	keys_tab_button.text = "K"
-	regular_tab_button.text = "B"
-	quest_tab_button.text = "Q"
+	keys_tab_button.text = ""
+	regular_tab_button.text = ""
+	quest_tab_button.text = ""
+	keys_tab_button.icon = KEY_ICON
+	regular_tab_button.icon = BACKPACK_ICON
+	quest_tab_button.icon = SCROLL_ICON
 
 
 func _create_slot_icon_label() -> Label:
@@ -198,15 +209,15 @@ func _create_slot_icon_label() -> Label:
 func _create_slot_count_label() -> Label:
 	var label := Label.new()
 	label.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	label.offset_left = -24.0
-	label.offset_top = -22.0
-	label.offset_right = -8.0
-	label.offset_bottom = -6.0
+	label.offset_left = -28.0
+	label.offset_top = -28.0
+	label.offset_right = -12.0
+	label.offset_bottom = -12.0
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	label.add_theme_font_override("font", BODY_FONT)
-	label.add_theme_font_size_override("font_size", 20)
+	label.add_theme_font_size_override("font_size", 18)
 	label.add_theme_color_override("font_color", BUTTON_HOVER_FONT_COLOR)
 	label.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.7))
 	label.add_theme_constant_override("outline_size", 5)
@@ -434,10 +445,10 @@ func _update_tab_styles(active_category: StringName) -> void:
 			"font_color",
 			TAB_HOVER_YELLOW if is_active else BUTTON_FONT_COLOR
 		)
-		button.add_theme_color_override("font_hover_color", TAB_HOVER_YELLOW)
-		button.add_theme_color_override("font_focus_color", TAB_HOVER_YELLOW)
-		button.add_theme_color_override("font_pressed_color", TAB_HOVER_YELLOW)
-		button.add_theme_color_override("font_hover_pressed_color", TAB_HOVER_YELLOW)
+		button.add_theme_color_override("font_hover_color", TAB_HOVER_YELLOW if is_active else TITLE_GOLD)
+		button.add_theme_color_override("font_focus_color", TAB_HOVER_YELLOW if is_active else TITLE_GOLD)
+		button.add_theme_color_override("font_pressed_color", TAB_HOVER_YELLOW if is_active else TITLE_GOLD)
+		button.add_theme_color_override("font_hover_pressed_color", TAB_HOVER_YELLOW if is_active else TITLE_GOLD)
 		button.add_theme_color_override("font_outline_color", TITLE_OUTLINE)
 		button.set_pressed_no_signal(is_active)
 		button.tooltip_text = TAB_TITLES[category]
