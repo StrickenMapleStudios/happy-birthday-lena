@@ -1,0 +1,167 @@
+extends Node
+
+class_name InventoryData
+
+signal inventory_changed
+signal category_changed(category: StringName)
+signal selection_changed(category: StringName, slot_index: int)
+
+const CATEGORY_REGULAR := &"regular"
+const CATEGORY_KEYS := &"keys"
+const CATEGORY_QUEST := &"quest"
+const CATEGORY_ORDER: Array[StringName] = [
+	CATEGORY_KEYS,
+	CATEGORY_REGULAR,
+	CATEGORY_QUEST,
+]
+const SLOTS_PER_CATEGORY: int = 16
+
+var _slots_by_category: Dictionary = {}
+var _selected_category: StringName = CATEGORY_REGULAR
+var _selected_slot_by_category: Dictionary = {
+	CATEGORY_REGULAR: 0,
+	CATEGORY_KEYS: 0,
+	CATEGORY_QUEST: 0,
+}
+
+
+func _init() -> void:
+	for category in CATEGORY_ORDER:
+		_slots_by_category[category] = _build_empty_slots()
+
+
+func add_item(item: InventoryItemData, quantity: int = 1) -> bool:
+	if item == null or quantity <= 0:
+		return false
+
+	var category: StringName = item.get_category_key()
+	var slots: Array = _slots_by_category.get(category, [])
+	if slots.is_empty():
+		return false
+
+	var remaining: int = quantity
+	if item.stackable:
+		for slot in slots:
+			if slot.get("item") != item:
+				continue
+			if int(slot.get("quantity", 0)) >= item.max_stack:
+				continue
+
+			var space_left: int = item.max_stack - int(slot.get("quantity", 0))
+			var to_add: int = mini(space_left, remaining)
+			slot["quantity"] = int(slot.get("quantity", 0)) + to_add
+			remaining -= to_add
+			if remaining <= 0:
+				break
+
+	for slot in slots:
+		if remaining <= 0:
+			break
+		if slot.get("item") != null:
+			continue
+
+		var stack_size: int = 1
+		if item.stackable:
+			stack_size = mini(item.max_stack, remaining)
+
+		slot["item"] = item
+		slot["quantity"] = stack_size
+		remaining -= stack_size
+
+	if remaining == quantity:
+		return false
+
+	_ensure_valid_selection_for_category(category)
+	inventory_changed.emit()
+	return true
+
+
+func get_slots(category: StringName) -> Array:
+	return _slots_by_category.get(category, [])
+
+
+func get_selected_category() -> StringName:
+	return _selected_category
+
+
+func set_selected_category(category: StringName) -> void:
+	if not _slots_by_category.has(category):
+		return
+	if _selected_category == category:
+		emit_current_selection()
+		return
+
+	_selected_category = category
+	_ensure_valid_selection_for_category(category)
+	category_changed.emit(category)
+	selection_changed.emit(category, get_selected_slot_index(category))
+
+
+func get_selected_slot_index(category: StringName = &"") -> int:
+	if category == &"":
+		category = _selected_category
+	return int(_selected_slot_by_category.get(category, 0))
+
+
+func select_slot(slot_index: int, category: StringName = &"") -> void:
+	if category == &"":
+		category = _selected_category
+	var slots: Array = _slots_by_category.get(category, [])
+	if slots.is_empty():
+		return
+
+	var clamped_index := clampi(slot_index, 0, slots.size() - 1)
+	_selected_slot_by_category[category] = clamped_index
+	if _selected_category != category:
+		_selected_category = category
+		category_changed.emit(category)
+	selection_changed.emit(category, clamped_index)
+
+
+func get_selected_slot(category: StringName = &"") -> Dictionary:
+	if category == &"":
+		category = _selected_category
+	var slots: Array = get_slots(category)
+	if slots.is_empty():
+		return {}
+
+	var slot_index: int = clampi(get_selected_slot_index(category), 0, slots.size() - 1)
+	return slots[slot_index]
+
+
+func find_first_occupied_slot_index(category: StringName) -> int:
+	var slots: Array = get_slots(category)
+	for slot_index in range(slots.size()):
+		if slots[slot_index].get("item") != null:
+			return slot_index
+
+	return 0
+
+
+func emit_current_selection() -> void:
+	selection_changed.emit(_selected_category, get_selected_slot_index())
+
+
+func _ensure_valid_selection_for_category(category: StringName) -> void:
+	var slots: Array = get_slots(category)
+	if slots.is_empty():
+		_selected_slot_by_category[category] = 0
+		return
+
+	var current_index: int = clampi(get_selected_slot_index(category), 0, slots.size() - 1)
+	if slots[current_index].get("item") != null:
+		_selected_slot_by_category[category] = current_index
+		return
+
+	_selected_slot_by_category[category] = find_first_occupied_slot_index(category)
+
+
+func _build_empty_slots() -> Array:
+	var slots: Array = []
+	for slot_index in range(SLOTS_PER_CATEGORY):
+		slots.append({
+			"index": slot_index,
+			"item": null,
+			"quantity": 0,
+		})
+	return slots

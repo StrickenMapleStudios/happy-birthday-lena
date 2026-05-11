@@ -9,6 +9,7 @@ const ACTION_KEY_BINDINGS := {
 	&"ui_right": [KEY_RIGHT, KEY_D],
 	&"dialogue_advance": [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER, KEY_E],
 	&"dialogue_select": [KEY_E, KEY_ENTER, KEY_KP_ENTER, KEY_SPACE],
+	&"inventory_toggle": [KEY_TAB, KEY_I],
 }
 
 

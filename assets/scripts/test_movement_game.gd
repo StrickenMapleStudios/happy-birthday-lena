@@ -14,6 +14,7 @@ const DIALOGUE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/dialogue_paus
 @onready var interaction_prompt_controller: InteractionPromptController = $InteractionPromptController
 @onready var gameplay_ui_layer: GameplayUiLayer = $GameplayUI
 @onready var pause_menu: Node = $PauseMenu
+@onready var inventory_ui: InventoryUi = $InventoryUI
 @onready var dialogue_manager: Node = Engine.get_singleton("DialogueManager")
 
 const DIALOGUE_BALLOON_SCENE := preload("res://assets/scenes/ui/dialogue_balloon.tscn")
@@ -30,6 +31,7 @@ enum InputContext {
 	GAMEPLAY,
 	DIALOGUE,
 	DIALOGUE_RESPONSE_SELECTION,
+	INVENTORY,
 	PAUSE,
 	TRANSITION,
 }
@@ -48,14 +50,17 @@ var _pause_active := false
 var _pause_transition_locked := false
 var _dialogue_pause_menu: Node
 var _active_pause_menu: Node
+var _inventory_open := false
 var _input_context := InputContext.GAMEPLAY
 var _focus_before_pause: WeakRef
+var _inventory_data: InventoryData = InventoryData.new()
 
 
 func _ready() -> void:
 	_set_dialogue_pivots_active(false)
 	_refresh_gameplay_world_ui_visibility()
 	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY)
+	add_child(_inventory_data)
 	if interaction_source != null:
 		interaction_source.interaction_requested.connect(_on_interaction_requested)
 		interaction_source.interaction_target_changed.connect(_on_interaction_target_changed)
@@ -66,14 +71,24 @@ func _ready() -> void:
 	_dialogue_pause_menu = DIALOGUE_PAUSE_MENU_SCENE.instantiate()
 	add_child(_dialogue_pause_menu)
 	_connect_pause_menu_signals(_dialogue_pause_menu)
+	if inventory_ui != null:
+		inventory_ui.set_inventory(_inventory_data)
+		inventory_ui.close_requested.connect(_close_inventory)
 	_refresh_cursor_mode()
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _inventory_open:
+		return
+
 	if _pause_active or _pause_transition_locked:
 		return
 
 	if not _dialogue_active:
+		if event.is_action_pressed("inventory_toggle") and not _interaction_locked:
+			get_viewport().set_input_as_handled()
+			_open_inventory()
+			return
 		if event.is_action_pressed("ui_cancel") and not _interaction_locked:
 			get_viewport().set_input_as_handled()
 			_open_pause_menu()
@@ -89,6 +104,12 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_interaction_requested(target: InteractionTarget) -> void:
 	if _interaction_locked or _dialogue_active or target == null or not target.is_interaction_available():
 		return
+
+	var interaction_owner := target.get_parent()
+	if interaction_owner != null and interaction_owner.has_method("handle_interaction"):
+		var was_handled := bool(interaction_owner.call("handle_interaction", player, _inventory_data))
+		if was_handled:
+			return
 
 	if dialogue_manager == null:
 		push_warning("DialogueManager singleton is not available.")
@@ -185,7 +206,7 @@ func _cancel_active_dialogue() -> void:
 
 
 func _open_pause_menu() -> void:
-	if _pause_active or _interaction_locked or pause_menu == null:
+	if _pause_active or _interaction_locked or _inventory_open or pause_menu == null:
 		return
 
 	_pause_active = true
@@ -215,6 +236,31 @@ func _resume_from_pause() -> void:
 		AUDIO_PRESET_DIALOGUE if _dialogue_active else AUDIO_PRESET_GAMEPLAY,
 		AUDIO_PRESET_FADE_DURATION
 	)
+	_sync_input_context()
+	call_deferred("_restore_focus_after_pause")
+
+
+func _open_inventory() -> void:
+	if _inventory_open or _interaction_locked or _pause_active or _dialogue_active or inventory_ui == null:
+		return
+
+	_inventory_open = true
+	_capture_focus_before_pause()
+	player.set_controls_enabled(false)
+	interaction_source.set_interaction_enabled(false)
+	_sync_input_context()
+	inventory_ui.open()
+
+
+func _close_inventory() -> void:
+	if not _inventory_open:
+		return
+
+	_inventory_open = false
+	if inventory_ui != null:
+		inventory_ui.close()
+	player.set_controls_enabled(true)
+	interaction_source.set_interaction_enabled(true)
 	_sync_input_context()
 	call_deferred("_restore_focus_after_pause")
 
@@ -472,7 +518,11 @@ func _get_planar_camera_right() -> Vector3:
 
 func _refresh_cursor_mode() -> void:
 	var desired_mode := CURSOR_MODE_INGAME
-	if _input_context == InputContext.PAUSE or _input_context == InputContext.DIALOGUE_RESPONSE_SELECTION:
+	if (
+		_input_context == InputContext.PAUSE
+		or _input_context == InputContext.DIALOGUE_RESPONSE_SELECTION
+		or _input_context == InputContext.INVENTORY
+	):
 		desired_mode = CURSOR_MODE_UI
 
 	if Input.mouse_mode != desired_mode:
@@ -482,6 +532,10 @@ func _refresh_cursor_mode() -> void:
 func _sync_input_context() -> void:
 	if _interaction_locked:
 		_set_input_context(InputContext.TRANSITION)
+		return
+
+	if _inventory_open:
+		_set_input_context(InputContext.INVENTORY)
 		return
 
 	if _pause_active:
@@ -509,7 +563,7 @@ func _set_input_context(value: int) -> void:
 
 
 func _refresh_gameplay_world_ui_visibility() -> void:
-	_set_gameplay_world_ui_visible(_input_context != InputContext.PAUSE)
+	_set_gameplay_world_ui_visible(_input_context == InputContext.GAMEPLAY)
 
 
 func _set_gameplay_world_ui_visible(is_visible: bool) -> void:

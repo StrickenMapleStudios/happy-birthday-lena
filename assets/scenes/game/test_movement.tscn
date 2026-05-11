@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/pause_menu.tscn" id="6_pause_menu"]
 [ext_resource type="Script" uid="uid://cb0ogsdv1ev5t" path="res://assets/scripts/interaction_prompt_controller.gd" id="7_prompt_controller"]
 [ext_resource type="Script" uid="uid://csmvxjritgblu" path="res://assets/scripts/gameplay_ui_layer.gd" id="8_gameplay_ui"]
+[ext_resource type="PackedScene" path="res://assets/scenes/ui/inventory_ui.tscn" id="9_inventory_ui"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_marker_column"]
 top_radius = 0.8
@@ -107,5 +108,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="PauseMenu" parent="." unique_id=1516564974 instance=ExtResource("6_pause_menu")]
+
+[node name="InventoryUI" parent="." instance=ExtResource("9_inventory_ui")]
 
 [editable path="Level"]

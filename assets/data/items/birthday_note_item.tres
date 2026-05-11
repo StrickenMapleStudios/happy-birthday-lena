@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="InventoryItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/scripts/inventory_item_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+item_id = &"birthday_note"
+display_name = "Birthday Note"
+description = "A quest clue written for Lena. Definitely not something to lose before the big moment."
+category = 2
+icon_text = "Q"
+accent_color = Color(0.42, 0.88, 0.78, 1)
+stackable = false
+max_stack = 1

@@ -1,5 +1,10 @@
 [gd_scene format=3 uid="uid://cgbqg1ajsh5ut"]
 
+[ext_resource type="PackedScene" path="res://assets/scenes/common/pickup_item.tscn" id="1_pickup"]
+[ext_resource type="Resource" path="res://assets/data/items/apple_item.tres" id="2_apple_item"]
+[ext_resource type="Resource" path="res://assets/data/items/brass_key_item.tres" id="3_brass_key_item"]
+[ext_resource type="Resource" path="res://assets/data/items/birthday_note_item.tres" id="4_birthday_note_item"]
+
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_test_movement"]
 sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
 sky_horizon_color = Color(0.729412, 0.882353, 0.984314, 1)
@@ -127,3 +132,16 @@ surface_material_override/0 = SubResource("StandardMaterial3D_marker_yellow")
 transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, -4, 1.68, 26)
 mesh = SubResource("SphereMesh_marker_sphere")
 surface_material_override/0 = SubResource("StandardMaterial3D_marker_blue")
+
+[node name="ApplePickup" parent="." instance=ExtResource("1_pickup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0, 4.5)
+item_data = ExtResource("2_apple_item")
+quantity = 3
+
+[node name="KeyPickup" parent="." instance=ExtResource("1_pickup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 7.5)
+item_data = ExtResource("3_brass_key_item")
+
+[node name="QuestPickup" parent="." instance=ExtResource("1_pickup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 0, 2.2)
+item_data = ExtResource("4_birthday_note_item")

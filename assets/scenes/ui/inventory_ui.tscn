@@ -1,0 +1,217 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://assets/scripts/inventory_ui.gd" id="1_script"]
+[ext_resource type="Script" path="res://assets/scripts/inventory_frame.gd" id="2_frame_script"]
+[ext_resource type="Shader" path="res://assets/shaders/ui_background_blur.gdshader" id="3_blur_shader"]
+[ext_resource type="FontFile" path="res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf" id="4_title_font"]
+[ext_resource type="FontFile" path="res://assets/art/fonts/Paytone_One/PaytoneOne-Regular.ttf" id="5_body_font"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blur"]
+shader = ExtResource("3_blur_shader")
+shader_parameter/tint_color = Color(0.12, 0.15, 0.12, 0.48)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 24.0
+content_margin_top = 18.0
+content_margin_right = 24.0
+content_margin_bottom = 20.0
+bg_color = Color(0.231373, 0.164706, 0.0784314, 0.45)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.929412, 0.729412, 0.28)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[node name="InventoryUI" type="CanvasLayer"]
+layer = 180
+script = ExtResource("1_script")
+
+[node name="MenuRoot" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackBufferCopy" type="BackBufferCopy" parent="MenuRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+copy_mode = 2
+
+[node name="BlurOverlay" type="ColorRect" parent="MenuRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+material = SubResource("ShaderMaterial_blur")
+color = Color(1, 1, 1, 1)
+
+[node name="TitleBlock" type="VBoxContainer" parent="MenuRoot"]
+layout_mode = 1
+anchors_preset = 10
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -220.0
+offset_top = 26.0
+offset_right = 220.0
+offset_bottom = 158.0
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="MenuRoot/TitleBlock"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_fonts/font = ExtResource("4_title_font")
+theme_override_font_sizes/font_size = 70
+text = "INVENTORY"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="Divider" type="HSeparator" parent="MenuRoot/TitleBlock"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+modulate = Color(0.88, 0.73, 0.18, 0.6)
+
+[node name="Center" type="Control" parent="MenuRoot"]
+custom_minimum_size = Vector2(920, 920)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -460.0
+offset_top = -390.0
+offset_right = 460.0
+offset_bottom = 530.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Frame" type="Control" parent="MenuRoot/Center"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_frame_script")
+
+[node name="Content" type="Control" parent="MenuRoot/Center"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TabButtons" type="Control" parent="MenuRoot/Center/Content"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_right = 920.0
+offset_bottom = 920.0
+
+[node name="KeysTabButton" type="Button" parent="MenuRoot/Center/Content/TabButtons"]
+layout_mode = 0
+offset_left = 222.0
+offset_top = 98.0
+offset_right = 310.0
+offset_bottom = 170.0
+focus_mode = 0
+text = "K"
+
+[node name="RegularTabButton" type="Button" parent="MenuRoot/Center/Content/TabButtons"]
+layout_mode = 0
+offset_left = 416.0
+offset_top = 78.0
+offset_right = 504.0
+offset_bottom = 150.0
+focus_mode = 0
+text = "B"
+
+[node name="QuestTabButton" type="Button" parent="MenuRoot/Center/Content/TabButtons"]
+layout_mode = 0
+offset_left = 610.0
+offset_top = 98.0
+offset_right = 698.0
+offset_bottom = 170.0
+focus_mode = 0
+text = "Q"
+
+[node name="SlotGrid" type="GridContainer" parent="MenuRoot/Center/Content"]
+layout_mode = 0
+offset_left = 248.0
+offset_top = 236.0
+offset_right = 672.0
+offset_bottom = 660.0
+columns = 4
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
+
+[node name="DescriptionPanel" type="PanelContainer" parent="MenuRoot/Center/Content"]
+layout_mode = 0
+offset_left = 195.0
+offset_top = 672.0
+offset_right = 725.0
+offset_bottom = 818.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="DescriptionBlock" type="VBoxContainer" parent="MenuRoot/Center/Content/DescriptionPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="ItemNameLabel" type="Label" parent="MenuRoot/Center/Content/DescriptionPanel/DescriptionBlock"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("4_title_font")
+theme_override_font_sizes/font_size = 32
+text = "Empty"
+horizontal_alignment = 1
+
+[node name="ItemTypeLabel" type="Label" parent="MenuRoot/Center/Content/DescriptionPanel/DescriptionBlock"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 0.86)
+theme_override_fonts/font = ExtResource("5_body_font")
+theme_override_font_sizes/font_size = 20
+text = "Choose a slot"
+horizontal_alignment = 1
+
+[node name="ItemDescriptionLabel" type="Label" parent="MenuRoot/Center/Content/DescriptionPanel/DescriptionBlock"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.97, 0.97, 0.97, 0.95)
+theme_override_fonts/font = ExtResource("5_body_font")
+theme_override_font_sizes/font_size = 23
+text = "Collect items in the world and they will appear here."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="BackHintLabel" type="Label" parent="MenuRoot/Center/Content"]
+layout_mode = 0
+offset_left = 370.0
+offset_top = 830.0
+offset_right = 550.0
+offset_bottom = 874.0
+theme_override_colors/font_color = Color(0.97, 0.97, 0.97, 0.95)
+theme_override_fonts/font = ExtResource("5_body_font")
+theme_override_font_sizes/font_size = 22
+text = "ESC  Back"
+horizontal_alignment = 1
