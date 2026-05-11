@@ -20,6 +20,13 @@ static func bind_hover_focus_control(control: Control) -> void:
 	control.mouse_entered.connect(on_hover_callable)
 
 
+static func get_first_focusable_control(controls: Array) -> Control:
+	var active_controls := _get_active_controls(controls)
+	if active_controls.is_empty():
+		return null
+	return active_controls[0]
+
+
 static func handle_linear_navigation_input(event: InputEvent, controls: Array) -> bool:
 	var active_controls := _get_active_controls(controls)
 	if active_controls.is_empty():

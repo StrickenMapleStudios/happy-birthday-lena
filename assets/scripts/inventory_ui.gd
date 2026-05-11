@@ -303,7 +303,6 @@ func _update_slot_buttons() -> void:
 	var slots: Array = []
 	if _inventory != null:
 		slots = _inventory.get_slots(category)
-	var selected_slot_index: int = 0 if _inventory == null else _inventory.get_selected_slot_index(category)
 	for slot_index in range(_slot_buttons.size()):
 		var button: Button = _slot_buttons[slot_index]
 		var slot: Dictionary = {}
@@ -312,15 +311,14 @@ func _update_slot_buttons() -> void:
 		_apply_slot_button_state(
 			button,
 			slot,
-			category == InventoryData.CATEGORY_KEYS,
-			slot_index == selected_slot_index
+			category == InventoryData.CATEGORY_KEYS
 		)
 
 
-func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category: bool, is_selected: bool) -> void:
+func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category: bool) -> void:
 	var normal_style: StyleBoxFlat = StyleBoxFlat.new()
-	normal_style.bg_color = BUTTON_GOLD_BG if is_selected else BUTTON_DARK_BG
-	normal_style.border_color = BUTTON_GOLD_BORDER if is_selected else BUTTON_DARK_BORDER
+	normal_style.bg_color = BUTTON_DARK_BG
+	normal_style.border_color = BUTTON_DARK_BORDER
 	normal_style.border_width_left = 3
 	normal_style.border_width_top = 3
 	normal_style.border_width_right = 3
@@ -340,17 +338,19 @@ func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category:
 
 	button.add_theme_stylebox_override("normal", normal_style)
 	button.add_theme_stylebox_override("hover", focus_style)
-	button.add_theme_stylebox_override("focus", normal_style if is_selected else focus_style)
+	button.add_theme_stylebox_override("focus", focus_style)
 	button.add_theme_stylebox_override("pressed", focus_style)
+	button.add_theme_stylebox_override("hover_pressed", focus_style)
 	button.add_theme_font_size_override("font_size", 34 if is_key_category else 36)
-	button.add_theme_color_override("font_color", BUTTON_HOVER_FONT_COLOR if is_selected else BUTTON_FONT_COLOR)
+	button.add_theme_color_override("font_color", BUTTON_FONT_COLOR)
 	button.add_theme_color_override("font_focus_color", BUTTON_HOVER_FONT_COLOR)
 	button.add_theme_color_override("font_hover_color", BUTTON_HOVER_FONT_COLOR)
 	button.add_theme_color_override("font_pressed_color", BUTTON_HOVER_FONT_COLOR)
+	button.add_theme_color_override("font_hover_pressed_color", BUTTON_HOVER_FONT_COLOR)
 	button.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.55))
 	button.add_theme_constant_override("outline_size", 6)
 	button.add_theme_font_override("font", BODY_FONT)
-	button.set_pressed_no_signal(is_selected)
+	button.set_pressed_no_signal(false)
 
 	var item: InventoryItemData = slot.get("item") as InventoryItemData
 	if item == null:

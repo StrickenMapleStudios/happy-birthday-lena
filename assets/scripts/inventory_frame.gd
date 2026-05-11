@@ -9,7 +9,7 @@ const GOLD_ACCENT_COLOR := Color(1.0, 0.83, 0.18, 1.0)
 const TAB_FILL_COLOR := Color(0.76, 0.65, 0.16, 0.78)
 const TAB_CENTER_ANGLES_DEGREES := [-130.0, -90.0, -50.0]
 
-@export_range(0.1, 0.49, 0.01) var ring_thickness_ratio: float = 0.16
+@export_range(0.1, 0.49, 0.01) var ring_thickness_ratio: float = 0.21
 @export_range(0.1, 0.49, 0.01) var inner_gap_ratio: float = 0.08
 @export_range(8.0, 45.0, 1.0) var tab_half_span_degrees: float = 18.0
 
@@ -30,8 +30,8 @@ func _draw() -> void:
 	var content_radius: float = inner_radius - 1.0
 
 	draw_circle(center, radius, OUTER_RING_COLOR)
-	draw_arc(center, radius, 0.0, TAU, 160, GOLD_LINE_COLOR, 2.0, true)
-	draw_arc(center, inner_radius, 0.0, TAU, 160, GOLD_LINE_COLOR, 1.5, true)
+	draw_arc(center, radius, 0.0, TAU, 160, GOLD_LINE_COLOR, 3.0, true)
+	draw_arc(center, inner_radius, 0.0, TAU, 160, GOLD_LINE_COLOR, 2.5, true)
 	draw_circle(center, content_radius, INNER_FILL_COLOR)
 
 	_draw_tab_segment(center, radius, inner_radius, selected_tab_index)
@@ -58,8 +58,8 @@ func _draw_tab_segment(center: Vector2, outer_radius: float, inner_radius: float
 		points.append(center + Vector2.from_angle(angle) * inner_radius)
 
 	draw_colored_polygon(points, TAB_FILL_COLOR)
-	draw_arc(center, outer_radius, start_angle, end_angle, 48, GOLD_LINE_COLOR, 2.0, true)
-	draw_arc(center, inner_radius, start_angle, end_angle, 48, GOLD_LINE_COLOR, 1.5, true)
+	draw_arc(center, outer_radius, start_angle, end_angle, 48, GOLD_LINE_COLOR, 3.0, true)
+	draw_arc(center, inner_radius, start_angle, end_angle, 48, GOLD_LINE_COLOR, 2.5, true)
 
 
 func _draw_side_diamond(center: Vector2, color: Color) -> void:

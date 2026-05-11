@@ -44,6 +44,8 @@ func _ready() -> void:
 
 	options_screen.call("set_focus_enabled", false)
 	confirm_dialog.call("hide_dialog")
+	_set_button_focus_enabled(menu_buttons, true)
+	call_deferred("_focus_first_main_menu_button")
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -130,7 +132,7 @@ func _hide_confirm_dialog() -> void:
 		return
 
 	_set_button_focus_enabled(menu_buttons, true)
-	exit_button.grab_focus()
+	_focus_first_main_menu_button()
 
 
 func _confirm_exit() -> void:
@@ -165,7 +167,7 @@ func _hide_options_screen() -> void:
 	_set_character_standing(false)
 	options_screen.call("set_focus_enabled", false)
 	_set_button_focus_enabled(menu_buttons, true)
-	options_button.grab_focus()
+	_focus_first_main_menu_button()
 
 
 func _show_save_slot_screen() -> void:
@@ -191,7 +193,7 @@ func _hide_save_slot_screen() -> void:
 	_restore_menu_interactivity()
 	_set_button_focus_enabled(save_slot_screen_buttons, false)
 	_set_button_focus_enabled(menu_buttons, true)
-	new_game_button.grab_focus()
+	_focus_first_main_menu_button()
 
 
 func _set_button_focus_enabled(buttons: Array[Button], enabled: bool) -> void:
@@ -201,6 +203,12 @@ func _set_button_focus_enabled(buttons: Array[Button], enabled: bool) -> void:
 			continue
 
 		button.focus_mode = Control.FOCUS_ALL if enabled else Control.FOCUS_NONE
+
+
+func _focus_first_main_menu_button() -> void:
+	var first_button := UINavigation.get_first_focusable_control(menu_buttons) as Button
+	if first_button != null:
+		first_button.grab_focus()
 
 func _set_character_standing(active: bool) -> void:
 	if menu_character != null and menu_character.has_method("set_standing"):
