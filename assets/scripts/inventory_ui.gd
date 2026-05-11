@@ -25,8 +25,12 @@ const BUTTON_GOLD_BG := Color(0.623529, 0.423529, 0.0, 0.65)
 const BUTTON_GOLD_BORDER := Color(1.0, 0.960784, 0.0, 1.0)
 const TITLE_GOLD := Color(1.0, 0.741176, 0.0, 1.0)
 const TITLE_OUTLINE := Color(0.368627, 0.270588, 0.0, 1.0)
-const TAB_BUTTON_SIZE := Vector2(88.0, 72.0)
-const DESCRIPTION_PANEL_SIZE := Vector2(530.0, 146.0)
+const TAB_BUTTON_SIZE := Vector2(84.0, 66.0)
+const SLOT_BUTTON_SIZE := Vector2(74.0, 74.0)
+const DESCRIPTION_PANEL_SIZE := Vector2(430.0, 152.0)
+const GRID_TOP_OFFSET := -46.0
+const DESCRIPTION_OFFSET_FACTOR := 0.50
+const BACK_HINT_OFFSET_FACTOR := 0.93
 
 @onready var menu_root: Control = $MenuRoot
 @onready var frame: InventoryFrame = $MenuRoot/Center/Frame
@@ -48,6 +52,8 @@ const DESCRIPTION_PANEL_SIZE := Vector2(530.0, 146.0)
 var _inventory: InventoryData
 var _slot_buttons: Array[Button] = []
 var _tab_buttons: Dictionary = {}
+var _slot_button_group := ButtonGroup.new()
+var _tab_button_group := ButtonGroup.new()
 
 
 func _ready() -> void:
@@ -78,9 +84,24 @@ func _input(event: InputEvent) -> void:
 	if not menu_root.visible:
 		return
 
+	if event is InputEventKey and event.is_pressed() and not event.is_echo() and event.keycode == KEY_TAB:
+		get_viewport().set_input_as_handled()
+		close_requested.emit()
+		return
+
 	if event.is_action_pressed("ui_cancel") or event.is_action_pressed("inventory_toggle"):
 		get_viewport().set_input_as_handled()
 		close_requested.emit()
+		return
+
+	if event.is_action_pressed("inventory_prev_tab"):
+		get_viewport().set_input_as_handled()
+		_cycle_tab(-1)
+		return
+
+	if event.is_action_pressed("inventory_next_tab"):
+		get_viewport().set_input_as_handled()
+		_cycle_tab(1)
 		return
 
 
@@ -90,6 +111,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	var slot_rows := _get_slot_rows()
 	if UINavigation.handle_grid_navigation_input(event, slot_rows):
+		_sync_selection_to_focus()
 		get_viewport().set_input_as_handled()
 
 
@@ -134,13 +156,17 @@ func close() -> void:
 func _build_slot_buttons() -> void:
 	for slot_index in range(InventoryData.SLOTS_PER_CATEGORY):
 		var button: Button = Button.new()
-		button.custom_minimum_size = Vector2(92.0, 92.0)
+		button.custom_minimum_size = SLOT_BUTTON_SIZE
 		button.focus_mode = Control.FOCUS_ALL
+		button.toggle_mode = true
+		button.button_group = _slot_button_group
 		button.clip_text = true
 		button.alignment = HORIZONTAL_ALIGNMENT_CENTER
 		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
 		button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		button.set_meta("slot_index", slot_index)
 		button.pressed.connect(_on_slot_button_pressed.bind(slot_index))
+		button.focus_entered.connect(_on_slot_button_focus_entered.bind(slot_index))
 		slot_grid.add_child(button)
 		_slot_buttons.append(button)
 
@@ -148,6 +174,8 @@ func _build_slot_buttons() -> void:
 func _configure_tab_buttons() -> void:
 	for button in [keys_tab_button, regular_tab_button, quest_tab_button]:
 		button.focus_mode = Control.FOCUS_NONE
+		button.toggle_mode = true
+		button.button_group = _tab_button_group
 		button.custom_minimum_size = TAB_BUTTON_SIZE
 
 
@@ -181,6 +209,17 @@ func _select_category(category: StringName) -> void:
 
 func _on_slot_button_pressed(slot_index: int) -> void:
 	if _inventory == null:
+		return
+	if _inventory.get_selected_slot_index() == slot_index:
+		_update_visual_state()
+		return
+	_inventory.select_slot(slot_index)
+
+
+func _on_slot_button_focus_entered(slot_index: int) -> void:
+	if not menu_root.visible or _inventory == null:
+		return
+	if _inventory.get_selected_slot_index() == slot_index:
 		return
 	_inventory.select_slot(slot_index)
 
@@ -216,17 +255,17 @@ func _update_layout() -> void:
 		button.position = frame.get_tab_button_center(tab_index) - (TAB_BUTTON_SIZE * 0.5)
 
 	slot_grid.size = grid_size
-	slot_grid.position = circle_center - (grid_size * 0.5) + Vector2(0.0, -24.0)
+	slot_grid.position = circle_center - (grid_size * 0.5) + Vector2(0.0, GRID_TOP_OFFSET)
 
 	description_panel.size = DESCRIPTION_PANEL_SIZE
 	description_panel.position = Vector2(
 		circle_center.x - (DESCRIPTION_PANEL_SIZE.x * 0.5),
-		circle_center.y + (content_radius * 0.58)
+		circle_center.y + (content_radius * DESCRIPTION_OFFSET_FACTOR)
 	)
 
 	back_hint_label.position = Vector2(
 		circle_center.x - (back_hint_size.x * 0.5),
-		circle_center.y + (content_radius * 0.9)
+		circle_center.y + (content_radius * BACK_HINT_OFFSET_FACTOR)
 	)
 
 
@@ -240,6 +279,34 @@ func _get_slot_rows() -> Array:
 	return rows
 
 
+func _sync_selection_to_focus() -> void:
+	if _inventory == null:
+		return
+	var focus_owner := get_viewport().gui_get_focus_owner()
+	if focus_owner == null:
+		return
+	var focused_button := focus_owner as Button
+	if focused_button == null:
+		return
+	if not focused_button.has_meta("slot_index"):
+		return
+	var slot_index: int = int(focused_button.get_meta("slot_index"))
+	if _inventory.get_selected_slot_index() == slot_index:
+		return
+	_inventory.select_slot(slot_index)
+
+
+func _cycle_tab(direction: int) -> void:
+	if _inventory == null:
+		return
+	var current_category: StringName = _inventory.get_selected_category()
+	var current_index := InventoryData.CATEGORY_ORDER.find(current_category)
+	if current_index < 0:
+		current_index = 0
+	var next_index := posmod(current_index + direction, InventoryData.CATEGORY_ORDER.size())
+	_inventory.set_selected_category(InventoryData.CATEGORY_ORDER[next_index])
+
+
 func _update_slot_buttons() -> void:
 	var category: StringName = InventoryData.CATEGORY_REGULAR
 	if _inventory != null:
@@ -248,18 +315,24 @@ func _update_slot_buttons() -> void:
 	var slots: Array = []
 	if _inventory != null:
 		slots = _inventory.get_slots(category)
+	var selected_slot_index: int = 0 if _inventory == null else _inventory.get_selected_slot_index(category)
 	for slot_index in range(_slot_buttons.size()):
 		var button: Button = _slot_buttons[slot_index]
 		var slot: Dictionary = {}
 		if slot_index < slots.size():
 			slot = slots[slot_index]
-		_apply_slot_button_state(button, slot, category == InventoryData.CATEGORY_KEYS)
+		_apply_slot_button_state(
+			button,
+			slot,
+			category == InventoryData.CATEGORY_KEYS,
+			slot_index == selected_slot_index
+		)
 
 
-func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category: bool) -> void:
+func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category: bool, is_selected: bool) -> void:
 	var normal_style: StyleBoxFlat = StyleBoxFlat.new()
-	normal_style.bg_color = BUTTON_DARK_BG
-	normal_style.border_color = BUTTON_DARK_BORDER
+	normal_style.bg_color = BUTTON_GOLD_BG if is_selected else BUTTON_DARK_BG
+	normal_style.border_color = BUTTON_GOLD_BORDER if is_selected else BUTTON_DARK_BORDER
 	normal_style.border_width_left = 3
 	normal_style.border_width_top = 3
 	normal_style.border_width_right = 3
@@ -279,21 +352,23 @@ func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category:
 
 	button.add_theme_stylebox_override("normal", normal_style)
 	button.add_theme_stylebox_override("hover", focus_style)
-	button.add_theme_stylebox_override("focus", focus_style)
+	button.add_theme_stylebox_override("focus", normal_style if is_selected else focus_style)
 	button.add_theme_stylebox_override("pressed", focus_style)
 	button.add_theme_font_size_override("font_size", 34 if is_key_category else 36)
-	button.add_theme_color_override("font_color", BUTTON_FONT_COLOR)
+	button.add_theme_color_override("font_color", BUTTON_HOVER_FONT_COLOR if is_selected else BUTTON_FONT_COLOR)
 	button.add_theme_color_override("font_focus_color", BUTTON_HOVER_FONT_COLOR)
 	button.add_theme_color_override("font_hover_color", BUTTON_HOVER_FONT_COLOR)
 	button.add_theme_color_override("font_pressed_color", BUTTON_HOVER_FONT_COLOR)
 	button.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.55))
 	button.add_theme_constant_override("outline_size", 6)
 	button.add_theme_font_override("font", BODY_FONT)
+	button.set_pressed_no_signal(is_selected)
 
 	var item: InventoryItemData = slot.get("item") as InventoryItemData
 	if item == null:
 		button.text = ""
 		button.tooltip_text = ""
+		button.disabled = false
 		return
 
 	var quantity: int = int(slot.get("quantity", 1))
@@ -301,6 +376,7 @@ func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category:
 	if quantity > 1:
 		button.text += "\n%d" % quantity
 	button.tooltip_text = item.display_name
+	button.disabled = false
 
 
 func _update_visual_state() -> void:
@@ -323,12 +399,12 @@ func _update_tab_styles(active_category: StringName) -> void:
 		var is_active: bool = category == active_category
 		var normal_style: StyleBoxFlat = StyleBoxFlat.new()
 		normal_style.bg_color = Color(0.0, 0.0, 0.0, 0.0)
-		var active_style: StyleBoxFlat = StyleBoxFlat.new()
-		active_style.bg_color = Color(0.0, 0.0, 0.0, 0.0)
+		var hover_style: StyleBoxFlat = StyleBoxFlat.new()
+		hover_style.bg_color = Color(0.0, 0.0, 0.0, 0.0)
 		button.add_theme_stylebox_override("normal", normal_style)
-		button.add_theme_stylebox_override("hover", active_style)
-		button.add_theme_stylebox_override("focus", active_style)
-		button.add_theme_stylebox_override("pressed", active_style)
+		button.add_theme_stylebox_override("hover", normal_style if is_active else hover_style)
+		button.add_theme_stylebox_override("focus", normal_style if is_active else hover_style)
+		button.add_theme_stylebox_override("pressed", normal_style)
 		button.add_theme_font_override("font", TITLE_FONT)
 		button.add_theme_font_size_override("font_size", 36)
 		button.add_theme_constant_override("outline_size", 6)
@@ -336,7 +412,11 @@ func _update_tab_styles(active_category: StringName) -> void:
 			"font_color",
 			TITLE_GOLD if is_active else BUTTON_FONT_COLOR
 		)
+		button.add_theme_color_override("font_hover_color", TITLE_GOLD)
+		button.add_theme_color_override("font_focus_color", TITLE_GOLD)
+		button.add_theme_color_override("font_pressed_color", TITLE_GOLD)
 		button.add_theme_color_override("font_outline_color", TITLE_OUTLINE)
+		button.set_pressed_no_signal(is_active)
 		button.tooltip_text = TAB_TITLES[category]
 
 

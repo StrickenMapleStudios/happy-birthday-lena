@@ -10,6 +10,8 @@ const ACTION_KEY_BINDINGS := {
 	&"dialogue_advance": [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER, KEY_E],
 	&"dialogue_select": [KEY_E, KEY_ENTER, KEY_KP_ENTER, KEY_SPACE],
 	&"inventory_toggle": [KEY_TAB, KEY_I],
+	&"inventory_prev_tab": [KEY_Q],
+	&"inventory_next_tab": [KEY_E],
 }
 
 

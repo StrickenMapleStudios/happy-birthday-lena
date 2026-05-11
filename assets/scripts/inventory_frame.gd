@@ -27,7 +27,7 @@ func _draw() -> void:
 	var center: Vector2 = get_ring_center()
 	var radius: float = get_outer_radius()
 	var inner_radius: float = get_inner_radius()
-	var content_radius: float = get_content_radius()
+	var content_radius: float = inner_radius - 1.0
 
 	draw_circle(center, radius, OUTER_RING_COLOR)
 	draw_arc(center, radius, 0.0, TAU, 160, GOLD_LINE_COLOR, 2.0, true)
@@ -100,7 +100,7 @@ func get_inner_radius() -> float:
 
 
 func get_content_radius() -> float:
-	return get_inner_radius() - (get_outer_radius() * inner_gap_ratio)
+	return get_inner_radius() - 1.0
 
 
 func get_tab_button_center(tab_index: int) -> Vector2:
