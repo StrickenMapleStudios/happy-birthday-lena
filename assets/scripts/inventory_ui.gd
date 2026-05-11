@@ -27,10 +27,6 @@ const TITLE_GOLD := Color(1.0, 0.741176, 0.0, 1.0)
 const TITLE_OUTLINE := Color(0.368627, 0.270588, 0.0, 1.0)
 const TAB_BUTTON_SIZE := Vector2(84.0, 66.0)
 const SLOT_BUTTON_SIZE := Vector2(74.0, 74.0)
-const DESCRIPTION_PANEL_SIZE := Vector2(430.0, 152.0)
-const GRID_TOP_OFFSET := -46.0
-const DESCRIPTION_OFFSET_FACTOR := 0.50
-const BACK_HINT_OFFSET_FACTOR := 0.93
 
 @onready var menu_root: Control = $MenuRoot
 @onready var frame: InventoryFrame = $MenuRoot/Center/Frame
@@ -43,11 +39,6 @@ const BACK_HINT_OFFSET_FACTOR := 0.93
 @onready var quest_tab_button: Button = $MenuRoot/Center/Content/TabButtons/QuestTabButton
 @onready var tab_buttons_root: Control = $MenuRoot/Center/Content/TabButtons
 @onready var slot_grid: GridContainer = $MenuRoot/Center/Content/SlotGrid
-@onready var description_panel: PanelContainer = $MenuRoot/Center/Content/DescriptionPanel
-@onready var item_name_label: Label = $MenuRoot/Center/Content/DescriptionPanel/DescriptionBlock/ItemNameLabel
-@onready var item_type_label: Label = $MenuRoot/Center/Content/DescriptionPanel/DescriptionBlock/ItemTypeLabel
-@onready var item_description_label: Label = $MenuRoot/Center/Content/DescriptionPanel/DescriptionBlock/ItemDescriptionLabel
-@onready var back_hint_label: Label = $MenuRoot/Center/Content/BackHintLabel
 
 var _inventory: InventoryData
 var _slot_buttons: Array[Button] = []
@@ -167,6 +158,7 @@ func _build_slot_buttons() -> void:
 		button.set_meta("slot_index", slot_index)
 		button.pressed.connect(_on_slot_button_pressed.bind(slot_index))
 		button.focus_entered.connect(_on_slot_button_focus_entered.bind(slot_index))
+		button.mouse_entered.connect(_on_slot_button_mouse_entered.bind(slot_index))
 		slot_grid.add_child(button)
 		_slot_buttons.append(button)
 
@@ -183,7 +175,6 @@ func _apply_tab_button_text() -> void:
 	keys_tab_button.text = "K"
 	regular_tab_button.text = "B"
 	quest_tab_button.text = "Q"
-	back_hint_label.text = "ESC  Back"
 
 
 func _refresh_from_inventory() -> void:
@@ -224,6 +215,14 @@ func _on_slot_button_focus_entered(slot_index: int) -> void:
 	_inventory.select_slot(slot_index)
 
 
+func _on_slot_button_mouse_entered(slot_index: int) -> void:
+	if not menu_root.visible or _inventory == null:
+		return
+	if _inventory.get_selected_slot_index() == slot_index:
+		return
+	_inventory.select_slot(slot_index)
+
+
 func _focus_active_slot() -> void:
 	if not menu_root.visible or _inventory == null:
 		return
@@ -238,10 +237,8 @@ func _update_layout() -> void:
 		return
 
 	var circle_center: Vector2 = frame.get_ring_center()
-	var content_radius: float = frame.get_content_radius()
 	var title_size: Vector2 = title_block.get_combined_minimum_size()
 	var grid_size: Vector2 = slot_grid.get_combined_minimum_size()
-	var back_hint_size: Vector2 = back_hint_label.get_combined_minimum_size()
 
 	title_block.position = Vector2((menu_root.size.x - title_size.x) * 0.5, 26.0)
 	tab_buttons_root.set_anchors_preset(Control.PRESET_TOP_LEFT)
@@ -255,18 +252,7 @@ func _update_layout() -> void:
 		button.position = frame.get_tab_button_center(tab_index) - (TAB_BUTTON_SIZE * 0.5)
 
 	slot_grid.size = grid_size
-	slot_grid.position = circle_center - (grid_size * 0.5) + Vector2(0.0, GRID_TOP_OFFSET)
-
-	description_panel.size = DESCRIPTION_PANEL_SIZE
-	description_panel.position = Vector2(
-		circle_center.x - (DESCRIPTION_PANEL_SIZE.x * 0.5),
-		circle_center.y + (content_radius * DESCRIPTION_OFFSET_FACTOR)
-	)
-
-	back_hint_label.position = Vector2(
-		circle_center.x - (back_hint_size.x * 0.5),
-		circle_center.y + (content_radius * BACK_HINT_OFFSET_FACTOR)
-	)
+	slot_grid.position = circle_center - (grid_size * 0.5)
 
 
 func _get_slot_rows() -> Array:
@@ -381,15 +367,12 @@ func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category:
 
 func _update_visual_state() -> void:
 	var category: StringName = InventoryData.CATEGORY_REGULAR
-	var slot: Dictionary = {}
 	if _inventory != null:
 		category = _inventory.get_selected_category()
-		slot = _inventory.get_selected_slot(category)
 
 	title_label.text = "INVENTORY"
 	frame.selected_tab_index = int(CATEGORY_TO_TAB.get(category, 1))
 	_update_tab_styles(category)
-	_update_description(slot)
 
 
 func _update_tab_styles(active_category: StringName) -> void:
@@ -418,28 +401,3 @@ func _update_tab_styles(active_category: StringName) -> void:
 		button.add_theme_color_override("font_outline_color", TITLE_OUTLINE)
 		button.set_pressed_no_signal(is_active)
 		button.tooltip_text = TAB_TITLES[category]
-
-
-func _update_description(slot: Dictionary) -> void:
-	var item: InventoryItemData = slot.get("item") as InventoryItemData
-	if item == null:
-		item_name_label.text = "Empty"
-		item_name_label.add_theme_color_override("font_color", TITLE_GOLD)
-		item_type_label.text = "Choose a slot"
-		item_description_label.text = "Collect items in the world and they will appear here."
-		return
-
-	item_name_label.text = item.display_name
-	item_name_label.add_theme_color_override("font_color", item.accent_color)
-	item_type_label.text = _get_type_label(item.category)
-	item_description_label.text = item.description
-
-
-func _get_type_label(category: int) -> String:
-	match category:
-		InventoryItemData.ItemCategory.KEY:
-			return "Key item"
-		InventoryItemData.ItemCategory.QUEST:
-			return "Quest item"
-		_:
-			return "Regular item"

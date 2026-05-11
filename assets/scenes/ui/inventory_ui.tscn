@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://assets/scripts/inventory_ui.gd" id="1_script"]
 [ext_resource type="Script" path="res://assets/scripts/inventory_frame.gd" id="2_frame_script"]
@@ -9,22 +9,6 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_blur"]
 shader = ExtResource("3_blur_shader")
 shader_parameter/tint_color = Color(0.12, 0.15, 0.12, 0.48)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-content_margin_left = 24.0
-content_margin_top = 18.0
-content_margin_right = 24.0
-content_margin_bottom = 20.0
-bg_color = Color(0.231373, 0.164706, 0.0784314, 0.45)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 0.929412, 0.729412, 0.28)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
 
 [node name="InventoryUI" type="CanvasLayer"]
 layer = 180
@@ -163,55 +147,3 @@ offset_bottom = 486.0
 columns = 4
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
-
-[node name="DescriptionPanel" type="PanelContainer" parent="MenuRoot/Center/Content"]
-layout_mode = 0
-offset_left = 165.0
-offset_top = 542.0
-offset_right = 595.0
-offset_bottom = 694.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
-
-[node name="DescriptionBlock" type="VBoxContainer" parent="MenuRoot/Center/Content/DescriptionPanel"]
-layout_mode = 2
-theme_override_constants/separation = 8
-alignment = 1
-
-[node name="ItemNameLabel" type="Label" parent="MenuRoot/Center/Content/DescriptionPanel/DescriptionBlock"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
-theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
-theme_override_constants/outline_size = 6
-theme_override_fonts/font = ExtResource("4_title_font")
-theme_override_font_sizes/font_size = 32
-text = "Empty"
-horizontal_alignment = 1
-
-[node name="ItemTypeLabel" type="Label" parent="MenuRoot/Center/Content/DescriptionPanel/DescriptionBlock"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 0.86)
-theme_override_fonts/font = ExtResource("5_body_font")
-theme_override_font_sizes/font_size = 20
-text = "Choose a slot"
-horizontal_alignment = 1
-
-[node name="ItemDescriptionLabel" type="Label" parent="MenuRoot/Center/Content/DescriptionPanel/DescriptionBlock"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.97, 0.97, 0.97, 0.95)
-theme_override_fonts/font = ExtResource("5_body_font")
-theme_override_font_sizes/font_size = 23
-text = "Collect items in the world and they will appear here."
-horizontal_alignment = 1
-autowrap_mode = 3
-
-[node name="BackHintLabel" type="Label" parent="MenuRoot/Center/Content"]
-layout_mode = 0
-offset_left = 290.0
-offset_top = 674.0
-offset_right = 470.0
-offset_bottom = 718.0
-theme_override_colors/font_color = Color(0.97, 0.97, 0.97, 0.95)
-theme_override_fonts/font = ExtResource("5_body_font")
-theme_override_font_sizes/font_size = 22
-text = "ESC  Back"
-horizontal_alignment = 1
