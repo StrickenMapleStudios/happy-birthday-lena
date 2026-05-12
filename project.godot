@@ -28,6 +28,8 @@ _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
+mouse_cursor/custom_image="res://assets/art/sprites/cursor/cursor_64.png"
+mouse_cursor/custom_image_hotspot=Vector2(20, 14)
 
 [editor_plugins]
 
