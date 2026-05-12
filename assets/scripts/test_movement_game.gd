@@ -23,6 +23,9 @@ const AUDIO_PRESET_GAMEPLAY := &"gameplay"
 const AUDIO_PRESET_PAUSE := &"pause"
 const AUDIO_PRESET_DIALOGUE := &"dialogue"
 const AUDIO_PRESET_FADE_DURATION := 0.15
+const CURSOR_IMAGE_PATH := "res://assets/art/sprites/cursor/cursor.png"
+const CURSOR_SIZE := Vector2i(64, 64)
+const CURSOR_HOTSPOT := Vector2(20, 14)
 
 const CURSOR_MODE_INGAME := Input.MOUSE_MODE_CAPTURED
 const CURSOR_MODE_UI := Input.MOUSE_MODE_VISIBLE
@@ -57,6 +60,7 @@ var _inventory_data: InventoryData = InventoryData.new()
 
 
 func _ready() -> void:
+	_apply_custom_cursor()
 	_set_dialogue_pivots_active(false)
 	_refresh_gameplay_world_ui_visibility()
 	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY)
@@ -529,6 +533,19 @@ func _refresh_cursor_mode() -> void:
 
 	if Input.mouse_mode != desired_mode:
 		Input.mouse_mode = desired_mode
+
+
+func _apply_custom_cursor() -> void:
+	var image := Image.load_from_file(CURSOR_IMAGE_PATH)
+	if image == null or image.is_empty():
+		return
+
+	image.resize(CURSOR_SIZE.x, CURSOR_SIZE.y, Image.INTERPOLATE_LANCZOS)
+	var texture := ImageTexture.create_from_image(image)
+	if texture == null:
+		return
+
+	Input.set_custom_mouse_cursor(texture, Input.CURSOR_ARROW, CURSOR_HOTSPOT)
 
 
 func _sync_input_context() -> void:
