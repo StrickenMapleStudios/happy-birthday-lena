@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://ccjs06m5tpi8k"]
+
+[ext_resource type="PackedScene" uid="uid://cuvqsplyq6dy6" path="res://assets/art/models/characters/character.glb" id="1_character"]
+
+[node name="GiantCharacter" type="Node3D"]
+
+[node name="Model" parent="." index="0" instance=ExtResource("1_character")]
+
+[node name="AnimationPlayer" parent="Model" index="1"]
+autoplay = "Idle"
+
+[node name="Skeleton3D" parent="Model/Rig" index="0"]
+bones/22/scale = Vector3(0.67, 0.67, 0.67)
+
+[node name="hat_2" parent="Model/Rig/Skeleton3D" index="0"]
+visible = false
+
+[node name="hat" parent="Model/Rig/Skeleton3D/hat_2" index="0"]
+visible = false
