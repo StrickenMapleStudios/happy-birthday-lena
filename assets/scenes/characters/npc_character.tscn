@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="PackedScene" path="res://assets/art/models/characters/character.glb" id="1_glb"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/dialogue_camera_mount.tscn" id="2_mount"]
@@ -9,6 +9,8 @@
 [ext_resource type="Resource" path="res://assets/data/characters/npc_not_lena_identity.tres" id="7_identity_data"]
 [ext_resource type="Script" path="res://assets/scripts/dialogue_cycle_state_component.gd" id="8_dialogue_cycle_state"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/character_collision_shape.tscn" id="9_collision_shape"]
+[ext_resource type="Script" path="res://assets/scripts/npc_look_tracking_controller.gd" id="10_look_tracking"]
+[ext_resource type="Resource" path="res://assets/data/characters/npc_default_look_tracking.tres" id="11_look_tracking_settings"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_interaction"]
 radius = 6.24
@@ -26,6 +28,10 @@ states/Idle/position = Vector2(366, 117)
 states/Start/position = Vector2(160, 116)
 transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_dialogue_start")]
 graph_offset = Vector2(-72, -6)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_look_tracking"]
+radius = 10.0
+height = 3.6
 
 [node name="NpcCharacter" type="CharacterBody3D"]
 motion_mode = 1
@@ -76,3 +82,13 @@ dialogue_start_title = "start"
 [node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionTarget" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 shape = SubResource("CylinderShape3D_interaction")
+
+[node name="LookTracking" type="Area3D" parent="." index="4"]
+collision_mask = 1
+monitorable = false
+script = ExtResource("10_look_tracking")
+settings = ExtResource("11_look_tracking_settings")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LookTracking" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+shape = SubResource("CylinderShape3D_look_tracking")

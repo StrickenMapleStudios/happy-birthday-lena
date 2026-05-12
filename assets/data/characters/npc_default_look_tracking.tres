@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NpcLookTrackingSettings" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/scripts/npc_look_tracking_settings.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+tracking_distance = 10.0
+tracking_height = 3.6
+horizontal_fov_degrees = 150.0
+turn_speed = 5.0
+target_height_offset = 1.5

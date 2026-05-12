@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://dwinqt4ms18vm"]
 
-[ext_resource type="PackedScene" path="res://assets/scenes/characters/giant_character.tscn" id="1_giant_character"]
+[ext_resource type="PackedScene" uid="uid://ccjs06m5tpi8k" path="res://assets/scenes/characters/giant_character.tscn" id="1_giant_character"]
 
-[node name="GiantCharacterShowcase" type="Node3D"]
+[node name="GiantCharacterShowcase" type="Node3D" unique_id=1778353891]
 
-[node name="GiantCharacterLeft" parent="." index="0" instance=ExtResource("1_giant_character")]
+[node name="GiantCharacterLeft" parent="." unique_id=1055612407 instance=ExtResource("1_giant_character")]
 transform = Transform3D(18, 0, 0, 0, 18, 0, 0, 0, 18, -30, 0, -72)
 
-[node name="GiantCharacterRight" parent="." index="1" instance=ExtResource("1_giant_character")]
+[node name="GiantCharacterRight" parent="." unique_id=2061108701 instance=ExtResource("1_giant_character")]
 transform = Transform3D(15.588457, 0, -9, 0, 18, 0, 9, 0, 15.588457, 26, 0, -66)

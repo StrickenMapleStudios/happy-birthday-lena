@@ -51,6 +51,7 @@ var _saved_animation_tree: AnimationTree
 
 func _ready() -> void:
 	_ensure_input_map()
+	add_to_group(&"player_character")
 	animation_tree.active = true
 	if dialogue_animation_tree != null:
 		dialogue_animation_tree.active = false
