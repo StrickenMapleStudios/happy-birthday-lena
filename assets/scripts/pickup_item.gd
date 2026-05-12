@@ -11,10 +11,12 @@ class_name PickupItem
 @onready var icon_label: Label3D = $VisualRoot/IconLabel
 @onready var body_mesh: MeshInstance3D = $VisualRoot/BodyMesh
 @onready var top_mesh: MeshInstance3D = $VisualRoot/TopMesh
+@onready var custom_visual_anchor: Node3D = $VisualRoot/CustomVisualAnchor
 @onready var interaction_target: InteractionTarget = $InteractionTarget
 
 var _base_visual_position := Vector3.ZERO
 var _time := 0.0
+var _custom_visual_instance: Node3D
 
 
 func _ready() -> void:
@@ -52,9 +54,22 @@ func _apply_item_visuals() -> void:
 	if interaction_target != null:
 		interaction_target.interaction_key_text = "E"
 
+	_clear_custom_visual()
+
+	var has_custom_visual := item_data.world_model_scene != null
+	if body_mesh != null:
+		body_mesh.visible = not has_custom_visual
+	if top_mesh != null:
+		top_mesh.visible = not has_custom_visual
+
 	if icon_label != null:
 		icon_label.text = item_data.icon_text
 		icon_label.modulate = item_data.accent_color
+		icon_label.visible = not has_custom_visual
+
+	if has_custom_visual:
+		_spawn_custom_visual()
+		return
 
 	var body_material := StandardMaterial3D.new()
 	body_material.albedo_color = item_data.accent_color.darkened(0.25)
@@ -69,3 +84,26 @@ func _apply_item_visuals() -> void:
 	top_material.roughness = 0.38
 	if top_mesh != null:
 		top_mesh.material_override = top_material
+
+
+func _spawn_custom_visual() -> void:
+	if custom_visual_anchor == null or item_data == null or item_data.world_model_scene == null:
+		return
+
+	var instance := item_data.world_model_scene.instantiate() as Node3D
+	if instance == null:
+		return
+
+	custom_visual_anchor.add_child(instance)
+	instance.position = item_data.world_model_offset
+	instance.rotation_degrees = item_data.world_model_rotation_degrees
+	instance.scale = item_data.world_model_scale
+	_custom_visual_instance = instance
+
+
+func _clear_custom_visual() -> void:
+	if _custom_visual_instance == null:
+		return
+
+	_custom_visual_instance.queue_free()
+	_custom_visual_instance = null

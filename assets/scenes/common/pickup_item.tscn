@@ -30,6 +30,8 @@ mesh = SubResource("CylinderMesh_body")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
 mesh = SubResource("SphereMesh_top")
 
+[node name="CustomVisualAnchor" type="Node3D" parent="VisualRoot"]
+
 [node name="IconLabel" type="Label3D" parent="VisualRoot"]
 transform = Transform3D(0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, 0, 1.72, 0)
 billboard = 1

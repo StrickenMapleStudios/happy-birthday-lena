@@ -14,6 +14,10 @@ enum ItemCategory {
 @export var category: ItemCategory = ItemCategory.REGULAR
 @export var icon_text := "?"
 @export var accent_color := Color(1.0, 0.8, 0.2, 1.0)
+@export var world_model_scene: PackedScene
+@export var world_model_offset := Vector3.ZERO
+@export var world_model_rotation_degrees := Vector3.ZERO
+@export var world_model_scale := Vector3.ONE
 @export var stackable := false
 @export_range(1, 99, 1) var max_stack := 1
 

@@ -109,6 +109,6 @@ mouse_filter = 2
 
 [node name="PauseMenu" parent="." unique_id=1516564974 instance=ExtResource("6_pause_menu")]
 
-[node name="InventoryUI" parent="." instance=ExtResource("9_inventory_ui")]
+[node name="InventoryUI" parent="." unique_id=165687049 instance=ExtResource("9_inventory_ui")]
 
 [editable path="Level"]
