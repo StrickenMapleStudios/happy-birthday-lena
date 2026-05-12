@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="PackedScene" path="res://assets/art/models/characters/character.glb" id="1_glb"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/dialogue_camera_mount.tscn" id="2_mount"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" path="res://assets/scenes/common/character_collision_shape.tscn" id="9_collision_shape"]
 [ext_resource type="Script" path="res://assets/scripts/npc_look_tracking_controller.gd" id="10_look_tracking"]
 [ext_resource type="Resource" path="res://assets/data/characters/npc_default_look_tracking.tres" id="11_look_tracking_settings"]
+[ext_resource type="Script" path="res://assets/scripts/npc_head_pole_modifier.gd" id="12_head_pole_modifier"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_interaction"]
 radius = 6.24
@@ -52,6 +53,11 @@ anim_player = NodePath("..")
 
 [node name="hat_2" parent="Model/Rig/Skeleton3D" index="0"]
 visible = false
+
+[node name="HeadPoleModifier" type="SkeletonModifier3D" parent="Model/Rig/Skeleton3D" index="1"]
+script = ExtResource("12_head_pole_modifier")
+settings = ExtResource("11_look_tracking_settings")
+look_tracking_controller_path = NodePath("../../../../LookTracking")
 
 [node name="DialogueSpeakerPivot" type="Marker3D" parent="."]
 

@@ -16,20 +16,14 @@ func _ready() -> void:
 	monitoring = true
 	monitorable = false
 	_refresh_configuration()
-	_validate_head_bone()
 
 
 func _physics_process(delta: float) -> void:
-	if not _is_tracking_active():
+	if settings == null:
 		return
 
 	_seed_tracked_bodies_from_overlaps()
 	_prune_tracked_bodies()
-	var target := _find_best_target()
-	if target == null:
-		return
-
-	_rotate_tracked_node_towards(target.global_position + Vector3.UP * settings.target_height_offset, delta)
 
 
 func set_tracking_enabled(value: bool) -> void:
@@ -50,11 +44,11 @@ func _refresh_configuration() -> void:
 	if settings == null:
 		return
 
-	var collision_shape := get_node_or_null(collision_shape_path) as CollisionShape3D
+	var collision_shape: CollisionShape3D = get_node_or_null(collision_shape_path) as CollisionShape3D
 	if collision_shape == null:
 		return
 
-	var cylinder_shape := collision_shape.shape as CylinderShape3D
+	var cylinder_shape: CylinderShape3D = collision_shape.shape as CylinderShape3D
 	if cylinder_shape == null:
 		cylinder_shape = CylinderShape3D.new()
 		collision_shape.shape = cylinder_shape
@@ -62,23 +56,6 @@ func _refresh_configuration() -> void:
 	cylinder_shape.radius = settings.tracking_distance
 	cylinder_shape.height = settings.tracking_height
 	collision_shape.position.y = settings.tracking_height * 0.5
-
-
-func _validate_head_bone() -> void:
-	if settings == null or settings.rig_head_bone_name == StringName():
-		return
-
-	var skeleton := get_node_or_null("../Model/Rig/Skeleton3D") as Skeleton3D
-	if skeleton == null:
-		return
-
-	if skeleton.find_bone(String(settings.rig_head_bone_name)) >= 0:
-		return
-
-	push_warning(
-		"Look tracking expected bone '%s' on '%s', but it was not found."
-		% [String(settings.rig_head_bone_name), get_parent().name]
-	)
 
 
 func _on_body_entered(body: Node) -> void:
@@ -119,17 +96,17 @@ func _seed_tracked_bodies_from_overlaps() -> void:
 
 
 func _find_best_target() -> Node3D:
-	var tracked_node := _get_tracked_node()
+	var tracked_node: Node3D = _get_tracked_node()
 	if tracked_node == null:
 		return null
 
 	var best_target: Node3D
-	var best_distance_squared := INF
+	var best_distance_squared: float = INF
 	for candidate in _tracked_bodies:
 		if not _is_candidate_in_front(candidate, tracked_node):
 			continue
 
-		var distance_squared := tracked_node.global_position.distance_squared_to(candidate.global_position)
+		var distance_squared: float = tracked_node.global_position.distance_squared_to(candidate.global_position)
 		if distance_squared >= best_distance_squared:
 			continue
 
@@ -140,41 +117,35 @@ func _find_best_target() -> Node3D:
 
 
 func _is_candidate_in_front(candidate: Node3D, tracked_node: Node3D) -> bool:
-	var to_candidate := candidate.global_position - tracked_node.global_position
+	var to_candidate: Vector3 = candidate.global_position - tracked_node.global_position
 	to_candidate.y = 0.0
 	if to_candidate.is_zero_approx():
 		return true
 
-	var forward := tracked_node.global_transform.basis.z
+	var forward: Vector3 = tracked_node.global_transform.basis.z
 	forward.y = 0.0
 	forward = forward.normalized()
 	if forward.is_zero_approx():
 		return true
 
-	var min_dot := cos(deg_to_rad(settings.horizontal_fov_degrees * 0.5))
+	var min_dot: float = cos(deg_to_rad(settings.horizontal_fov_degrees * 0.5))
 	return forward.dot(to_candidate.normalized()) >= min_dot
-
-
-func _rotate_tracked_node_towards(target_position: Vector3, delta: float) -> void:
-	var tracked_node := _get_tracked_node()
-	if tracked_node == null:
-		return
-
-	var offset := target_position - tracked_node.global_position
-	offset.y = 0.0
-	if offset.is_zero_approx():
-		return
-
-	var target_rotation := atan2(offset.x, offset.z)
-	var target_basis := Basis.from_euler(Vector3(0.0, target_rotation, 0.0))
-	var current_transform := tracked_node.global_transform
-	var turn_weight := clampf(delta * settings.turn_speed, 0.0, 1.0)
-	current_transform.basis = current_transform.basis.orthonormalized().slerp(target_basis, turn_weight)
-	tracked_node.global_transform = current_transform
 
 
 func _get_tracked_node() -> Node3D:
 	return get_node_or_null(tracked_node_path) as Node3D
+
+
+func get_tracked_node() -> Node3D:
+	return _get_tracked_node()
+
+
+func get_current_target_world_position() -> Vector3:
+	var target: Node3D = _find_best_target() if _is_tracking_active() else null
+	if target == null:
+		return Vector3.INF
+
+	return target.global_position + Vector3.UP * settings.target_height_offset
 
 
 func _is_target_body(body: Node3D) -> bool:
