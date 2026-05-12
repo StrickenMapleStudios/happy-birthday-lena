@@ -27,6 +27,9 @@ animation = &"Idle"
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_walking"]
 animation = &"Walking"
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_running"]
+animation = &"Running"
+
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_dialogue_start"]
 advance_mode = 2
 
@@ -36,16 +39,30 @@ advance_mode = 2
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idle_to_walking"]
 xfade_time = 0.25
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idle_to_running"]
+xfade_time = 0.25
+
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_walking_to_idle"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_walking_to_running"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_running_to_idle"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_running_to_walking"]
 xfade_time = 0.25
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_locomotion"]
 states/Idle/node = SubResource("AnimationNodeAnimation_idle")
 states/Idle/position = Vector2(430, 118)
+states/Running/node = SubResource("AnimationNodeAnimation_running")
+states/Running/position = Vector2(675, 43)
 states/Start/position = Vector2(182, 119)
 states/Walking/node = SubResource("AnimationNodeAnimation_walking")
 states/Walking/position = Vector2(674, 118)
-transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_start"), "Idle", "Walking", SubResource("AnimationNodeStateMachineTransition_idle_to_walking"), "Walking", "Idle", SubResource("AnimationNodeStateMachineTransition_walking_to_idle")]
+transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_start"), "Idle", "Walking", SubResource("AnimationNodeStateMachineTransition_idle_to_walking"), "Idle", "Running", SubResource("AnimationNodeStateMachineTransition_idle_to_running"), "Walking", "Idle", SubResource("AnimationNodeStateMachineTransition_walking_to_idle"), "Walking", "Running", SubResource("AnimationNodeStateMachineTransition_walking_to_running"), "Running", "Idle", SubResource("AnimationNodeStateMachineTransition_running_to_idle"), "Running", "Walking", SubResource("AnimationNodeStateMachineTransition_running_to_walking")]
 graph_offset = Vector2(-40, 6)
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_dialogue"]

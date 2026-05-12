@@ -1,9 +1,12 @@
 extends CharacterBody3D
 
 const WALKING_TURN_SPEED := 6.0
+const RUNNING_TURN_SPEED := 9.0
 const ANIMATION_IDLE := "Idle"
 const ANIMATION_WALKING := "Walking"
+const ANIMATION_RUNNING := "Running"
 const WALKING_SPEED_SCALE := 2.0
+const RUNNING_SPEED_SCALE := 5.0
 const CHARACTER_IDENTITY_PATH := ^"CharacterIdentity"
 const HEAD_POLE_MODIFIER_PATH := ^"Model/Rig/Skeleton3D/HeadPoleModifier"
 const FRIEND_FOLLOW_STATE_PATH := ^"FriendFollowState"
@@ -11,6 +14,7 @@ const LOOK_TRACKING_PATH := ^"LookTracking"
 const PREPARED_SPEED_SCALE_META := &"prepared_speed_scale"
 const STATE_IDLE := &"Idle"
 const STATE_WALKING := &"Walking"
+const STATE_RUNNING := &"Running"
 const MAX_COLLISION_SLIDES := 4
 
 @export var visual_root_path: NodePath = ^"Model/Rig"
@@ -23,6 +27,7 @@ const MAX_COLLISION_SLIDES := 4
 var _playback: AnimationNodeStateMachinePlayback
 var _dialogue_animation_mode_active := false
 var _follow_movement_active := false
+var _follow_running_active := false
 var _follow_direction := Vector3.ZERO
 var _follow_turn_speed := WALKING_TURN_SPEED
 var _current_state := StringName()
@@ -37,6 +42,7 @@ func _ready() -> void:
 		dialogue_animation_tree.active = false
 	_playback = animation_tree.get("parameters/playback") as AnimationNodeStateMachinePlayback
 	_prepare_locomotion_animation(ANIMATION_WALKING, WALKING_SPEED_SCALE)
+	_prepare_locomotion_animation(ANIMATION_RUNNING, RUNNING_SPEED_SCALE)
 	_configure_root_motion_track()
 	_travel_to(STATE_IDLE)
 
@@ -122,10 +128,11 @@ func get_dialogue_speaker_name() -> String:
 	return name
 
 
-func set_follow_navigation(direction: Vector3, turn_speed: float = WALKING_TURN_SPEED) -> void:
+func set_follow_navigation(direction: Vector3, turn_speed: float = WALKING_TURN_SPEED, is_running: bool = false) -> void:
 	_follow_turn_speed = turn_speed
 	_follow_direction = direction.normalized() if direction.length_squared() > 0.0001 else Vector3.ZERO
 	_follow_movement_active = _follow_direction != Vector3.ZERO
+	_follow_running_active = _follow_movement_active and is_running
 	_update_look_tracking_state()
 
 
@@ -151,6 +158,9 @@ func _update_follow_animation_state() -> void:
 		return
 
 	if _follow_movement_active:
+		if _follow_running_active:
+			_travel_to(STATE_RUNNING)
+			return
 		_travel_to(STATE_WALKING)
 		return
 

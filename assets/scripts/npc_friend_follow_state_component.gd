@@ -5,11 +5,12 @@ class_name NpcFriendFollowStateComponent
 const DIALOGUE_STATE_GROUP := &"dialogue_state_components"
 
 @export var target_group: StringName = &"player_character"
-@export var turn_speed := 7.5
-@export var follow_distance := 2.8
+@export var walk_turn_speed := 7.5
+@export var run_turn_speed := 9.0
+@export var follow_start_distance := 5.7
+@export var run_start_distance := 8.55
 @export var stop_distance := 1.9
 @export var repath_distance := 0.75
-@export var side_offset := 0.9
 @export var avoidance_enabled := true
 @export var is_friend := false
 
@@ -17,6 +18,7 @@ const DIALOGUE_STATE_GROUP := &"dialogue_state_components"
 
 var _target_actor: Node3D
 var _follow_paused := false
+var _follow_active := false
 var _last_requested_target := Vector3.INF
 
 
@@ -52,9 +54,15 @@ func _physics_process(delta: float) -> void:
 
 	var planar_delta := desired_target - actor.global_position
 	planar_delta.y = 0.0
-	if planar_delta.length() <= stop_distance:
+	var distance_to_target := planar_delta.length()
+	if distance_to_target <= stop_distance:
 		_stop_following(actor, delta)
 		return
+	if not _follow_active and distance_to_target < follow_start_distance:
+		_stop_following(actor, delta)
+		return
+
+	_follow_active = true
 
 	if navigation_agent.is_navigation_finished():
 		_stop_following(actor, delta)
@@ -68,18 +76,21 @@ func _physics_process(delta: float) -> void:
 		return
 
 	move_direction = move_direction.normalized()
-	_apply_follow_navigation(actor, move_direction)
+	var should_run := distance_to_target >= run_start_distance
+	_apply_follow_navigation(actor, move_direction, should_run)
 
 
 func become_friend() -> void:
 	is_friend = true
 	_follow_paused = false
+	_follow_active = false
 	_target_actor = _find_target_actor()
 	_last_requested_target = Vector3.INF
 
 
 func pause_following() -> void:
 	_follow_paused = true
+	_follow_active = false
 	_last_requested_target = Vector3.INF
 
 
@@ -88,6 +99,7 @@ func resume_following() -> void:
 		return
 
 	_follow_paused = false
+	_follow_active = false
 	_target_actor = _find_target_actor()
 	_last_requested_target = Vector3.INF
 
@@ -115,9 +127,10 @@ func _get_follow_target_position() -> Vector3:
 
 
 func _stop_following(actor: CharacterBody3D, _delta: float) -> void:
-	_apply_follow_navigation(actor, Vector3.ZERO)
+	_follow_active = false
+	_apply_follow_navigation(actor, Vector3.ZERO, false)
 
 
-func _apply_follow_navigation(actor: CharacterBody3D, direction: Vector3) -> void:
+func _apply_follow_navigation(actor: CharacterBody3D, direction: Vector3, should_run: bool) -> void:
 	if actor != null and actor.has_method("set_follow_navigation"):
-		actor.call("set_follow_navigation", direction, turn_speed)
+		actor.call("set_follow_navigation", direction, run_turn_speed if should_run else walk_turn_speed, should_run)
