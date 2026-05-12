@@ -10,5 +10,5 @@ horizontal_fov_degrees = 150.0
 max_yaw_degrees = 55.0
 max_pitch_up_degrees = 30.0
 max_pitch_down_degrees = 12.0
-rotation_follow_speed = 9.0
+rotation_follow_speed = 6
 target_height_offset = 1.5
