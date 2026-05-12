@@ -15,6 +15,23 @@ func _ready() -> void:
 	_validate_bone_name()
 
 
+func reset_head_rotation_immediately() -> void:
+	var skeleton: Skeleton3D = get_skeleton()
+	if skeleton == null:
+		return
+
+	if _head_bone_idx < 0:
+		_validate_bone_name()
+	if _head_bone_idx < 0:
+		return
+
+	var animated_pose_rotation: Quaternion = skeleton.get_bone_pose_rotation(_head_bone_idx)
+	_smoothed_pose_rotation = animated_pose_rotation
+	_smoothed_pose_initialized = true
+	_last_update_time_usec = 0
+	skeleton.set_bone_pose_rotation(_head_bone_idx, animated_pose_rotation)
+
+
 func _validate_bone_name() -> void:
 	_head_bone_idx = -1
 	var skeleton: Skeleton3D = get_skeleton()

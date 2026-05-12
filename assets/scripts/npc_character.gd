@@ -2,6 +2,7 @@ extends CharacterBody3D
 
 const ANIMATION_IDLE := "Idle"
 const CHARACTER_IDENTITY_PATH := ^"CharacterIdentity"
+const HEAD_POLE_MODIFIER_PATH := ^"Model/Rig/Skeleton3D/HeadPoleModifier"
 
 @export var visual_root_path: NodePath = ^"Model/Rig"
 @export var player_dialogue_anchor_path: NodePath = ^"PlayerDialogueAnchor"
@@ -35,6 +36,7 @@ func enter_dialogue_animation_mode(_is_talking: bool) -> void:
 		_dialogue_animation_mode_active = true
 
 	dialogue_animation_tree.active = true
+	_reset_head_look_immediately()
 
 
 func exit_dialogue_animation_mode() -> void:
@@ -91,3 +93,9 @@ func _get_active_animation_tree(excluded_tree: AnimationTree) -> AnimationTree:
 			return tree
 
 	return null
+
+
+func _reset_head_look_immediately() -> void:
+	var head_pole_modifier := get_node_or_null(HEAD_POLE_MODIFIER_PATH)
+	if head_pole_modifier != null and head_pole_modifier.has_method("reset_head_rotation_immediately"):
+		head_pole_modifier.call("reset_head_rotation_immediately")
