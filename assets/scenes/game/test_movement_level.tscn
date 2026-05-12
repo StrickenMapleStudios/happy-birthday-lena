@@ -60,6 +60,10 @@ roughness = 0.8
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_marker_capsule"]
 radius = 0.9
 
+[sub_resource type="NavigationMesh" id="NavigationMesh_test_movement"]
+vertices = PackedVector3Array(-300, 0, -300, 300, 0, -300, 300, 0, 300, -300, 0, 300)
+polygons = [PackedInt32Array(0, 1, 2), PackedInt32Array(0, 2, 3)]
+
 [node name="TestMovementLevel" type="Node3D" unique_id=1638308877]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1304216360]
@@ -80,6 +84,9 @@ directional_shadow_max_distance = 1301.8
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.014071941, -0.029748935, 0.002511382)
 mesh = SubResource("PlaneMesh_test_movement")
 surface_material_override/0 = SubResource("StandardMaterial3D_ground")
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=1695030196]
+navigation_mesh = SubResource("NavigationMesh_test_movement")
 
 [node name="OrientationProps" type="Node3D" parent="." unique_id=1223392466]
 

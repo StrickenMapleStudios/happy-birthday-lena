@@ -30,6 +30,7 @@
 	=> END
 
 ~ new_friend
+do become_friend()
 {{speaker_name}}: Ура! Давай.
 => END
 

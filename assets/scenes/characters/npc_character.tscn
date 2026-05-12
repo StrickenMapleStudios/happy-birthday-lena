@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="PackedScene" path="res://assets/art/models/characters/character.glb" id="1_glb"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/dialogue_camera_mount.tscn" id="2_mount"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://assets/scripts/npc_look_tracking_controller.gd" id="10_look_tracking"]
 [ext_resource type="Resource" path="res://assets/data/characters/npc_default_look_tracking.tres" id="11_look_tracking_settings"]
 [ext_resource type="Script" path="res://assets/scripts/npc_head_pole_modifier.gd" id="12_head_pole_modifier"]
+[ext_resource type="Script" path="res://assets/scripts/npc_friend_follow_state_component.gd" id="13_follow_state"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_interaction"]
 radius = 6.24
@@ -20,8 +21,32 @@ height = 3.2
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dialogue_idle"]
 animation = &"Idle"
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_idle"]
+animation = &"Idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_walking"]
+animation = &"Walking"
+
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_dialogue_start"]
 advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_start"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idle_to_walking"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_walking_to_idle"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_locomotion"]
+states/Idle/node = SubResource("AnimationNodeAnimation_idle")
+states/Idle/position = Vector2(430, 118)
+states/Start/position = Vector2(182, 119)
+states/Walking/node = SubResource("AnimationNodeAnimation_walking")
+states/Walking/position = Vector2(674, 118)
+transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_start"), "Idle", "Walking", SubResource("AnimationNodeStateMachineTransition_idle_to_walking"), "Walking", "Idle", SubResource("AnimationNodeStateMachineTransition_walking_to_idle")]
+graph_offset = Vector2(-40, 6)
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_dialogue"]
 states/Idle/node = SubResource("AnimationNodeAnimation_dialogue_idle")
@@ -34,17 +59,27 @@ graph_offset = Vector2(-72, -6)
 radius = 10.0
 height = 3.6
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_npc_character"]
+radius = 0.715
+height = 2.1
+
 [node name="NpcCharacter" type="CharacterBody3D"]
 motion_mode = 1
 script = ExtResource("4_script")
 
 [node name="CollisionShape3D" parent="." index="0" instance=ExtResource("9_collision_shape")]
-transform = Transform3D(1.3, 0, 0, 0, 1, 0, 0, 0, 1.3, 0, 1.6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+shape = SubResource("CapsuleShape3D_npc_character")
 
 [node name="Model" parent="." index="1" instance=ExtResource("1_glb")]
 
 [node name="AnimationPlayer" parent="Model" index="1"]
 autoplay = "Idle"
+
+[node name="AnimationTree" type="AnimationTree" parent="Model/AnimationPlayer" index="0"]
+root_node = NodePath("../..")
+tree_root = SubResource("AnimationNodeStateMachine_locomotion")
+anim_player = NodePath("..")
 
 [node name="DialogueAnimationTree" type="AnimationTree" parent="Model/AnimationPlayer" index="0"]
 active = false
@@ -67,6 +102,17 @@ identity_data = ExtResource("7_identity_data")
 
 [node name="DialogueCycleState" type="Node" parent="."]
 script = ExtResource("8_dialogue_cycle_state")
+
+[node name="FriendFollowState" type="Node3D" parent="."]
+script = ExtResource("13_follow_state")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="FriendFollowState"]
+path_desired_distance = 0.35
+target_desired_distance = 1.7
+radius = 0.7
+height = 2.0
+max_speed = 3.6
+avoidance_enabled = true
 
 [node name="DialogueCameraMount" parent="." instance=ExtResource("2_mount")]
 
