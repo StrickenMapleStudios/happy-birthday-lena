@@ -54,6 +54,7 @@ var _inventory_open := false
 var _input_context := InputContext.GAMEPLAY
 var _focus_before_pause: WeakRef
 var _inventory_data: InventoryData = InventoryData.new()
+var _hidden_follower_actors: Array[Node3D] = []
 
 
 func _ready() -> void:
@@ -136,6 +137,7 @@ func _on_interaction_requested(target: InteractionTarget) -> void:
 	await SceneTransition.fade_out()
 	player.set_controls_enabled(false)
 	interaction_source.set_interaction_enabled(false)
+	_hide_follower_actors_for_dialogue()
 	player.global_transform = player_dialogue_anchor.global_transform
 	player.face_towards_position(target.global_position)
 	_dialogue_target_actor = target.get_parent() as Node3D
@@ -176,6 +178,7 @@ func _exit_dialogue_mode() -> void:
 	_active_dialogue_resource = null
 	_restore_dialogue_animation_mode(player)
 	_restore_dialogue_animation_mode(_dialogue_target_actor)
+	_restore_follower_actors_after_dialogue()
 	player.global_transform = _saved_player_transform
 	player.set_character_visible(true)
 	if is_instance_valid(_dialogue_target_actor) and _dialogue_target_actor.has_method("set_character_visible"):
@@ -621,3 +624,30 @@ func _restore_dialogue_animation_mode(actor: Node3D) -> void:
 		return
 
 	actor.call("exit_dialogue_animation_mode")
+
+
+func _hide_follower_actors_for_dialogue() -> void:
+	_hidden_follower_actors.clear()
+	var tree := get_tree()
+	if tree == null:
+		return
+
+	for actor in tree.get_nodes_in_group(&"friendly_followers"):
+		var follower := actor as Node3D
+		if follower == null or follower == _dialogue_target_actor:
+			continue
+		if not follower.has_method("pause_as_follower_during_dialogue"):
+			continue
+
+		follower.call("pause_as_follower_during_dialogue")
+		_hidden_follower_actors.append(follower)
+
+
+func _restore_follower_actors_after_dialogue() -> void:
+	for actor in _hidden_follower_actors:
+		if actor == null:
+			continue
+		if actor.has_method("resume_as_follower_after_dialogue"):
+			actor.call("resume_as_follower_after_dialogue")
+
+	_hidden_follower_actors.clear()

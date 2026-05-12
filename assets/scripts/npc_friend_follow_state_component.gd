@@ -3,13 +3,15 @@ extends Node
 class_name NpcFriendFollowStateComponent
 
 const DIALOGUE_STATE_GROUP := &"dialogue_state_components"
+const FRIEND_FOLLOWERS_GROUP := &"friendly_followers"
+const INTERACTION_TARGET_PATH := ^"../InteractionTarget"
 
 @export var target_group: StringName = &"player_character"
 @export var walk_turn_speed := 7.5
 @export var run_turn_speed := 9.0
 @export var follow_start_distance := 5.7
 @export var run_start_distance := 8.55
-@export var stop_distance := 1.9
+@export var stop_distance := 4.8
 @export var repath_distance := 0.75
 @export var avoidance_enabled := true
 @export var is_friend := false
@@ -86,6 +88,12 @@ func become_friend() -> void:
 	_follow_active = false
 	_target_actor = _find_target_actor()
 	_last_requested_target = Vector3.INF
+	var actor := get_parent()
+	if actor != null and not actor.is_in_group(FRIEND_FOLLOWERS_GROUP):
+		actor.add_to_group(FRIEND_FOLLOWERS_GROUP)
+	var interaction_target := get_node_or_null(INTERACTION_TARGET_PATH)
+	if interaction_target != null and interaction_target.has_method("set_interaction_enabled"):
+		interaction_target.call("set_interaction_enabled", false)
 
 
 func pause_following() -> void:

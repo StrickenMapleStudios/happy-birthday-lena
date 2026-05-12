@@ -33,6 +33,7 @@ var _follow_turn_speed := WALKING_TURN_SPEED
 var _current_state := StringName()
 var _root_motion_track_path := NodePath()
 var _saved_animation_tree: AnimationTree
+var _saved_companion_dialogue_transform := Transform3D.IDENTITY
 
 
 func _ready() -> void:
@@ -134,6 +135,18 @@ func set_follow_navigation(direction: Vector3, turn_speed: float = WALKING_TURN_
 	_follow_movement_active = _follow_direction != Vector3.ZERO
 	_follow_running_active = _follow_movement_active and is_running
 	_update_look_tracking_state()
+
+
+func pause_as_follower_during_dialogue() -> void:
+	_saved_companion_dialogue_transform = global_transform
+	_pause_friend_following()
+	set_character_visible(false)
+
+
+func resume_as_follower_after_dialogue() -> void:
+	global_transform = _saved_companion_dialogue_transform
+	set_character_visible(true)
+	_resume_friend_following()
 
 
 func _get_active_animation_tree(excluded_tree: AnimationTree) -> AnimationTree:

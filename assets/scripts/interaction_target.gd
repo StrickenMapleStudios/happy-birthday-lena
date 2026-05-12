@@ -20,6 +20,10 @@ func is_interaction_available() -> bool:
 	return interaction_enabled
 
 
+func set_interaction_enabled(value: bool) -> void:
+	interaction_enabled = value
+
+
 func get_dialogue_camera_mount() -> Node3D:
 	return get_node_or_null(dialogue_camera_mount_path) as Node3D
 
