@@ -31,6 +31,14 @@ mesh = SubResource("SphereMesh_top")
 
 [node name="CustomVisualAnchor" type="Node3D" parent="VisualRoot"]
 
+[node name="HighlightLight" type="OmniLight3D" parent="VisualRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+visible = false
+light_color = Color(1, 0.87451, 0.517647, 1)
+light_energy = 0.45
+omni_range = 2.8
+shadow_enabled = false
+
 [node name="DialogueCameraMount" type="Node3D" parent="."]
 
 [node name="CameraMount" type="Marker3D" parent="DialogueCameraMount"]

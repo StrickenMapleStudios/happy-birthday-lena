@@ -19,6 +19,12 @@ enum ItemCategory {
 @export var world_model_offset := Vector3.ZERO
 @export var world_model_rotation_degrees := Vector3.ZERO
 @export var world_model_scale := Vector3.ONE
+@export var world_highlight_enabled := false
+@export var world_highlight_color := Color(1.0, 0.84, 0.28, 1.0)
+@export_range(0.1, 4.0, 0.05) var world_highlight_scale := 1.0
+@export_range(0.0, 8.0, 0.05) var world_highlight_energy := 1.15
+@export_range(0.0, 6.0, 0.05) var world_light_energy := 0.65
+@export_range(0.5, 12.0, 0.1) var world_light_range := 3.2
 @export var stackable := false
 @export_range(1, 99, 1) var max_stack := 1
 
