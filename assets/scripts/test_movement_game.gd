@@ -23,6 +23,9 @@ const AUDIO_PRESET_GAMEPLAY := &"gameplay"
 const AUDIO_PRESET_PAUSE := &"pause"
 const AUDIO_PRESET_DIALOGUE := &"dialogue"
 const AUDIO_PRESET_FADE_DURATION := 0.15
+const INVENTORY_TIME_SCALE_DURATION := 0.5
+const INVENTORY_TIME_SCALE_CLOSED := 1.0
+const INVENTORY_TIME_SCALE_OPEN := 0.0
 
 const CURSOR_MODE_INGAME := Input.MOUSE_MODE_CAPTURED
 const CURSOR_MODE_UI := Input.MOUSE_MODE_VISIBLE
@@ -55,9 +58,11 @@ var _input_context := InputContext.GAMEPLAY
 var _focus_before_pause: WeakRef
 var _inventory_data: InventoryData = InventoryData.new()
 var _hidden_follower_actors: Array[Node3D] = []
+var _inventory_time_scale_tween: Tween
 
 
 func _ready() -> void:
+	_set_inventory_time_scale(INVENTORY_TIME_SCALE_CLOSED)
 	_set_dialogue_pivots_active(false)
 	_refresh_gameplay_world_ui_visibility()
 	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY)
@@ -76,6 +81,11 @@ func _ready() -> void:
 		inventory_ui.set_inventory(_inventory_data)
 		inventory_ui.close_requested.connect(_close_inventory)
 	_refresh_cursor_mode()
+
+
+func _exit_tree() -> void:
+	_kill_inventory_time_scale_tween()
+	_set_inventory_time_scale(INVENTORY_TIME_SCALE_CLOSED)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -248,6 +258,7 @@ func _open_inventory() -> void:
 		return
 
 	_inventory_open = true
+	_tween_inventory_time_scale(INVENTORY_TIME_SCALE_OPEN)
 	_capture_focus_before_pause()
 	_inventory_data.set_selected_category(InventoryData.CATEGORY_REGULAR)
 	player.set_controls_enabled(false)
@@ -261,6 +272,7 @@ func _close_inventory() -> void:
 		return
 
 	_inventory_open = false
+	_tween_inventory_time_scale(INVENTORY_TIME_SCALE_CLOSED)
 	if inventory_ui != null:
 		inventory_ui.close()
 	_inventory_data.set_selected_category(InventoryData.CATEGORY_REGULAR)
@@ -605,6 +617,36 @@ func _restore_focus_after_pause() -> void:
 
 	if is_instance_valid(_active_dialogue_balloon) and _active_dialogue_balloon.has_method("restore_interaction_focus"):
 		_active_dialogue_balloon.call("restore_interaction_focus")
+
+
+func _tween_inventory_time_scale(target: float) -> void:
+	_kill_inventory_time_scale_tween()
+	_inventory_time_scale_tween = create_tween()
+	_inventory_time_scale_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_inventory_time_scale_tween.set_ignore_time_scale(true)
+	_inventory_time_scale_tween.set_trans(Tween.TRANS_CUBIC)
+	_inventory_time_scale_tween.set_ease(Tween.EASE_OUT)
+	_inventory_time_scale_tween.tween_method(
+		Callable(self, "_set_inventory_time_scale"),
+		Engine.time_scale,
+		target,
+		INVENTORY_TIME_SCALE_DURATION
+	)
+	_inventory_time_scale_tween.finished.connect(_on_inventory_time_scale_tween_finished)
+
+
+func _on_inventory_time_scale_tween_finished() -> void:
+	_inventory_time_scale_tween = null
+
+
+func _kill_inventory_time_scale_tween() -> void:
+	if _inventory_time_scale_tween != null and _inventory_time_scale_tween.is_valid():
+		_inventory_time_scale_tween.kill()
+	_inventory_time_scale_tween = null
+
+
+func _set_inventory_time_scale(value: float) -> void:
+	Engine.time_scale = clampf(value, INVENTORY_TIME_SCALE_OPEN, INVENTORY_TIME_SCALE_CLOSED)
 
 
 func _apply_dialogue_animation_roles(speaker: Node3D) -> void:
