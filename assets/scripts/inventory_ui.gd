@@ -11,6 +11,7 @@ const ICON_OUTLINE_SHADER := preload("res://assets/shaders/ui_icon_outline.gdsha
 const KEY_ICON := preload("res://assets/art/sprites/key.png")
 const BACKPACK_ICON := preload("res://assets/art/sprites/backpack.png")
 const SCROLL_ICON := preload("res://assets/art/sprites/scroll.png")
+const PLACEHOLDER_ITEM_ICON := preload("res://addons/assetplus/defaultgodot.png")
 const CATEGORY_TO_TAB := {
 	InventoryData.CATEGORY_KEYS: 0,
 	InventoryData.CATEGORY_REGULAR: 1,
@@ -33,6 +34,7 @@ const TAB_HOVER_YELLOW := Color(1.0, 0.960784, 0.0, 1.0)
 const TAB_BUTTON_SIZE := Vector2(84.0, 66.0)
 const SLOT_BUTTON_SIZE := Vector2(74.0, 74.0)
 const TAB_ICON_SIZE := Vector2(40.0, 40.0)
+const SLOT_ICON_INSET := 10.0
 const SLOT_NEW_BADGE_SIZE := Vector2(12.0, 12.0)
 const TAB_NEW_BADGE_SIZE := Vector2(10.0, 10.0)
 const NEW_BADGE_FILL := Color(0.2, 0.66, 1.0, 1.0)
@@ -170,13 +172,13 @@ func _build_slot_buttons() -> void:
 		button.button_group = _slot_button_group
 		button.clip_contents = true
 		button.set_meta("slot_index", slot_index)
-		button.set_meta("icon_label", _create_slot_icon_label())
+		button.set_meta("icon_rect", _create_slot_icon_rect())
 		button.set_meta("count_label", _create_slot_count_label())
 		button.set_meta("new_badge", _create_new_badge(SLOT_NEW_BADGE_SIZE))
 		button.pressed.connect(_on_slot_button_pressed.bind(slot_index))
 		button.focus_entered.connect(_on_slot_button_focus_entered.bind(slot_index))
 		button.mouse_entered.connect(_on_slot_button_mouse_entered.bind(slot_index))
-		button.add_child(button.get_meta("icon_label") as Label)
+		button.add_child(button.get_meta("icon_rect") as TextureRect)
 		button.add_child(button.get_meta("count_label") as Label)
 		button.add_child(button.get_meta("new_badge") as Control)
 		slot_grid.add_child(button)
@@ -230,18 +232,24 @@ func _ensure_tab_icon(button: Button, texture: Texture2D) -> void:
 	icon_rect.texture = texture
 
 
-func _create_slot_icon_label() -> Label:
-	var label := Label.new()
-	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.add_theme_font_override("font", BODY_FONT)
-	label.add_theme_font_size_override("font_size", 36)
-	label.add_theme_color_override("font_color", BUTTON_HOVER_FONT_COLOR)
-	label.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.55))
-	label.add_theme_constant_override("outline_size", 6)
-	return label
+func _create_slot_icon_rect() -> TextureRect:
+	var icon_rect := TextureRect.new()
+	icon_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	icon_rect.offset_left = SLOT_ICON_INSET
+	icon_rect.offset_top = SLOT_ICON_INSET
+	icon_rect.offset_right = -SLOT_ICON_INSET
+	icon_rect.offset_bottom = -SLOT_ICON_INSET
+	icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon_rect.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon_rect.visible = false
+	var icon_material := ShaderMaterial.new()
+	icon_material.shader = ICON_OUTLINE_SHADER
+	icon_material.set_shader_parameter("outline_color", Color(0.08, 0.06, 0.02, 0.92))
+	icon_material.set_shader_parameter("outline_size", 1.0)
+	icon_rect.material = icon_material
+	return icon_rect
 
 
 func _create_slot_count_label() -> Label:
@@ -438,8 +446,8 @@ func _update_slot_buttons() -> void:
 		)
 
 
-func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category: bool) -> void:
-	var icon_label := button.get_meta("icon_label") as Label
+func _apply_slot_button_state(button: Button, slot: Dictionary, _is_key_category: bool) -> void:
+	var icon_rect := button.get_meta("icon_rect") as TextureRect
 	var count_label := button.get_meta("count_label") as Label
 	var new_badge := button.get_meta("new_badge") as Control
 	var normal_style: StyleBoxFlat = StyleBoxFlat.new()
@@ -469,8 +477,6 @@ func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category:
 	button.add_theme_stylebox_override("hover_pressed", focus_style)
 	button.text = ""
 	button.set_pressed_no_signal(false)
-	if icon_label != null:
-		icon_label.add_theme_font_size_override("font_size", 34 if is_key_category else 36)
 	if new_badge != null:
 		new_badge.size = new_badge.custom_minimum_size
 		new_badge.position = (button.size * 0.5) + Vector2(15.0, 15.0) - (new_badge.size * 0.5)
@@ -479,8 +485,9 @@ func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category:
 	if item == null:
 		button.tooltip_text = ""
 		button.disabled = false
-		if icon_label != null:
-			icon_label.text = ""
+		if icon_rect != null:
+			icon_rect.texture = null
+			icon_rect.visible = false
 		if count_label != null:
 			count_label.text = ""
 			count_label.visible = false
@@ -491,8 +498,9 @@ func _apply_slot_button_state(button: Button, slot: Dictionary, is_key_category:
 	var quantity: int = int(slot.get("quantity", 1))
 	button.tooltip_text = item.display_name
 	button.disabled = false
-	if icon_label != null:
-		icon_label.text = item.icon_text
+	if icon_rect != null:
+		icon_rect.texture = item.icon_texture if item.icon_texture != null else PLACEHOLDER_ITEM_ICON
+		icon_rect.visible = true
 	if count_label != null:
 		count_label.text = str(quantity)
 		count_label.visible = quantity > 1

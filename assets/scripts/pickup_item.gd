@@ -8,7 +8,6 @@ class_name PickupItem
 @export var bob_speed := 1.9
 
 @onready var visual_root: Node3D = $VisualRoot
-@onready var icon_label: Label3D = $VisualRoot/IconLabel
 @onready var body_mesh: MeshInstance3D = $VisualRoot/BodyMesh
 @onready var top_mesh: MeshInstance3D = $VisualRoot/TopMesh
 @onready var custom_visual_anchor: Node3D = $VisualRoot/CustomVisualAnchor
@@ -61,11 +60,6 @@ func _apply_item_visuals() -> void:
 		body_mesh.visible = not has_custom_visual
 	if top_mesh != null:
 		top_mesh.visible = not has_custom_visual
-
-	if icon_label != null:
-		icon_label.text = item_data.icon_text
-		icon_label.modulate = item_data.accent_color
-		icon_label.visible = not has_custom_visual
 
 	if has_custom_visual:
 		_spawn_custom_visual()

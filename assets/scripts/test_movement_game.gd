@@ -246,6 +246,7 @@ func _open_inventory() -> void:
 
 	_inventory_open = true
 	_capture_focus_before_pause()
+	_inventory_data.set_selected_category(InventoryData.CATEGORY_REGULAR)
 	player.set_controls_enabled(false)
 	interaction_source.set_interaction_enabled(false)
 	_sync_input_context()
@@ -259,6 +260,7 @@ func _close_inventory() -> void:
 	_inventory_open = false
 	if inventory_ui != null:
 		inventory_ui.close()
+	_inventory_data.set_selected_category(InventoryData.CATEGORY_REGULAR)
 	player.set_controls_enabled(true)
 	interaction_source.set_interaction_enabled(true)
 	_sync_input_context()

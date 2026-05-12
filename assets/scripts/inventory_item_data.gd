@@ -13,6 +13,7 @@ enum ItemCategory {
 @export_multiline var description := ""
 @export var category: ItemCategory = ItemCategory.REGULAR
 @export var icon_text := "?"
+@export var icon_texture: Texture2D
 @export var accent_color := Color(1.0, 0.8, 0.2, 1.0)
 @export var world_model_scene: PackedScene
 @export var world_model_offset := Vector3.ZERO

@@ -1,8 +1,7 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://assets/scripts/pickup_item.gd" id="1_script"]
 [ext_resource type="Script" path="res://assets/scripts/interaction_target.gd" id="2_interaction"]
-[ext_resource type="FontFile" path="res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf" id="3_font"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_body"]
 top_radius = 0.42
@@ -31,15 +30,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
 mesh = SubResource("SphereMesh_top")
 
 [node name="CustomVisualAnchor" type="Node3D" parent="VisualRoot"]
-
-[node name="IconLabel" type="Label3D" parent="VisualRoot"]
-transform = Transform3D(0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, 0, 1.72, 0)
-billboard = 1
-text = "?"
-font = ExtResource("3_font")
-font_size = 70
-outline_size = 12
-modulate = Color(1, 0.85, 0.3, 1)
 
 [node name="DialogueCameraMount" type="Node3D" parent="."]
 
