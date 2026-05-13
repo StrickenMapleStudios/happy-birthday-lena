@@ -231,3 +231,4 @@ text = "03  EMPTY SLOT          START A NEW ADVENTURE FROM SLOT 03"
 alignment = 0
 
 [node name="ConfirmDialog" parent="." instance=ExtResource("3_confirm")]
+visible = false

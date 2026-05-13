@@ -73,11 +73,20 @@ func _ready() -> void:
 	if dialogue_manager != null and not dialogue_manager.is_connected("dialogue_ended", Callable(self, "_on_dialogue_ended")):
 		dialogue_manager.connect("dialogue_ended", Callable(self, "_on_dialogue_ended"))
 	if pause_menu != null:
+		var pause_menu_root := pause_menu.get_node_or_null("MenuRoot") as Control
+		if pause_menu_root != null:
+			pause_menu_root.visible = false
 		_connect_pause_menu_signals(pause_menu)
 	_dialogue_pause_menu = DIALOGUE_PAUSE_MENU_SCENE.instantiate()
+	var dialogue_pause_menu_root := _dialogue_pause_menu.get_node_or_null("MenuRoot") as Control
+	if dialogue_pause_menu_root != null:
+		dialogue_pause_menu_root.visible = false
 	add_child(_dialogue_pause_menu)
 	_connect_pause_menu_signals(_dialogue_pause_menu)
 	if inventory_ui != null:
+		var inventory_menu_root := inventory_ui.get_node_or_null("MenuRoot") as Control
+		if inventory_menu_root != null:
+			inventory_menu_root.visible = false
 		inventory_ui.set_inventory(_inventory_data)
 		inventory_ui.close_requested.connect(_close_inventory)
 	_refresh_cursor_mode()

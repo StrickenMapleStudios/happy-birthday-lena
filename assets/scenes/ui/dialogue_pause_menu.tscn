@@ -12,7 +12,6 @@ layer = 200
 script = ExtResource("1_script")
 
 [node name="MenuRoot" type="Control" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

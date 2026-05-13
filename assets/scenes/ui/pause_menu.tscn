@@ -14,7 +14,6 @@ layer = 200
 script = ExtResource("1_script")
 
 [node name="MenuRoot" type="Control" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -65,5 +64,7 @@ grow_vertical = 2
 [node name="Content" parent="MenuRoot/SafeMargin/VerticalCenter" instance=ExtResource("2_content")]
 
 [node name="OptionsPanel" parent="MenuRoot/SafeMargin/VerticalCenter" instance=ExtResource("5_options")]
+visible = false
 
 [node name="ConfirmDialog" parent="MenuRoot" instance=ExtResource("3_confirm")]
+visible = false
