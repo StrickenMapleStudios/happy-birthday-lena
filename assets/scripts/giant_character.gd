@@ -11,9 +11,14 @@ extends Node3D
 
 @onready var look_tracking: NpcLookTrackingController = $LookTracking
 @onready var head_pole_modifier: GiantHeadPoleModifier = $Model/Rig/Skeleton3D/HeadPoleModifier
+@onready var dialogue_animation_tree: AnimationTree = $Model/AnimationPlayer/DialogueAnimationTree
 
 
 func _ready() -> void:
+	if dialogue_animation_tree != null:
+		dialogue_animation_tree.active = true
+		_set_dialogue_animation_condition(false)
+
 	var interaction_target := get_node_or_null(interaction_target_path) as InteractionTarget
 	if interaction_target == null:
 		return
@@ -30,6 +35,8 @@ func set_character_visible(value: bool) -> void:
 
 
 func enter_dialogue_animation_mode(_is_talking: bool) -> void:
+	_set_dialogue_animation_condition(true)
+
 	if look_tracking != null:
 		look_tracking.set_tracking_enabled(true)
 	if head_pole_modifier != null:
@@ -37,6 +44,8 @@ func enter_dialogue_animation_mode(_is_talking: bool) -> void:
 
 
 func exit_dialogue_animation_mode() -> void:
+	_set_dialogue_animation_condition(false)
+
 	if look_tracking != null:
 		look_tracking.set_tracking_enabled(false)
 	if head_pole_modifier != null:
@@ -73,3 +82,11 @@ func set_dialogue_camera_target(camera: Camera3D) -> void:
 		look_tracking.set_external_target(camera)
 	if head_pole_modifier != null:
 		head_pole_modifier.reset_head_rotation_immediately()
+
+
+func _set_dialogue_animation_condition(is_in_dialogue: bool) -> void:
+	if dialogue_animation_tree == null:
+		return
+
+	dialogue_animation_tree.set("parameters/conditions/InDialogue", is_in_dialogue)
+	dialogue_animation_tree.set("parameters/conditions/NotInDialogue", not is_in_dialogue)

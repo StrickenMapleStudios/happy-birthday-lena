@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://ccjs06m5tpi8k"]
+[gd_scene load_steps=13 format=3 uid="uid://ccjs06m5tpi8k"]
 
 [ext_resource type="PackedScene" uid="uid://cuvqsplyq6dy6" path="res://assets/art/models/characters/character.glb" id="1_character"]
 [ext_resource type="Script" path="res://assets/scripts/giant_character.gd" id="2_script"]
@@ -16,6 +16,32 @@ height = 18.0
 radius = 12.0
 height = 18.0
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dialogue_idle"]
+animation = &"Idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dialogue_guarding"]
+animation = &"Guarding"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_dialogue_start"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idle_to_guarding"]
+advance_mode = 2
+advance_condition = &"InDialogue"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_guarding_to_idle"]
+advance_mode = 2
+advance_condition = &"NotInDialogue"
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_dialogue"]
+states/Idle/node = SubResource("AnimationNodeAnimation_dialogue_idle")
+states/Idle/position = Vector2(364, 181)
+states/Guarding/node = SubResource("AnimationNodeAnimation_dialogue_guarding")
+states/Guarding/position = Vector2(366, 59)
+states/Start/position = Vector2(160, 116)
+transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_dialogue_start"), "Idle", "Guarding", SubResource("AnimationNodeStateMachineTransition_idle_to_guarding"), "Guarding", "Idle", SubResource("AnimationNodeStateMachineTransition_guarding_to_idle")]
+graph_offset = Vector2(-72, -6)
+
 [node name="GiantCharacter" type="Node3D"]
 script = ExtResource("2_script")
 
@@ -23,6 +49,11 @@ script = ExtResource("2_script")
 
 [node name="AnimationPlayer" parent="Model" index="1"]
 autoplay = "Idle"
+
+[node name="DialogueAnimationTree" type="AnimationTree" parent="Model/AnimationPlayer" index="0"]
+active = true
+tree_root = SubResource("AnimationNodeStateMachine_dialogue")
+anim_player = NodePath("..")
 
 [node name="Skeleton3D" parent="Model/Rig" index="0"]
 bones/22/scale = Vector3(0.67, 0.67, 0.67)
