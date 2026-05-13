@@ -12,10 +12,8 @@ extends Node3D
 @export var dialogue_start_title := "start"
 @export var dialogue_speaker_name := "Гиганты"
 @export_range(0.5, 20.0, 0.1) var interaction_margin := 1.5
-@export_range(0.5, 30.0, 0.1) var auto_trigger_margin := 2.0
 @export_range(0.5, 20.0, 0.1) var player_anchor_margin := 3.5
 
-var _auto_trigger_radius := 0.0
 var _auto_trigger_consumed := false
 var _interaction_radius := 0.0
 
@@ -26,7 +24,7 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if _auto_trigger_consumed or _auto_trigger_radius <= 0.0:
+	if _auto_trigger_consumed:
 		return
 
 	var player := _get_player_character()
@@ -37,8 +35,7 @@ func _physics_process(_delta: float) -> void:
 	if interaction_target == null:
 		return
 
-	var distance_to_activation := player.global_position.distance_to(global_position)
-	if distance_to_activation > _auto_trigger_radius:
+	if not _is_point_inside_area_shape(auto_trigger_path, player.global_position):
 		return
 
 	var current_scene := get_tree().current_scene
@@ -121,14 +118,11 @@ func _fit_interaction_geometry_to_giants() -> void:
 
 	var height := maxf(mesh_bounds.size.y, 4.0)
 	var interaction_radius := maxf((height * 0.08) + interaction_margin, 2.25)
-	var trigger_radius := maxf((height * 0.12) + auto_trigger_margin, interaction_radius + 0.75)
 	_interaction_radius = interaction_radius
-	_auto_trigger_radius = trigger_radius
 	var base_y := mesh_bounds.position.y
 	var activation_center := Vector3.ZERO
 
 	_configure_area(interaction_target_path, interaction_radius, height, base_y)
-	_configure_area(auto_trigger_path, trigger_radius, height, base_y)
 
 	var prompt_anchor := get_node_or_null(interaction_prompt_anchor_path) as Node3D
 	if prompt_anchor != null:
@@ -212,6 +206,37 @@ func _get_area_shape(area_path: NodePath) -> Shape3D:
 		return null
 
 	return collision_shape.shape
+
+
+func _is_point_inside_area_shape(area_path: NodePath, global_point: Vector3) -> bool:
+	var area := get_node_or_null(area_path) as Area3D
+	if area == null:
+		return false
+
+	var collision_shape := area.get_node_or_null(^"CollisionShape3D") as CollisionShape3D
+	if collision_shape == null or collision_shape.shape == null:
+		return false
+
+	var local_point := collision_shape.to_local(global_point)
+	var shape := collision_shape.shape
+
+	var box_shape := shape as BoxShape3D
+	if box_shape != null:
+		var half_size := box_shape.size * 0.5
+		return absf(local_point.x) <= half_size.x \
+			and absf(local_point.y) <= half_size.y \
+			and absf(local_point.z) <= half_size.z
+
+	var cylinder_shape := shape as CylinderShape3D
+	if cylinder_shape != null:
+		var half_height := cylinder_shape.height * 0.5
+		if absf(local_point.y) > half_height:
+			return false
+
+		var radial_distance := Vector2(local_point.x, local_point.z).length()
+		return radial_distance <= cylinder_shape.radius
+
+	return false
 
 
 func _configure_area(
