@@ -1,8 +1,8 @@
 extends Node3D
 
 @export var model_root_path: NodePath = ^"Model"
-@export_range(-180.0, 180.0, 1.0) var right_door_opened_yaw_degrees := 90.0
-@export_range(-180.0, 180.0, 1.0) var left_door_opened_yaw_degrees := -90.0
+@export_range(-180.0, 180.0, 1.0) var right_door_opened_yaw_degrees := -105.0
+@export_range(-180.0, 180.0, 1.0) var left_door_opened_yaw_degrees := 105.0
 @export_range(0.1, 12.0, 0.1) var open_duration_seconds := 3.6
 
 var _doors_opened := false
