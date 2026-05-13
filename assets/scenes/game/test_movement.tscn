@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dmb72unyvr0t3" path="res://assets/scenes/characters/player_character.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://assets/scenes/characters/npc_character.tscn" id="3_npc"]
 [ext_resource type="Script" uid="uid://b84roxoxwu700" path="res://assets/scripts/test_movement_camera.gd" id="4_camera"]
-[ext_resource type="PackedScene" path="res://assets/scenes/game/giant_character_showcase.tscn" id="4_giant_showcase"]
+[ext_resource type="PackedScene" uid="uid://dwinqt4ms18vm" path="res://assets/scenes/game/giant_character_showcase.tscn" id="4_giant_showcase"]
 [ext_resource type="Script" uid="uid://ptlmyvnfxne6" path="res://assets/scripts/test_movement_game.gd" id="5_game"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/pause_menu.tscn" id="6_pause_menu"]
 [ext_resource type="Script" uid="uid://cb0ogsdv1ev5t" path="res://assets/scripts/interaction_prompt_controller.gd" id="7_prompt_controller"]
@@ -62,7 +62,7 @@ transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.629
 transform = Transform3D(-0.65744096, 0, 0.753506, 0, 1, 0, -0.753506, 0, -0.65744096, -4.4477897, -1.4305115e-06, 36.136303)
 
 [node name="GiantCharacterShowcase" parent="." unique_id=752756083 instance=ExtResource("4_giant_showcase")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 108.55545)
 
 [node name="CameraRig" type="Node3D" parent="." unique_id=1843382860]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)

@@ -113,33 +113,57 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_interaction_requested(target: InteractionTarget) -> void:
-	if _interaction_locked or _dialogue_active or target == null or not target.is_interaction_available():
+	if _try_handle_non_dialogue_interaction(target):
 		return
 
-	var interaction_owner := target.get_parent()
-	if interaction_owner != null and interaction_owner.has_method("handle_interaction"):
-		var was_handled := bool(interaction_owner.call("handle_interaction", player, _inventory_data))
-		if was_handled:
-			return
+	await _start_dialogue_with_target(target)
+
+
+func can_start_dialogue_with_target(target: InteractionTarget, ignore_interaction_availability: bool = false) -> bool:
+	if _interaction_locked or _dialogue_active or target == null:
+		return false
+
+	if not ignore_interaction_availability and not target.is_interaction_available():
+		return false
 
 	if dialogue_manager == null:
-		push_warning("DialogueManager singleton is not available.")
+		return false
+
+	if target.get_dialogue_resource() == null:
+		return false
+
+	if target.get_dialogue_camera_mount() == null:
+		return false
+
+	if target.get_player_dialogue_anchor() == null:
+		return false
+
+	return true
+
+
+func request_dialogue_with_target(target: InteractionTarget, ignore_interaction_availability: bool = false) -> void:
+	if not can_start_dialogue_with_target(target, ignore_interaction_availability):
+		return
+
+	call_deferred("_request_dialogue_with_target_deferred", target, ignore_interaction_availability)
+
+
+func _request_dialogue_with_target_deferred(
+	target: InteractionTarget,
+	ignore_interaction_availability: bool = false
+) -> void:
+	await _start_dialogue_with_target(target, ignore_interaction_availability)
+
+
+func _start_dialogue_with_target(
+	target: InteractionTarget,
+	ignore_interaction_availability: bool = false
+) -> void:
+	if not can_start_dialogue_with_target(target, ignore_interaction_availability):
 		return
 
 	var dialogue_resource := target.get_dialogue_resource()
-	if dialogue_resource == null:
-		push_warning("Interaction target '%s' is missing a dialogue resource." % target.name)
-		return
-
-	var dialogue_camera_mount: Node3D = target.get_dialogue_camera_mount()
-	if dialogue_camera_mount == null:
-		push_warning("Interaction target '%s' is missing a dialogue camera mount." % target.name)
-		return
-
 	var player_dialogue_anchor: Node3D = target.get_player_dialogue_anchor()
-	if player_dialogue_anchor == null:
-		push_warning("Interaction target '%s' is missing a player dialogue anchor." % target.name)
-		return
 
 	_interaction_locked = true
 	_set_input_context(InputContext.TRANSITION)
@@ -381,6 +405,12 @@ func _set_dialogue_speaker(speaker: Node3D) -> void:
 	if is_instance_valid(_dialogue_target_actor) and _dialogue_target_actor.has_method("set_character_visible"):
 		_dialogue_target_actor.call("set_character_visible", speaker == _dialogue_target_actor)
 
+	var scene_camera := _get_dialogue_scene_camera(speaker)
+	if scene_camera != null:
+		_set_dialogue_pivots_active(false)
+		scene_camera.current = true
+		return
+
 	_sync_dialogue_pivots()
 	_activate_speaker_camera(speaker)
 
@@ -492,6 +522,13 @@ func _matches_dialogue_speaker_name(actor: Node3D, normalized_name: String) -> b
 			return true
 
 	return actor.name.strip_edges().to_lower() == normalized_name
+
+
+func _get_dialogue_scene_camera(actor: Node3D) -> Camera3D:
+	if actor == null or not actor.has_method("get_dialogue_scene_camera"):
+		return null
+
+	return actor.call("get_dialogue_scene_camera") as Camera3D
 
 
 func _get_dialogue_pivot_transform(mount: Node3D) -> Transform3D:
@@ -693,3 +730,14 @@ func _restore_follower_actors_after_dialogue() -> void:
 			actor.call("resume_as_follower_after_dialogue")
 
 	_hidden_follower_actors.clear()
+
+
+func _try_handle_non_dialogue_interaction(target: InteractionTarget) -> bool:
+	if _interaction_locked or _dialogue_active or target == null or not target.is_interaction_available():
+		return false
+
+	var interaction_owner := target.get_parent()
+	if interaction_owner == null or not interaction_owner.has_method("handle_interaction"):
+		return false
+
+	return bool(interaction_owner.call("handle_interaction", player, _inventory_data))

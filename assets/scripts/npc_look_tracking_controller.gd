@@ -5,9 +5,12 @@ class_name NpcLookTrackingController
 @export var settings: NpcLookTrackingSettings
 @export var tracked_node_path: NodePath = ^".."
 @export var collision_shape_path: NodePath = ^"CollisionShape3D"
+@export var external_target_path: NodePath
+@export var instant_rotation := false
 
 var _tracked_bodies: Array[Node3D] = []
 var _tracking_enabled := true
+var _runtime_external_target: Node3D
 
 
 func _ready() -> void:
@@ -30,6 +33,11 @@ func set_tracking_enabled(value: bool) -> void:
 	_tracking_enabled = value
 	if not value:
 		_tracked_bodies.clear()
+		_runtime_external_target = null
+
+
+func set_external_target(target: Node3D) -> void:
+	_runtime_external_target = target
 
 
 func refresh_tracking_configuration() -> void:
@@ -141,6 +149,10 @@ func get_tracked_node() -> Node3D:
 
 
 func get_current_target_world_position() -> Vector3:
+	var external_target := _get_external_target()
+	if _is_tracking_active() and external_target != null:
+		return external_target.global_position + Vector3.UP * settings.target_height_offset
+
 	var target: Node3D = _find_best_target() if _is_tracking_active() else null
 	if target == null:
 		return Vector3.INF
@@ -148,8 +160,19 @@ func get_current_target_world_position() -> Vector3:
 	return target.global_position + Vector3.UP * settings.target_height_offset
 
 
+func should_rotate_instantly() -> bool:
+	return instant_rotation
+
+
 func _is_target_body(body: Node3D) -> bool:
 	if settings == null:
 		return false
 
 	return settings.target_group == StringName() or body.is_in_group(settings.target_group)
+
+
+func _get_external_target() -> Node3D:
+	if _runtime_external_target != null and is_instance_valid(_runtime_external_target):
+		return _runtime_external_target
+
+	return get_node_or_null(external_target_path) as Node3D

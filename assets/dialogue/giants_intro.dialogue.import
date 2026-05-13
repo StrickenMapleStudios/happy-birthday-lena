@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://dqtfbosbact4j"
+path="res://.godot/imported/giants_intro.dialogue-02b2498f5b140479ca50072ae4d06e50.tres"
+
+[deps]
+
+source_file="res://assets/dialogue/giants_intro.dialogue"
+dest_files=["res://.godot/imported/giants_intro.dialogue-02b2498f5b140479ca50072ae4d06e50.tres"]
+
+[params]
+
+defaults=true

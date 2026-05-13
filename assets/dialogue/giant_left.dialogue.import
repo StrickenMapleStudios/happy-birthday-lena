@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://c8mp1qoe3f2sd"
+path="res://.godot/imported/giant_left.dialogue-c5c9f256448f1a65012a47377ddc50b3.tres"
+
+[deps]
+
+source_file="res://assets/dialogue/giant_left.dialogue"
+dest_files=["res://.godot/imported/giant_left.dialogue-c5c9f256448f1a65012a47377ddc50b3.tres"]
+
+[params]
+
+defaults=true
