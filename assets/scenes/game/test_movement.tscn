@@ -73,7 +73,7 @@ transform = Transform3D(1, -4.712819e-08, 1.6832325e-07, 4.144082e-09, 0.9690889
 attributes = SubResource("CameraAttributesPractical_game")
 current = true
 fov = 60.0
-far = 200.0
+far = 300.0
 
 [node name="DialoguePivotRight" type="Node3D" parent="." unique_id=1302733744]
 process_mode = 4
@@ -83,7 +83,7 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 transform = Transform3D(-0.83823305, 0.087016225, -0.5383251, 7.752061e-09, 0.9871866, 0.15957133, 0.54531246, 0.13375793, -0.82749224, -1.2970997, 3.3030784, -2.917794)
 attributes = SubResource("CameraAttributesPractical_dialogue")
 fov = 60.0
-far = 200.0
+far = 300.0
 
 [node name="DialoguePivotLeft" type="Node3D" parent="." unique_id=225155647]
 process_mode = 4
@@ -94,7 +94,7 @@ visible = false
 transform = Transform3D(-0.83867055, -0.08707753, 0.5376329, 0, 0.9871362, 0.15988117, -0.54463905, 0.13408764, -0.82788205, 1.297, 3.303, -2.918)
 attributes = SubResource("CameraAttributesPractical_dialogue")
 fov = 60.0
-far = 200.0
+far = 300.0
 
 [node name="InteractionPromptController" type="Node3D" parent="." unique_id=868489893]
 script = ExtResource("7_prompt_controller")
