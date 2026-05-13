@@ -5,6 +5,7 @@ extends Node3D
 @export var dialogue_camera_path: NodePath = ^"Camera3D"
 @export var interaction_target_path: NodePath = ^"InteractionTarget"
 @export var auto_trigger_path: NodePath = ^"AutoDialogueTrigger"
+@export var wall_with_door_path: NodePath = ^"WallWithDoor"
 @export var dialogue_speaker_pivot_path: NodePath = ^"DialogueSpeakerPivot"
 @export var player_dialogue_anchor_path: NodePath = ^"PlayerDialogueAnchor"
 @export var interaction_prompt_anchor_path: NodePath = ^"InteractionPromptAnchor"
@@ -13,7 +14,6 @@ extends Node3D
 @export var dialogue_speaker_name := "Гиганты"
 @export_range(0.5, 20.0, 0.1) var interaction_margin := 1.5
 @export_range(0.5, 20.0, 0.1) var player_anchor_margin := 3.5
-
 var _auto_trigger_consumed := false
 var _interaction_radius := 0.0
 
@@ -92,6 +92,13 @@ func exit_dialogue_animation_mode() -> void:
 			giant.call("set_dialogue_camera_target", null)
 		if giant.has_method("exit_dialogue_animation_mode"):
 			giant.call("exit_dialogue_animation_mode")
+
+
+func handle_dialogue_finished(_resource: DialogueResource) -> void:
+	_auto_trigger_consumed = true
+	var wall_with_door := get_node_or_null(wall_with_door_path)
+	if wall_with_door != null and wall_with_door.has_method("open_doors"):
+		wall_with_door.call("open_doors")
 
 
 func face_towards_position(_target_position: Vector3) -> void:

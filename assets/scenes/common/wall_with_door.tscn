@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/art/models/game/wall_with_door.glb" id="1_model"]
+[ext_resource type="Script" path="res://assets/scripts/wall_with_door.gd" id="2_script"]
+
+[node name="WallWithDoor" type="Node3D"]
+script = ExtResource("2_script")
+
+[node name="Model" parent="." instance=ExtResource("1_model")]

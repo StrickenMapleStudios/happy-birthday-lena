@@ -470,6 +470,9 @@ func _on_dialogue_ended(resource: DialogueResource) -> void:
 	if _active_dialogue_resource != null and resource != _active_dialogue_resource:
 		return
 
+	if is_instance_valid(_dialogue_target_actor) and _dialogue_target_actor.has_method("handle_dialogue_finished"):
+		_dialogue_target_actor.call("handle_dialogue_finished", resource)
+
 	await _exit_dialogue_mode()
 
 
