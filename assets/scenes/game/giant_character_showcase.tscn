@@ -25,10 +25,10 @@ transform = Transform3D(16, 0, 0, 0, 16, 0, 0, 0, 16, 0, 0, -118)
 [node name="MysteryRoomCutscene" parent="." unique_id=1488788868 instance=ExtResource("7_mystery_room_cutscene")]
 transform = Transform3D(3.519, 0, 0, 0, 3.519, 0, 0, 0, 3.519, 0, 0, -122.974205)
 
-[node name="GiantCharacterLeft" parent="." unique_id=1055612407 instance=ExtResource("1_giant_character")]
+[node name="GiantCharacterLeft" parent="." unique_id=741154339 instance=ExtResource("1_giant_character")]
 transform = Transform3D(22, 0, 0, 0, 22, 0, 0, 0, 22, -42, 0, -98.95607)
 
-[node name="GiantCharacterRight" parent="." unique_id=2061108701 instance=ExtResource("1_giant_character")]
+[node name="GiantCharacterRight" parent="." unique_id=1829788121 instance=ExtResource("1_giant_character")]
 transform = Transform3D(22, 0, 0, 0, 22, 0, 0, 0, 22, 42, 0, -98.95607)
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=306439518]
