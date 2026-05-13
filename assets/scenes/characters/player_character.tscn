@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://dmb72unyvr0t3"]
+[gd_scene format=3 uid="uid://dmb72unyvr0t3"]
 
 [ext_resource type="PackedScene" uid="uid://cuvqsplyq6dy6" path="res://assets/art/models/characters/character.glb" id="1_glb"]
 [ext_resource type="Script" uid="uid://uhnj7b0665k6" path="res://assets/scripts/test_movement_character.gd" id="2_script"]
@@ -8,28 +8,25 @@
 [ext_resource type="Resource" path="res://assets/data/characters/player_identity.tres" id="6_identity_data"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/character_collision_shape.tscn" id="7_collision_shape"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_interaction"]
-size = Vector3(2.8, 2.8, 2.4)
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dialogue_idle"]
+animation = &"Idle"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_idle"]
 animation = &"Idle"
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_naruto"]
-animation = &"NarutoRunning"
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_walking"]
+animation = &"Walking"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_running"]
 animation = &"Running"
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_walking"]
-animation = &"Walking"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dialogue_idle"]
-animation = &"Idle"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_start"]
-advance_mode = 2
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_naruto_running"]
+animation = &"NarutoRunning"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_dialogue_start"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_start"]
 advance_mode = 2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idle_to_walking"]
@@ -38,11 +35,14 @@ xfade_time = 0.25
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idle_to_running"]
 xfade_time = 0.25
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idle_to_naruto_running"]
+xfade_time = 0.25
+
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_walking_to_idle"]
 xfade_time = 0.25
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_walking_to_running"]
-xfade_time = 0.3
+xfade_time = 0.25
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_running_to_idle"]
 xfade_time = 0.25
@@ -50,31 +50,27 @@ xfade_time = 0.25
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_running_to_walking"]
 xfade_time = 0.25
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_running_to_naruto"]
-xfade_time = 0.25
-switch_mode = 2
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_running_to_naruto_running"]
+xfade_time = 0.2
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_naruto_to_idle"]
-xfade_time = 0.25
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_naruto_to_walking"]
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_naruto_running_to_idle"]
 xfade_time = 0.25
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_naruto_to_running"]
-xfade_time = 0.25
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_naruto_running_to_running"]
+xfade_time = 0.2
 
-[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_test_movement"]
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_locomotion"]
 states/Idle/node = SubResource("AnimationNodeAnimation_idle")
-states/Idle/position = Vector2(440, 138)
-states/NarutoRunning/node = SubResource("AnimationNodeAnimation_naruto")
-states/NarutoRunning/position = Vector2(855, 28)
+states/Idle/position = Vector2(414, 126)
+states/NarutoRunning/node = SubResource("AnimationNodeAnimation_naruto_running")
+states/NarutoRunning/position = Vector2(914, 40)
 states/Running/node = SubResource("AnimationNodeAnimation_running")
-states/Running/position = Vector2(665, 82)
-states/Start/position = Vector2(210, 140)
+states/Running/position = Vector2(678, 44)
+states/Start/position = Vector2(186, 124)
 states/Walking/node = SubResource("AnimationNodeAnimation_walking")
-states/Walking/position = Vector2(660, 170)
-transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_start"), "Idle", "Walking", SubResource("AnimationNodeStateMachineTransition_idle_to_walking"), "Idle", "Running", SubResource("AnimationNodeStateMachineTransition_idle_to_running"), "Walking", "Idle", SubResource("AnimationNodeStateMachineTransition_walking_to_idle"), "Walking", "Running", SubResource("AnimationNodeStateMachineTransition_walking_to_running"), "Running", "Idle", SubResource("AnimationNodeStateMachineTransition_running_to_idle"), "Running", "Walking", SubResource("AnimationNodeStateMachineTransition_running_to_walking"), "Running", "NarutoRunning", SubResource("AnimationNodeStateMachineTransition_running_to_naruto"), "NarutoRunning", "Idle", SubResource("AnimationNodeStateMachineTransition_naruto_to_idle"), "NarutoRunning", "Walking", SubResource("AnimationNodeStateMachineTransition_naruto_to_walking"), "NarutoRunning", "Running", SubResource("AnimationNodeStateMachineTransition_naruto_to_running")]
-graph_offset = Vector2(36, 17)
+states/Walking/position = Vector2(678, 127)
+transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_start"), "Idle", "Walking", SubResource("AnimationNodeStateMachineTransition_idle_to_walking"), "Idle", "Running", SubResource("AnimationNodeStateMachineTransition_idle_to_running"), "Idle", "NarutoRunning", SubResource("AnimationNodeStateMachineTransition_idle_to_naruto_running"), "Walking", "Idle", SubResource("AnimationNodeStateMachineTransition_walking_to_idle"), "Walking", "Running", SubResource("AnimationNodeStateMachineTransition_walking_to_running"), "Running", "Idle", SubResource("AnimationNodeStateMachineTransition_running_to_idle"), "Running", "Walking", SubResource("AnimationNodeStateMachineTransition_running_to_walking"), "Running", "NarutoRunning", SubResource("AnimationNodeStateMachineTransition_running_to_naruto_running"), "NarutoRunning", "Idle", SubResource("AnimationNodeStateMachineTransition_naruto_running_to_idle"), "NarutoRunning", "Running", SubResource("AnimationNodeStateMachineTransition_naruto_running_to_running")]
+graph_offset = Vector2(-39, 7)
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_dialogue"]
 states/Idle/node = SubResource("AnimationNodeAnimation_dialogue_idle")
@@ -82,6 +78,9 @@ states/Idle/position = Vector2(366, 117)
 states/Start/position = Vector2(160, 116)
 transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_dialogue_start")]
 graph_offset = Vector2(-72, -6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_interaction"]
+size = Vector3(2.8, 2.8, 2.4)
 
 [node name="PlayerCharacter" type="CharacterBody3D" unique_id=77292897]
 motion_mode = 1
@@ -91,12 +90,15 @@ script = ExtResource("2_script")
 
 [node name="Model" parent="." unique_id=1156079164 instance=ExtResource("1_glb")]
 
-[node name="AnimationTree" type="AnimationTree" parent="Model/AnimationPlayer"]
+[node name="AnimationPlayer" parent="Model" index="1"]
+autoplay = "Idle"
+
+[node name="AnimationTree" type="AnimationTree" parent="Model/AnimationPlayer" index="0"]
 root_node = NodePath("../..")
-tree_root = SubResource("AnimationNodeStateMachine_test_movement")
+tree_root = SubResource("AnimationNodeStateMachine_locomotion")
 anim_player = NodePath("..")
 
-[node name="DialogueAnimationTree" type="AnimationTree" parent="Model/AnimationPlayer"]
+[node name="DialogueAnimationTree" type="AnimationTree" parent="Model/AnimationPlayer" index="1"]
 active = false
 tree_root = SubResource("AnimationNodeStateMachine_dialogue")
 anim_player = NodePath("..")

@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://assets/data/items/apple_item.tres" id="2_apple_item"]
 [ext_resource type="Resource" path="res://assets/data/items/brass_key_item.tres" id="3_brass_key_item"]
 [ext_resource type="Resource" path="res://assets/data/items/birthday_note_item.tres" id="4_birthday_note_item"]
+[ext_resource type="PackedScene" uid="uid://dwinqt4ms18vm" path="res://assets/scenes/game/giant_character_showcase.tscn" id="5_giant_showcase"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_test_movement"]
 sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
@@ -178,3 +179,6 @@ item_data = ExtResource("4_birthday_note_item")
 [node name="QuestPickupFarWest" parent="." instance=ExtResource("1_pickup")]
 transform = Transform3D(0.9848077, 0, -0.1736482, 0, 1, 0, 0.1736482, 0, 0.9848077, -13.2, 0.12, -5.4)
 item_data = ExtResource("4_birthday_note_item")
+
+[node name="GiantCharacterShowcase" parent="." unique_id=1656241094 instance=ExtResource("5_giant_showcase")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -108.55545)

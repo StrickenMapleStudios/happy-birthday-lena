@@ -42,6 +42,7 @@ const MAX_COLLISION_SLIDES := 4
 var _playback: AnimationNodeStateMachinePlayback
 var _current_state := StringName()
 var _running_loops := 0
+var _naruto_running_active := false
 var _previous_running_play_position := 0.0
 var _root_motion_track_path := NodePath()
 var _controls_enabled := true
@@ -52,6 +53,9 @@ var _saved_animation_tree: AnimationTree
 func _ready() -> void:
 	_ensure_input_map()
 	add_to_group(&"player_character")
+	if animation_player == null or animation_tree == null:
+		push_warning("Player character is missing AnimationPlayer/AnimationTree. Locomotion animation setup was skipped.")
+		return
 	animation_tree.active = true
 	if dialogue_animation_tree != null:
 		dialogue_animation_tree.active = false
@@ -100,7 +104,7 @@ func _update_animation_state(is_moving: bool, speed_up: bool) -> void:
 		_travel_to(STATE_WALKING)
 		return
 
-	if _running_loops >= RUNNING_LOOPS_TO_NARUTO:
+	if _naruto_running_active:
 		_travel_to(STATE_NARUTO_RUNNING)
 		return
 
@@ -118,7 +122,18 @@ func _travel_to(state_name: StringName) -> void:
 
 
 func _update_running_loops(is_moving: bool, speed_up: bool) -> void:
-	if not is_moving or not speed_up or _current_state != STATE_RUNNING:
+	if not is_moving or not speed_up:
+		_running_loops = 0
+		_naruto_running_active = false
+		_previous_running_play_position = 0.0
+		return
+
+	if _current_state == STATE_NARUTO_RUNNING:
+		_naruto_running_active = true
+		_previous_running_play_position = _get_current_play_position()
+		return
+
+	if _current_state != STATE_RUNNING:
 		_running_loops = 0
 		_previous_running_play_position = 0.0
 		return
@@ -126,10 +141,14 @@ func _update_running_loops(is_moving: bool, speed_up: bool) -> void:
 	var current_animation_position := _get_current_play_position()
 	if current_animation_position < _previous_running_play_position:
 		_running_loops += 1
+		if _running_loops >= RUNNING_LOOPS_TO_NARUTO:
+			_naruto_running_active = true
 	_previous_running_play_position = current_animation_position
 
 
 func _sync_animation_flags(is_moving: bool, speed_up: bool) -> void:
+	if animation_tree == null:
+		return
 	animation_tree.set("parameters/conditions/Moving", is_moving)
 	animation_tree.set("parameters/conditions/SpeedUp", speed_up)
 
@@ -161,6 +180,8 @@ func _get_current_play_position() -> float:
 
 
 func _prepare_locomotion_animation(animation_name: StringName, speed_scale: float, _state_name: StringName) -> void:
+	if animation_player == null:
+		return
 	var library: AnimationLibrary = animation_player.get_animation_library("")
 	if library == null:
 		return
@@ -212,13 +233,15 @@ func _find_root_position_track(animation: Animation) -> int:
 
 
 func _configure_root_motion_track() -> void:
-	if _root_motion_track_path.is_empty():
+	if animation_tree == null or _root_motion_track_path.is_empty():
 		return
 
 	animation_tree.root_motion_track = _root_motion_track_path
 
 
 func _apply_root_motion() -> void:
+	if animation_tree == null:
+		return
 	if animation_tree.root_motion_track.is_empty():
 		return
 
