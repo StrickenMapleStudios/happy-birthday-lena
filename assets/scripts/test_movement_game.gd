@@ -34,6 +34,7 @@ enum InputContext {
 	GAMEPLAY,
 	DIALOGUE,
 	DIALOGUE_RESPONSE_SELECTION,
+	CUTSCENE,
 	INVENTORY,
 	PAUSE,
 	TRANSITION,
@@ -157,11 +158,33 @@ func request_dialogue_with_target(target: InteractionTarget, ignore_interaction_
 	call_deferred("_request_dialogue_with_target_deferred", target, ignore_interaction_availability)
 
 
+func can_start_cutscene_with_target(target: Node, _ignore_interaction_availability: bool = true) -> bool:
+	if _interaction_locked or _dialogue_active or target == null:
+		return false
+
+	if not target.has_method("get_cutscene_camera"):
+		return false
+
+	var cutscene_camera := target.call("get_cutscene_camera") as Camera3D
+	return cutscene_camera != null
+
+
+func request_cutscene_with_target(target: Node, ignore_interaction_availability: bool = true) -> void:
+	if not can_start_cutscene_with_target(target, ignore_interaction_availability):
+		return
+
+	call_deferred("_request_cutscene_with_target_deferred", target, ignore_interaction_availability)
+
+
 func _request_dialogue_with_target_deferred(
 	target: InteractionTarget,
 	ignore_interaction_availability: bool = false
 ) -> void:
 	await _start_dialogue_with_target(target, ignore_interaction_availability)
+
+
+func _request_cutscene_with_target_deferred(target: Node, ignore_interaction_availability: bool = true) -> void:
+	await _start_cutscene_with_target(target, ignore_interaction_availability)
 
 
 func _start_dialogue_with_target(
@@ -199,6 +222,26 @@ func _start_dialogue_with_target(
 	await get_tree().process_frame
 	await SceneTransition.fade_in()
 	_interaction_locked = false
+	_sync_input_context()
+
+
+func _start_cutscene_with_target(target: Node, ignore_interaction_availability: bool = true) -> void:
+	if not can_start_cutscene_with_target(target, ignore_interaction_availability):
+		return
+
+	var cutscene_camera := target.call("get_cutscene_camera") as Camera3D
+	if cutscene_camera == null:
+		return
+
+	_interaction_locked = true
+	_set_input_context(InputContext.TRANSITION)
+	await SceneTransition.fade_out()
+	_set_dialogue_pivots_active(false)
+	cutscene_camera.current = true
+	await get_tree().process_frame
+	_interaction_locked = false
+	_set_input_context(InputContext.CUTSCENE)
+	await SceneTransition.fade_in()
 	_sync_input_context()
 
 
@@ -618,6 +661,9 @@ func _sync_input_context() -> void:
 			_set_input_context(InputContext.DIALOGUE_RESPONSE_SELECTION)
 		else:
 			_set_input_context(InputContext.DIALOGUE)
+		return
+
+	if _input_context == InputContext.CUTSCENE:
 		return
 
 	_set_input_context(InputContext.GAMEPLAY)

@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://daiy6h0d1r3sf"]
+
+[ext_resource type="PackedScene" uid="uid://co64t8il0vqlg" path="res://assets/art/models/game/mystery_room.glb" id="1_mystery_room"]
+[ext_resource type="Script" uid="uid://xu05c85p1o8i" path="res://assets/scripts/camera_cutscene_target.gd" id="2_cutscene"]
+[ext_resource type="PackedScene" uid="uid://bkvweeoliwpaq" path="res://assets/art/models/game/cake.glb" id="3_6toka"]
+[ext_resource type="Script" uid="uid://y7p6yy8847d5" path="res://assets/scripts/proximity_dialogue_trigger.gd" id="3_auto_trigger"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ym06s"]
+size = Vector3(23.349854, 3.1658936, 5.401367)
+
+[node name="MysteryRoomCutscene" type="Node3D" unique_id=46491078]
+script = ExtResource("2_cutscene")
+
+[node name="MysteryRoom" parent="." unique_id=1521331465 instance=ExtResource("1_mystery_room")]
+
+[node name="Stand" parent="MysteryRoom/Stand_Stairs" parent_id_path=PackedInt32Array(1521331465, 1393171539) index="0" unique_id=497039865]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.73884475, 0)
+
+[node name="cake" parent="MysteryRoom/Stand_Stairs/Stand" index="0" unique_id=847802907 instance=ExtResource("3_6toka")]
+transform = Transform3D(0.61, 0, 0, 0, 0.61, 0, 0, 0, 0.61, 0, 3.110065, 0)
+
+[node name="CutsceneCamera" type="Camera3D" parent="." unique_id=564982831]
+transform = Transform3D(-1, 8.092387e-15, -8.742279e-08, -5.78652e-08, 0.7495915, 0.6619008, 6.5531374e-08, 0.6619008, -0.7495915, 1.686718, 11.201238, -141.15044)
+far = 2000.0
+
+[node name="AutoCutsceneTrigger" type="Area3D" parent="." unique_id=1879523689]
+monitorable = false
+script = ExtResource("3_auto_trigger")
+target_path = NodePath("..")
+can_activate_method = &"can_start_cutscene_with_target"
+request_activate_method = &"request_cutscene_with_target"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AutoCutsceneTrigger" unique_id=1042330339]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0829468, -99.540306)
+shape = SubResource("BoxShape3D_ym06s")
+
+[editable path="MysteryRoom"]

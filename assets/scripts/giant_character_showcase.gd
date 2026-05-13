@@ -14,39 +14,12 @@ extends Node3D
 @export var dialogue_speaker_name := "Гиганты"
 @export_range(0.5, 20.0, 0.1) var interaction_margin := 1.5
 @export_range(0.5, 20.0, 0.1) var player_anchor_margin := 3.5
-var _auto_trigger_consumed := false
 var _interaction_radius := 0.0
 
 
 func _ready() -> void:
 	_configure_interaction_target()
 	_fit_interaction_geometry_to_giants()
-
-
-func _physics_process(_delta: float) -> void:
-	if _auto_trigger_consumed:
-		return
-
-	var player := _get_player_character()
-	if player == null:
-		return
-
-	var interaction_target := get_node_or_null(interaction_target_path) as InteractionTarget
-	if interaction_target == null:
-		return
-
-	if not _is_point_inside_area_shape(auto_trigger_path, player.global_position):
-		return
-
-	var current_scene := get_tree().current_scene
-	if current_scene == null or not current_scene.has_method("can_start_dialogue_with_target"):
-		return
-	if not bool(current_scene.call("can_start_dialogue_with_target", interaction_target, true)):
-		return
-
-	_auto_trigger_consumed = true
-	current_scene.call_deferred("request_dialogue_with_target", interaction_target, true)
-
 
 func get_dialogue_camera_mount() -> Node3D:
 	return get_node_or_null(dialogue_speaker_pivot_path) as Node3D
@@ -95,7 +68,6 @@ func exit_dialogue_animation_mode() -> void:
 
 
 func handle_dialogue_finished(_resource: DialogueResource) -> void:
-	_auto_trigger_consumed = true
 	var wall_with_door := get_node_or_null(wall_with_door_path)
 	if wall_with_door != null and wall_with_door.has_method("open_doors"):
 		wall_with_door.call("open_doors")
@@ -202,50 +174,6 @@ func _build_aabb_corners(bounds: AABB) -> Array[Vector3]:
 		position + size,
 	]
 
-
-func _get_area_shape(area_path: NodePath) -> Shape3D:
-	var area := get_node_or_null(area_path) as Area3D
-	if area == null:
-		return null
-
-	var collision_shape := area.get_node_or_null(^"CollisionShape3D") as CollisionShape3D
-	if collision_shape == null:
-		return null
-
-	return collision_shape.shape
-
-
-func _is_point_inside_area_shape(area_path: NodePath, global_point: Vector3) -> bool:
-	var area := get_node_or_null(area_path) as Area3D
-	if area == null:
-		return false
-
-	var collision_shape := area.get_node_or_null(^"CollisionShape3D") as CollisionShape3D
-	if collision_shape == null or collision_shape.shape == null:
-		return false
-
-	var local_point := collision_shape.to_local(global_point)
-	var shape := collision_shape.shape
-
-	var box_shape := shape as BoxShape3D
-	if box_shape != null:
-		var half_size := box_shape.size * 0.5
-		return absf(local_point.x) <= half_size.x \
-			and absf(local_point.y) <= half_size.y \
-			and absf(local_point.z) <= half_size.z
-
-	var cylinder_shape := shape as CylinderShape3D
-	if cylinder_shape != null:
-		var half_height := cylinder_shape.height * 0.5
-		if absf(local_point.y) > half_height:
-			return false
-
-		var radial_distance := Vector2(local_point.x, local_point.z).length()
-		return radial_distance <= cylinder_shape.radius
-
-	return false
-
-
 func _configure_area(
 	area_path: NodePath,
 	radius: float,
@@ -305,19 +233,6 @@ func _compute_giants_midpoint_local() -> Vector3:
 		return to_local(midpoint)
 
 	return Vector3.ZERO
-
-
-func _get_player_character() -> Node3D:
-	var tree := get_tree()
-	if tree == null:
-		return null
-
-	var players := tree.get_nodes_in_group(&"player_character")
-	if players.is_empty():
-		return null
-
-	return players[0] as Node3D
-
 
 func _get_giants() -> Array[Node3D]:
 	var result: Array[Node3D] = []

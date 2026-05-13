@@ -33,18 +33,18 @@ dof_blur_near_transition = 1.2
 [node name="game" type="Node3D" unique_id=250801342]
 script = ExtResource("5_game")
 
-[node name="Level" parent="." unique_id=1748344399 instance=ExtResource("1_level")]
+[node name="Level" parent="." unique_id=1638308877 instance=ExtResource("1_level")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
-[node name="NorthBox" parent="Level/OrientationProps" parent_id_path=PackedInt32Array(1748344399, 1223392466) index="0" unique_id=1323818157]
+[node name="NorthBox" parent="Level/OrientationProps" parent_id_path=PackedInt32Array(1638308877, 1223392466) index="0" unique_id=1323818157]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.3611817, 0.9, -12)
 
-[node name="FarNorthColumn2" type="MeshInstance3D" parent="Level/OrientationProps" parent_id_path=PackedInt32Array(1748344399, 1223392466) index="9" unique_id=1841138750]
+[node name="FarNorthColumn2" type="MeshInstance3D" parent="Level/OrientationProps" parent_id_path=PackedInt32Array(1638308877, 1223392466) index="9" unique_id=1841138750]
 transform = Transform3D(1, 0, 0, 0, 1.4, 0, 0, 0, 1, -28.53847, 2.520001, -82.090454)
 mesh = SubResource("CylinderMesh_marker_column")
 surface_material_override/0 = SubResource("StandardMaterial3D_marker_yellow")
 
-[node name="FarNorthColumn3" type="MeshInstance3D" parent="Level/OrientationProps" parent_id_path=PackedInt32Array(1748344399, 1223392466) index="10" unique_id=414884998]
+[node name="FarNorthColumn3" type="MeshInstance3D" parent="Level/OrientationProps" parent_id_path=PackedInt32Array(1638308877, 1223392466) index="10" unique_id=414884998]
 transform = Transform3D(1, 0, 0, 0, 1.4, 0, 0, 0, 1, -6.9817467, 2.520001, -66.91274)
 mesh = SubResource("CylinderMesh_marker_column")
 surface_material_override/0 = SubResource("StandardMaterial3D_marker_yellow")

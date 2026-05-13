@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://y7p6yy8847d5" path="res://assets/scripts/proximity_dialogue_trigger.gd" id="4_auto_trigger"]
 [ext_resource type="Resource" uid="uid://dqtfbosbact4j" path="res://assets/dialogue/giants_intro.dialogue" id="5_dialogue"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/wall_with_door.tscn" id="6_wall"]
-[ext_resource type="PackedScene" uid="uid://co64t8il0vqlg" path="res://assets/art/models/game/mystery_room.glb" id="7_mystery_room"]
+[ext_resource type="PackedScene" path="res://assets/scenes/game/mystery_room_cutscene.tscn" id="7_mystery_room_cutscene"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_interaction"]
 height = 18.0
@@ -22,7 +22,7 @@ dialogue_resource = ExtResource("5_dialogue")
 [node name="WallWithDoor" parent="." unique_id=667245918 instance=ExtResource("6_wall")]
 transform = Transform3D(16, 0, 0, 0, 16, 0, 0, 0, 16, 0, 0, -118)
 
-[node name="MysteryRoom" parent="." unique_id=1488788868 instance=ExtResource("7_mystery_room")]
+[node name="MysteryRoomCutscene" parent="." unique_id=1488788868 instance=ExtResource("7_mystery_room_cutscene")]
 transform = Transform3D(3.519, 0, 0, 0, 3.519, 0, 0, 0, 3.519, 0, 0, -122.974205)
 
 [node name="GiantCharacterLeft" parent="." unique_id=1055612407 instance=ExtResource("1_giant_character")]
