@@ -13,6 +13,9 @@ script = ExtResource("2_cutscene")
 
 [node name="MysteryRoom" parent="." unique_id=1521331465 instance=ExtResource("1_mystery_room")]
 
+[node name="Walls" parent="MysteryRoom" index="0" unique_id=2083319832]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.03193283, 0, 0.09068298)
+
 [node name="Stand" parent="MysteryRoom/Stand_Stairs" parent_id_path=PackedInt32Array(1521331465, 1393171539) index="0" unique_id=497039865]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.73884475, 0)
 
@@ -31,7 +34,7 @@ can_activate_method = &"can_start_cutscene_with_target"
 request_activate_method = &"request_cutscene_with_target"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="AutoCutsceneTrigger" unique_id=1042330339]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0829468, -99.540306)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0829468, -112.097244)
 shape = SubResource("BoxShape3D_ym06s")
 
 [editable path="MysteryRoom"]

@@ -2,6 +2,7 @@ extends Node3D
 
 const MAIN_MENU_SCENE_PATH := "res://assets/scenes/menu/menu_main.tscn"
 const DIALOGUE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/dialogue_pause_menu.tscn")
+const CUTSCENE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/cutscene_pause_menu.tscn")
 
 @onready var camera_rig := $CameraRig
 @onready var dialogue_pivot_right := $DialoguePivotRight
@@ -43,6 +44,8 @@ enum InputContext {
 var _interaction_locked := false
 var _dialogue_active := false
 var _dialogue_response_selection_active := false
+var _cutscene_active := false
+var _cutscene_target: Node
 var _dialogue_target: InteractionTarget
 var _dialogue_target_actor: Node3D
 var _current_dialogue_speaker: Node3D
@@ -53,6 +56,7 @@ var _saved_player_transform := Transform3D.IDENTITY
 var _pause_active := false
 var _pause_transition_locked := false
 var _dialogue_pause_menu: Node
+var _cutscene_pause_menu: Node
 var _active_pause_menu: Node
 var _inventory_open := false
 var _input_context := InputContext.GAMEPLAY
@@ -84,6 +88,12 @@ func _ready() -> void:
 		dialogue_pause_menu_root.visible = false
 	add_child(_dialogue_pause_menu)
 	_connect_pause_menu_signals(_dialogue_pause_menu)
+	_cutscene_pause_menu = CUTSCENE_PAUSE_MENU_SCENE.instantiate()
+	var cutscene_pause_menu_root := _cutscene_pause_menu.get_node_or_null("MenuRoot") as Control
+	if cutscene_pause_menu_root != null:
+		cutscene_pause_menu_root.visible = false
+	add_child(_cutscene_pause_menu)
+	_connect_pause_menu_signals(_cutscene_pause_menu)
 	if inventory_ui != null:
 		var inventory_menu_root := inventory_ui.get_node_or_null("MenuRoot") as Control
 		if inventory_menu_root != null:
@@ -105,7 +115,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if _pause_active or _pause_transition_locked:
 		return
 
-	if not _dialogue_active:
+	if not _dialogue_active and not _cutscene_active:
 		if event.is_action_pressed("inventory_toggle") and not _interaction_locked:
 			get_viewport().set_input_as_handled()
 			_open_inventory()
@@ -130,7 +140,7 @@ func _on_interaction_requested(target: InteractionTarget) -> void:
 
 
 func can_start_dialogue_with_target(target: InteractionTarget, ignore_interaction_availability: bool = false) -> bool:
-	if _interaction_locked or _dialogue_active or target == null:
+	if _interaction_locked or _dialogue_active or _cutscene_active or target == null:
 		return false
 
 	if not ignore_interaction_availability and not target.is_interaction_available():
@@ -159,7 +169,7 @@ func request_dialogue_with_target(target: InteractionTarget, ignore_interaction_
 
 
 func can_start_cutscene_with_target(target: Node, _ignore_interaction_availability: bool = true) -> bool:
-	if _interaction_locked or _dialogue_active or target == null:
+	if _interaction_locked or _dialogue_active or _cutscene_active or target == null:
 		return false
 
 	if not target.has_method("get_cutscene_camera"):
@@ -237,10 +247,34 @@ func _start_cutscene_with_target(target: Node, ignore_interaction_availability: 
 	_set_input_context(InputContext.TRANSITION)
 	await SceneTransition.fade_out()
 	_set_dialogue_pivots_active(false)
+	player.set_controls_enabled(false)
+	interaction_source.set_interaction_enabled(false)
+	_cutscene_active = true
+	_cutscene_target = target
 	cutscene_camera.current = true
 	await get_tree().process_frame
 	_interaction_locked = false
 	_set_input_context(InputContext.CUTSCENE)
+	await SceneTransition.fade_in()
+	_sync_input_context()
+
+
+func _exit_cutscene_mode() -> void:
+	if _interaction_locked or not _cutscene_active:
+		return
+
+	_interaction_locked = true
+	_set_input_context(InputContext.TRANSITION)
+	await SceneTransition.fade_out()
+	_set_dialogue_pivots_active(false)
+	camera_rig.activate_game_camera()
+	player.set_controls_enabled(true)
+	interaction_source.set_interaction_enabled(true)
+	_cutscene_active = false
+	_cutscene_target = null
+	await get_tree().process_frame
+	_interaction_locked = false
+	_set_input_context(InputContext.GAMEPLAY)
 	await SceneTransition.fade_in()
 	_sync_input_context()
 
@@ -304,7 +338,7 @@ func _open_pause_menu() -> void:
 	_pause_active = true
 	_capture_focus_before_pause()
 	_active_pause_menu = _get_pause_menu_for_current_context()
-	if not _dialogue_active and camera_rig != null and camera_rig.has_method("begin_pause_focus"):
+	if not _dialogue_active and not _cutscene_active and camera_rig != null and camera_rig.has_method("begin_pause_focus"):
 		camera_rig.call("begin_pause_focus")
 	get_tree().paused = true
 	AudioService.apply_mix_preset(AUDIO_PRESET_PAUSE, AUDIO_PRESET_FADE_DURATION)
@@ -322,7 +356,7 @@ func _resume_from_pause() -> void:
 	if _active_pause_menu != null:
 		_active_pause_menu.call("close")
 	_active_pause_menu = null
-	if not _dialogue_active and camera_rig != null and camera_rig.has_method("end_pause_focus"):
+	if not _dialogue_active and not _cutscene_active and camera_rig != null and camera_rig.has_method("end_pause_focus"):
 		camera_rig.call("end_pause_focus")
 	AudioService.apply_mix_preset(
 		AUDIO_PRESET_DIALOGUE if _dialogue_active else AUDIO_PRESET_GAMEPLAY,
@@ -333,7 +367,7 @@ func _resume_from_pause() -> void:
 
 
 func _open_inventory() -> void:
-	if _inventory_open or _interaction_locked or _pause_active or _dialogue_active or inventory_ui == null:
+	if _inventory_open or _interaction_locked or _pause_active or _dialogue_active or _cutscene_active or inventory_ui == null:
 		return
 
 	_inventory_open = true
@@ -373,6 +407,20 @@ func _exit_dialogue_from_pause() -> void:
 	AudioService.apply_mix_preset(AUDIO_PRESET_DIALOGUE, AUDIO_PRESET_FADE_DURATION)
 	_sync_input_context()
 	await _cancel_active_dialogue()
+
+
+func _exit_cutscene_from_pause() -> void:
+	if not _pause_active:
+		return
+
+	get_tree().paused = false
+	_pause_active = false
+	if _active_pause_menu != null:
+		_active_pause_menu.call("close")
+	_active_pause_menu = null
+	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY, AUDIO_PRESET_FADE_DURATION)
+	_sync_input_context()
+	await _exit_cutscene_mode()
 
 
 func _return_to_main_menu() -> void:
@@ -549,11 +597,15 @@ func _connect_pause_menu_signals(menu: Node) -> void:
 		menu.connect("quit_requested", Callable(self, "_quit_from_pause"))
 	if menu.has_signal("exit_dialogue_requested"):
 		menu.connect("exit_dialogue_requested", Callable(self, "_exit_dialogue_from_pause"))
+	if menu.has_signal("exit_cutscene_requested"):
+		menu.connect("exit_cutscene_requested", Callable(self, "_exit_cutscene_from_pause"))
 
 
 func _get_pause_menu_for_current_context() -> Node:
 	if _dialogue_active and _dialogue_pause_menu != null:
 		return _dialogue_pause_menu
+	if _cutscene_active and _cutscene_pause_menu != null:
+		return _cutscene_pause_menu
 
 	return pause_menu
 
@@ -663,7 +715,8 @@ func _sync_input_context() -> void:
 			_set_input_context(InputContext.DIALOGUE)
 		return
 
-	if _input_context == InputContext.CUTSCENE:
+	if _cutscene_active:
+		_set_input_context(InputContext.CUTSCENE)
 		return
 
 	_set_input_context(InputContext.GAMEPLAY)
@@ -796,7 +849,7 @@ func _restore_follower_actors_after_dialogue() -> void:
 
 
 func _try_handle_non_dialogue_interaction(target: InteractionTarget) -> bool:
-	if _interaction_locked or _dialogue_active or target == null or not target.is_interaction_available():
+	if _interaction_locked or _dialogue_active or _cutscene_active or target == null or not target.is_interaction_available():
 		return false
 
 	var interaction_owner := target.get_parent()
