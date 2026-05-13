@@ -5,6 +5,8 @@
 [ext_resource type="Resource" path="res://assets/data/items/brass_key_item.tres" id="3_brass_key_item"]
 [ext_resource type="Resource" path="res://assets/data/items/birthday_note_item.tres" id="4_birthday_note_item"]
 [ext_resource type="PackedScene" uid="uid://dwinqt4ms18vm" path="res://assets/scenes/game/giant_character_showcase.tscn" id="5_giant_showcase"]
+[ext_resource type="PackedScene" uid="uid://jgs2yvp5lmdi" path="res://addons/Free Forest Nature Pack/Trees/Spruce/Flat_Tree_Spruce_large.glb" id="6_spruce_large"]
+[ext_resource type="PackedScene" uid="uid://berhpqhc32tqf" path="res://addons/Free Forest Nature Pack/Trees/Spruce/Flat_Tree_Spruce_medium.glb" id="7_spruce_medium"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_test_movement"]
 sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
@@ -182,3 +184,95 @@ item_data = ExtResource("4_birthday_note_item")
 
 [node name="GiantCharacterShowcase" parent="." unique_id=1656241094 instance=ExtResource("5_giant_showcase")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -108.55545)
+
+[node name="SideSpruces" type="Node3D" parent="." unique_id=207331484]
+
+[node name="LeftSpruceNorth" parent="SideSpruces" unique_id=170010001 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.8442571, 0, 0.30724448, 0, 0.898, 0, -0.30724448, 0, 0.8442571, -31, 0, -18)
+
+[node name="LeftSpruceMidNorth" parent="SideSpruces" unique_id=170010002 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.63441545, 0, -0.16997139, 0, 0.72, 0, 0.16997139, 0, 0.63441545, -29.5, 0, -7.5)
+
+[node name="LeftSpruceCenter" parent="SideSpruces" unique_id=170010003 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.7794228, 0, 0.2092749, 0, 0.84, 0, -0.2092749, 0, 0.7794228, -33, 0, 3.5)
+
+[node name="LeftSpruceMidSouth" parent="SideSpruces" unique_id=170010004 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.58525956, 0, 0.15680416, 0, 0.66, 0, -0.15680416, 0, 0.58525956, -30, 0, 14.5)
+
+[node name="LeftSpruceSouth" parent="SideSpruces" unique_id=170010005 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.7294298, 0, -0.271906, 0, 0.778, 0, 0.271906, 0, 0.7294298, -32, 0, 25)
+
+[node name="RightSpruceNorth" parent="SideSpruces" unique_id=170010006 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.7922622, 0, -0.21135657, 0, 0.82, 0, 0.21135657, 0, 0.7922622, 31.5, 0, -16.5)
+
+[node name="RightSpruceMidNorth" parent="SideSpruces" unique_id=170010007 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.61471146, 0, 0.1646915, 0, 0.7, 0, -0.1646915, 0, 0.61471146, 29, 0, -5.5)
+
+[node name="RightSpruceCenter" parent="SideSpruces" unique_id=170010008 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.87134576, 0, 0.23348108, 0, 0.902, 0, -0.23348108, 0, 0.87134576, 33.5, 0, 5)
+
+[node name="RightSpruceMidSouth" parent="SideSpruces" unique_id=170010009 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.5629165, 0, -0.1508151, 0, 0.64, 0, 0.1508151, 0, 0.5629165, 29.8, 0, 16.5)
+
+[node name="RightSpruceSouth" parent="SideSpruces" unique_id=170010010 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.74372965, 0, 0.27154693, 0, 0.792, 0, -0.27154693, 0, 0.74372965, 31, 0, 27)
+
+[node name="LeftBackNorthA" parent="SideSpruces" unique_id=170010011 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.9250174, 0, -0.33664185, 0, 0.984, 0, 0.33664185, 0, 0.9250174, -43, 0, -28)
+
+[node name="LeftBackNorthB" parent="SideSpruces" unique_id=170010012 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.71509075, 0, 0.19158289, 0, 0.81, 0, -0.19158289, 0, 0.71509075, -40, 0, -15)
+
+[node name="LeftBackCenterA" parent="SideSpruces" unique_id=170010013 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.85249096, 0, 0.2284374, 0, 0.91, 0, -0.2284374, 0, 0.85249096, -45, 0, -1)
+
+[node name="LeftBackCenterB" parent="SideSpruces" unique_id=170010014 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.66481656, 0, -0.17813559, 0, 0.75, 0, 0.17813559, 0, 0.66481656, -41.5, 0, 12)
+
+[node name="LeftBackSouth" parent="SideSpruces" unique_id=170010015 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.80212384, 0, 0.29194763, 0, 0.854, 0, -0.29194763, 0, 0.80212384, -44, 0, 28)
+
+[node name="RightBackNorthA" parent="SideSpruces" unique_id=170010016 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.9007638, 0, 0.32778487, 0, 0.958, 0, -0.32778487, 0, 0.9007638, 42.5, 0, -26)
+
+[node name="RightBackNorthB" parent="SideSpruces" unique_id=170010017 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.65583277, 0, -0.17572844, 0, 0.742, 0, 0.17572844, 0, 0.65583277, 39.5, 0, -12)
+
+[node name="RightBackCenterA" parent="SideSpruces" unique_id=170010018 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.82832366, 0, -0.22192965, 0, 0.884, 0, 0.22192965, 0, 0.82832366, 44.5, 0, 1)
+
+[node name="RightBackCenterB" parent="SideSpruces" unique_id=170010019 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.6862994, 0, 0.1838923, 0, 0.776, 0, -0.1838923, 0, 0.6862994, 40.8, 0, 14)
+
+[node name="RightBackSouth" parent="SideSpruces" unique_id=170010020 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.8777933, 0, -0.31950197, 0, 0.934, 0, 0.31950197, 0, 0.8777933, 43, 0, 30)
+
+[node name="LeftFarNorthA" parent="SideSpruces" unique_id=170010021 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.96859854, 0, 0.35257253, 0, 1.03, 0, -0.35257253, 0, 0.96859854, -56, 0, -46)
+
+[node name="LeftFarNorthB" parent="SideSpruces" unique_id=170010022 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.72070086, 0, -0.19308689, 0, 0.816, 0, 0.19308689, 0, 0.72070086, -50, 0, -37)
+
+[node name="RightFarNorthA" parent="SideSpruces" unique_id=170010023 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.9460365, 0, -0.34435984, 0, 1.006, 0, 0.34435984, 0, 0.9460365, 55, 0, -44)
+
+[node name="RightFarNorthB" parent="SideSpruces" unique_id=170010024 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.6908462, 0, 0.18511018, 0, 0.782, 0, -0.18511018, 0, 0.6908462, 49.5, 0, -35)
+
+[node name="LeftWallNorthA" parent="SideSpruces" unique_id=170010025 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.9017036, 0, 0.328127, 0, 0.959, 0, -0.328127, 0, 0.9017036, -36, 0, -62)
+
+[node name="LeftWallNorthB" parent="SideSpruces" unique_id=170010026 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.639889, 0, -0.17145571, 0, 0.724, 0, 0.17145571, 0, 0.639889, -47, 0, -72)
+
+[node name="LeftWallNorthC" parent="SideSpruces" unique_id=170010027 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.8186593, 0, -0.2990671, 0, 0.872, 0, 0.2990671, 0, 0.8186593, -58, 0, -84)
+
+[node name="RightWallNorthA" parent="SideSpruces" unique_id=170010028 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.8777933, 0, -0.31950197, 0, 0.934, 0, 0.31950197, 0, 0.8777933, 36.5, 0, -60)
+
+[node name="RightWallNorthB" parent="SideSpruces" unique_id=170010029 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.6757647, 0, 0.1810732, 0, 0.764, 0, -0.1810732, 0, 0.6757647, 47.5, 0, -71)
+
+[node name="RightWallNorthC" parent="SideSpruces" unique_id=170010030 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.86089414, 0, 0.31335112, 0, 0.916, 0, -0.31335112, 0, 0.86089414, 57.5, 0, -83)
