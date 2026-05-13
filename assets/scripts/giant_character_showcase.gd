@@ -17,6 +17,7 @@ extends Node3D
 
 var _auto_trigger_radius := 0.0
 var _auto_trigger_consumed := false
+var _interaction_radius := 0.0
 
 
 func _ready() -> void:
@@ -32,12 +33,12 @@ func _physics_process(_delta: float) -> void:
 	if player == null:
 		return
 
-	var distance_to_activation := player.global_position.distance_to(global_position)
-	if distance_to_activation > _auto_trigger_radius:
-		return
-
 	var interaction_target := get_node_or_null(interaction_target_path) as InteractionTarget
 	if interaction_target == null:
+		return
+
+	var distance_to_activation := player.global_position.distance_to(global_position)
+	if distance_to_activation > _auto_trigger_radius:
 		return
 
 	var current_scene := get_tree().current_scene
@@ -64,6 +65,10 @@ func get_dialogue_speaker_name() -> String:
 
 func get_dialogue_scene_camera() -> Camera3D:
 	return get_node_or_null(dialogue_camera_path) as Camera3D
+
+
+func get_dialogue_focus_position() -> Vector3:
+	return to_global(_compute_giants_midpoint_local())
 
 
 func set_character_visible(value: bool) -> void:
@@ -117,29 +122,13 @@ func _fit_interaction_geometry_to_giants() -> void:
 	var height := maxf(mesh_bounds.size.y, 4.0)
 	var interaction_radius := maxf((height * 0.08) + interaction_margin, 2.25)
 	var trigger_radius := maxf((height * 0.12) + auto_trigger_margin, interaction_radius + 0.75)
+	_interaction_radius = interaction_radius
 	_auto_trigger_radius = trigger_radius
 	var base_y := mesh_bounds.position.y
 	var activation_center := Vector3.ZERO
 
-	var interaction_shape := _get_area_shape(interaction_target_path) as CylinderShape3D
-	if interaction_shape != null:
-		interaction_shape.radius = interaction_radius
-		interaction_shape.height = height
-		_set_area_shape_origin(interaction_target_path, Vector3(
-			activation_center.x,
-			base_y + (height * 0.5),
-			activation_center.z
-		))
-
-	var trigger_shape := _get_area_shape(auto_trigger_path) as CylinderShape3D
-	if trigger_shape != null:
-		trigger_shape.radius = trigger_radius
-		trigger_shape.height = height
-		_set_area_shape_origin(auto_trigger_path, Vector3(
-			activation_center.x,
-			base_y + (height * 0.5),
-			activation_center.z
-		))
+	_configure_area(interaction_target_path, interaction_radius, height, base_y)
+	_configure_area(auto_trigger_path, trigger_radius, height, base_y)
 
 	var prompt_anchor := get_node_or_null(interaction_prompt_anchor_path) as Node3D
 	if prompt_anchor != null:
@@ -154,17 +143,7 @@ func _fit_interaction_geometry_to_giants() -> void:
 	if speaker_pivot != null and dialogue_camera != null:
 		speaker_pivot.global_transform = dialogue_camera.global_transform
 
-	var player_anchor := get_node_or_null(player_dialogue_anchor_path) as Node3D
-	if player_anchor != null and dialogue_camera != null:
-		var camera_forward := -dialogue_camera.global_transform.basis.z
-		camera_forward.y = 0.0
-		if camera_forward.is_zero_approx():
-			camera_forward = Vector3.FORWARD
-		else:
-			camera_forward = camera_forward.normalized()
-
-		var anchor_distance := interaction_radius + player_anchor_margin
-		player_anchor.position = activation_center - (camera_forward * anchor_distance)
+	_position_player_anchor()
 
 
 func _compute_combined_mesh_bounds() -> AABB:
@@ -235,7 +214,12 @@ func _get_area_shape(area_path: NodePath) -> Shape3D:
 	return collision_shape.shape
 
 
-func _set_area_shape_origin(area_path: NodePath, origin: Vector3) -> void:
+func _configure_area(
+	area_path: NodePath,
+	radius: float,
+	height: float,
+	base_y: float
+) -> void:
 	var area := get_node_or_null(area_path) as Area3D
 	if area == null:
 		return
@@ -244,9 +228,51 @@ func _set_area_shape_origin(area_path: NodePath, origin: Vector3) -> void:
 	if collision_shape == null:
 		return
 
+	var shape := collision_shape.shape as CylinderShape3D
+	if shape != null:
+		shape.radius = radius
+		shape.height = height
+
 	var transform := collision_shape.transform
-	transform.origin = origin
+	transform.origin = Vector3(0.0, base_y + (height * 0.5), 0.0)
 	collision_shape.transform = transform
+
+
+func _position_player_anchor() -> void:
+	var player_anchor := get_node_or_null(player_dialogue_anchor_path) as Node3D
+	if player_anchor == null or _interaction_radius <= 0.0:
+		return
+
+	var midpoint_local := _compute_giants_midpoint_local()
+	var approach_direction := _get_anchor_approach_direction()
+	var anchor_local := midpoint_local + (approach_direction * _interaction_radius)
+
+	player_anchor.position = anchor_local
+	player_anchor.look_at(to_global(midpoint_local), Vector3.UP, true)
+
+
+func _get_anchor_approach_direction() -> Vector3:
+	var dialogue_camera := get_dialogue_scene_camera()
+	if dialogue_camera != null:
+		var camera_forward := -dialogue_camera.global_transform.basis.z
+		camera_forward.y = 0.0
+		if not camera_forward.is_zero_approx():
+			var local_forward := global_transform.basis.inverse() * camera_forward.normalized()
+			local_forward.y = 0.0
+			if not local_forward.is_zero_approx():
+				return -local_forward.normalized()
+
+	return Vector3(0.0, 0.0, 1.0)
+
+
+func _compute_giants_midpoint_local() -> Vector3:
+	var left_giant := get_node_or_null(left_giant_path) as Node3D
+	var right_giant := get_node_or_null(right_giant_path) as Node3D
+	if left_giant != null and right_giant != null:
+		var midpoint := (left_giant.global_position + right_giant.global_position) * 0.5
+		return to_local(midpoint)
+
+	return Vector3.ZERO
 
 
 func _get_player_character() -> Node3D:

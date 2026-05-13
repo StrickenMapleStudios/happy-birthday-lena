@@ -173,8 +173,11 @@ func _start_dialogue_with_target(
 	interaction_source.set_interaction_enabled(false)
 	_hide_follower_actors_for_dialogue()
 	player.global_transform = player_dialogue_anchor.global_transform
-	player.face_towards_position(target.global_position)
 	_dialogue_target_actor = target.get_parent() as Node3D
+	var player_focus_position := target.global_position
+	if _dialogue_target_actor != null and _dialogue_target_actor.has_method("get_dialogue_focus_position"):
+		player_focus_position = _dialogue_target_actor.call("get_dialogue_focus_position")
+	player.face_towards_position(player_focus_position)
 	if _dialogue_target_actor != null and _dialogue_target_actor.has_method("face_towards_position"):
 		_dialogue_target_actor.call("face_towards_position", player.global_position)
 	_dialogue_target = target
