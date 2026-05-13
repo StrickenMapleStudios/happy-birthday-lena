@@ -4,8 +4,10 @@ class_name GameplayUiLayer
 
 const GAMEPLAY_UI_LAYER := 50
 const WORLD_UI_ROOT_NAME := "WorldUIRoot"
+const CINEMATIC_BARS_NAME := "CinematicBars"
 
 var world_ui_root: Control
+var cinematic_bars: Control
 
 
 func _ready() -> void:
@@ -35,6 +37,12 @@ func set_world_ui_visible(is_visible: bool) -> void:
 		root.visible = is_visible
 
 
+func set_cinematic_bars_visible(is_visible: bool) -> void:
+	var bars := _ensure_cinematic_bars()
+	if bars != null:
+		bars.visible = is_visible
+
+
 func _ensure_world_ui_root() -> Control:
 	if world_ui_root != null:
 		return world_ui_root
@@ -49,3 +57,11 @@ func _ensure_world_ui_root() -> Control:
 	world_ui_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(world_ui_root)
 	return world_ui_root
+
+
+func _ensure_cinematic_bars() -> Control:
+	if cinematic_bars != null:
+		return cinematic_bars
+
+	cinematic_bars = get_node_or_null(^"CinematicBars") as Control
+	return cinematic_bars

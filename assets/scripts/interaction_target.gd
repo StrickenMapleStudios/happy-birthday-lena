@@ -10,6 +10,8 @@ class_name InteractionTarget
 @export var dialogue_variables: Dictionary = {}
 @export var interaction_key_text := "E"
 @export var interaction_enabled := true
+@export var return_player_to_origin_after_dialogue := true
+@export var preserve_player_height_during_dialogue := false
 
 
 func _ready() -> void:
@@ -38,6 +40,14 @@ func get_dialogue_resource() -> DialogueResource:
 
 func get_dialogue_start_title() -> String:
 	return dialogue_start_title
+
+
+func should_return_player_to_origin_after_dialogue() -> bool:
+	return return_player_to_origin_after_dialogue
+
+
+func should_preserve_player_height_during_dialogue() -> bool:
+	return preserve_player_height_during_dialogue
 
 
 func get_dialogue_game_states() -> Array:

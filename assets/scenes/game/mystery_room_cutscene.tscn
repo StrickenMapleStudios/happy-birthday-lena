@@ -4,6 +4,11 @@
 [ext_resource type="Script" uid="uid://xu05c85p1o8i" path="res://assets/scripts/camera_cutscene_target.gd" id="2_cutscene"]
 [ext_resource type="PackedScene" uid="uid://bkvweeoliwpaq" path="res://assets/art/models/game/cake.glb" id="3_6toka"]
 [ext_resource type="Script" uid="uid://y7p6yy8847d5" path="res://assets/scripts/proximity_dialogue_trigger.gd" id="3_auto_trigger"]
+[ext_resource type="Script" uid="uid://c3fwb8aoupnd1" path="res://assets/scripts/mystery_room_light_isolation.gd" id="5_light_isolation"]
+
+[sub_resource type="Environment" id="Environment_mystery_room_dark"]
+background_mode = 1
+ambient_light_energy = 0.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ym06s"]
 size = Vector3(23.349854, 3.1658936, 5.401367)
@@ -11,20 +16,40 @@ size = Vector3(23.349854, 3.1658936, 5.401367)
 [node name="MysteryRoomCutscene" type="Node3D" unique_id=46491078]
 script = ExtResource("2_cutscene")
 
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1162087341]
+environment = SubResource("Environment_mystery_room_dark")
+
+[node name="LightIsolation" type="Node" parent="." unique_id=685614440]
+script = ExtResource("5_light_isolation")
+
 [node name="MysteryRoom" parent="." unique_id=1521331465 instance=ExtResource("1_mystery_room")]
 
 [node name="Walls" parent="MysteryRoom" index="0" unique_id=2083319832]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.03193283, 0, 0.09068298)
+layers = 2
 
-[node name="Stand" parent="MysteryRoom/Stand_Stairs" parent_id_path=PackedInt32Array(1521331465, 1393171539) index="0" unique_id=497039865]
+[node name="Columns" parent="MysteryRoom" index="1" unique_id=1650959316]
+layers = 2
+
+[node name="Stand_Stairs" parent="MysteryRoom" index="3" unique_id=1393171539]
+layers = 2
+
+[node name="Stand" parent="MysteryRoom/Stand_Stairs" index="0" unique_id=497039865]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.73884475, 0)
+layers = 2
 
 [node name="cake" parent="MysteryRoom/Stand_Stairs/Stand" index="0" unique_id=847802907 instance=ExtResource("3_6toka")]
 transform = Transform3D(0.61, 0, 0, 0, 0.61, 0, 0, 0, 0.61, 0, 3.110065, 0)
 
+[node name="Torch" parent="MysteryRoom" index="4" unique_id=838063887]
+layers = 2
+
 [node name="CutsceneCamera" type="Camera3D" parent="." unique_id=564982831]
 transform = Transform3D(-1, 8.092387e-15, -8.742279e-08, -5.78652e-08, 0.7495915, 0.6619008, 6.5531374e-08, 0.6619008, -0.7495915, 1.686718, 11.201238, -141.15044)
 far = 2000.0
+
+[node name="PlayerCutsceneAnchor" type="Marker3D" parent="." unique_id=564982832]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, -117.391205)
 
 [node name="AutoCutsceneTrigger" type="Area3D" parent="." unique_id=1879523689]
 monitorable = false
@@ -34,7 +59,7 @@ can_activate_method = &"can_start_cutscene_with_target"
 request_activate_method = &"request_cutscene_with_target"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="AutoCutsceneTrigger" unique_id=1042330339]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0829468, -112.097244)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0829468, -117.391205)
 shape = SubResource("BoxShape3D_ym06s")
 
 [editable path="MysteryRoom"]

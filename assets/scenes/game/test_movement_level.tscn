@@ -76,6 +76,7 @@ environment = SubResource("Environment_test_movement")
 transform = Transform3D(-0.6530099, -0.6150685, 0.44191104, -1.1948032e-08, 0.5837285, 0.81194884, -0.75732034, 0.5301067, -0.38136047, 0, 5.18316, 0)
 light_color = Color(1, 0.952941, 0.858824, 1)
 light_energy = 0.85
+light_cull_mask = 1
 shadow_enabled = true
 shadow_bias = 0.02
 shadow_normal_bias = 0.12

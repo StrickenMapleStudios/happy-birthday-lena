@@ -85,6 +85,7 @@ func _configure_interaction_target() -> void:
 	interaction_target.dialogue_resource = dialogue_resource
 	interaction_target.dialogue_start_title = dialogue_start_title
 	interaction_target.interaction_enabled = true
+	interaction_target.return_player_to_origin_after_dialogue = false
 	interaction_target.dialogue_variables = {
 		"speaker_name": dialogue_speaker_name,
 	}

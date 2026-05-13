@@ -53,6 +53,7 @@ var _right_pivot_actor: Node3D
 var _active_dialogue_balloon: Node
 var _active_dialogue_resource: DialogueResource
 var _saved_player_transform := Transform3D.IDENTITY
+var _restore_player_transform_after_sequence := true
 var _pause_active := false
 var _pause_transition_locked := false
 var _dialogue_pause_menu: Node
@@ -174,9 +175,12 @@ func can_start_cutscene_with_target(target: Node, _ignore_interaction_availabili
 
 	if not target.has_method("get_cutscene_camera"):
 		return false
+	if not target.has_method("get_player_cutscene_anchor"):
+		return false
 
 	var cutscene_camera := target.call("get_cutscene_camera") as Camera3D
-	return cutscene_camera != null
+	var player_cutscene_anchor := target.call("get_player_cutscene_anchor") as Node3D
+	return cutscene_camera != null and player_cutscene_anchor != null
 
 
 func request_cutscene_with_target(target: Node, ignore_interaction_availability: bool = true) -> void:
@@ -206,15 +210,22 @@ func _start_dialogue_with_target(
 
 	var dialogue_resource := target.get_dialogue_resource()
 	var player_dialogue_anchor: Node3D = target.get_player_dialogue_anchor()
+	var restore_player_transform := true
+	var preserve_player_height := false
+	if target.has_method("should_return_player_to_origin_after_dialogue"):
+		restore_player_transform = bool(target.call("should_return_player_to_origin_after_dialogue"))
+	if target.has_method("should_preserve_player_height_during_dialogue"):
+		preserve_player_height = bool(target.call("should_preserve_player_height_during_dialogue"))
 
 	_interaction_locked = true
 	_set_input_context(InputContext.TRANSITION)
 	_saved_player_transform = player.global_transform
+	_restore_player_transform_after_sequence = restore_player_transform
 	await SceneTransition.fade_out()
 	player.set_controls_enabled(false)
 	interaction_source.set_interaction_enabled(false)
 	_hide_follower_actors_for_dialogue()
-	player.global_transform = player_dialogue_anchor.global_transform
+	_move_player_to_anchor(player_dialogue_anchor, preserve_player_height)
 	_dialogue_target_actor = target.get_parent() as Node3D
 	var player_focus_position := target.global_position
 	if _dialogue_target_actor != null and _dialogue_target_actor.has_method("get_dialogue_focus_position"):
@@ -240,17 +251,29 @@ func _start_cutscene_with_target(target: Node, ignore_interaction_availability: 
 		return
 
 	var cutscene_camera := target.call("get_cutscene_camera") as Camera3D
-	if cutscene_camera == null:
+	var player_cutscene_anchor := target.call("get_player_cutscene_anchor") as Node3D
+	if cutscene_camera == null or player_cutscene_anchor == null:
 		return
+	var restore_player_transform := false
+	var preserve_player_height := true
+	if target.has_method("should_return_player_to_origin_after_cutscene"):
+		restore_player_transform = bool(target.call("should_return_player_to_origin_after_cutscene"))
+	if target.has_method("should_preserve_player_height_during_cutscene"):
+		preserve_player_height = bool(target.call("should_preserve_player_height_during_cutscene"))
 
 	_interaction_locked = true
 	_set_input_context(InputContext.TRANSITION)
+	_saved_player_transform = player.global_transform
+	_restore_player_transform_after_sequence = restore_player_transform
 	await SceneTransition.fade_out()
 	_set_dialogue_pivots_active(false)
 	player.set_controls_enabled(false)
 	interaction_source.set_interaction_enabled(false)
+	_move_player_to_anchor(player_cutscene_anchor, preserve_player_height)
 	_cutscene_active = true
 	_cutscene_target = target
+	if gameplay_ui_layer != null:
+		gameplay_ui_layer.set_cinematic_bars_visible(true)
 	cutscene_camera.current = true
 	await get_tree().process_frame
 	_interaction_locked = false
@@ -267,16 +290,31 @@ func _exit_cutscene_mode() -> void:
 	_set_input_context(InputContext.TRANSITION)
 	await SceneTransition.fade_out()
 	_set_dialogue_pivots_active(false)
+	if gameplay_ui_layer != null:
+		gameplay_ui_layer.set_cinematic_bars_visible(false)
 	camera_rig.activate_game_camera()
+	if _restore_player_transform_after_sequence:
+		player.global_transform = _saved_player_transform
 	player.set_controls_enabled(true)
 	interaction_source.set_interaction_enabled(true)
 	_cutscene_active = false
 	_cutscene_target = null
+	_restore_player_transform_after_sequence = true
 	await get_tree().process_frame
 	_interaction_locked = false
 	_set_input_context(InputContext.GAMEPLAY)
 	await SceneTransition.fade_in()
 	_sync_input_context()
+
+
+func _move_player_to_anchor(anchor: Node3D, preserve_y: bool) -> void:
+	if anchor == null:
+		return
+
+	var anchor_position := anchor.global_position
+	if preserve_y:
+		anchor_position.y = player.global_position.y
+	player.global_position = anchor_position
 
 
 func _on_interaction_target_changed(target: InteractionTarget) -> void:
@@ -316,6 +354,7 @@ func _exit_dialogue_mode() -> void:
 	_dialogue_target_actor = null
 	_current_dialogue_speaker = null
 	_right_pivot_actor = null
+	_restore_player_transform_after_sequence = true
 	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY, AUDIO_PRESET_FADE_DURATION)
 	_sync_input_context()
 	await get_tree().process_frame
