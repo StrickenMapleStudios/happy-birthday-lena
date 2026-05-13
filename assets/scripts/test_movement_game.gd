@@ -470,10 +470,12 @@ func _on_dialogue_ended(resource: DialogueResource) -> void:
 	if _active_dialogue_resource != null and resource != _active_dialogue_resource:
 		return
 
-	if is_instance_valid(_dialogue_target_actor) and _dialogue_target_actor.has_method("handle_dialogue_finished"):
-		_dialogue_target_actor.call("handle_dialogue_finished", resource)
+	var finished_dialogue_actor := _dialogue_target_actor
 
 	await _exit_dialogue_mode()
+
+	if is_instance_valid(finished_dialogue_actor) and finished_dialogue_actor.has_method("handle_dialogue_finished"):
+		finished_dialogue_actor.call("handle_dialogue_finished", resource)
 
 
 func _on_balloon_speaker_changed(character_name: String, _dialogue_line: DialogueLine) -> void:
