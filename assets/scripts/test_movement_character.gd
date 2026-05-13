@@ -2,22 +2,17 @@ extends CharacterBody3D
 
 const WALKING_TURN_SPEED := 6.0
 const RUNNING_TURN_SPEED := 9.0
-const NARUTO_RUNNING_TURN_SPEED := 11.0
 const ANIMATION_WALKING := "Walking"
 const ANIMATION_RUNNING := "Running"
-const ANIMATION_NARUTO_RUNNING := "NarutoRunning"
 const ANIMATION_EVENT_METHOD := &"handle_event"
 const WALKING_SPEED_SCALE := 2.0
 const RUNNING_SPEED_SCALE := 5.0
-const NARUTO_RUNNING_SPEED_SCALE := 7.0
-const RUNNING_LOOPS_TO_NARUTO := 10
 const EVENT_FOOTSTEP := &"footstep"
 const FOOTSTEP_SOUND_ID := &"footstep_grass"
 const PREPARED_FOOTSTEP_META := &"prepared_footstep_events"
 const FOOTSTEP_EVENT_TIMINGS := {
 	ANIMATION_WALKING: [0.18, 0.68],
 	ANIMATION_RUNNING: [0.16, 0.66],
-	ANIMATION_NARUTO_RUNNING: [0.14, 0.64],
 }
 
 const ACTION_MOVE_LEFT := "move_left"
@@ -29,7 +24,6 @@ const ACTION_SPEED_UP := "speed_up"
 const STATE_IDLE := "Idle"
 const STATE_WALKING := "Walking"
 const STATE_RUNNING := "Running"
-const STATE_NARUTO_RUNNING := "NarutoRunning"
 const PREPARED_SPEED_SCALE_META := &"prepared_speed_scale"
 const CHARACTER_IDENTITY_PATH := ^"CharacterIdentity"
 const MAX_COLLISION_SLIDES := 4
@@ -41,9 +35,6 @@ const MAX_COLLISION_SLIDES := 4
 
 var _playback: AnimationNodeStateMachinePlayback
 var _current_state := StringName()
-var _running_loops := 0
-var _naruto_running_active := false
-var _previous_running_play_position := 0.0
 var _root_motion_track_path := NodePath()
 var _controls_enabled := true
 var _dialogue_animation_mode_active := false
@@ -62,7 +53,6 @@ func _ready() -> void:
 	_playback = animation_tree.get("parameters/playback") as AnimationNodeStateMachinePlayback
 	_prepare_locomotion_animation(ANIMATION_WALKING, WALKING_SPEED_SCALE, STATE_WALKING)
 	_prepare_locomotion_animation(ANIMATION_RUNNING, RUNNING_SPEED_SCALE, STATE_RUNNING)
-	_prepare_locomotion_animation(ANIMATION_NARUTO_RUNNING, NARUTO_RUNNING_SPEED_SCALE, STATE_NARUTO_RUNNING)
 	_configure_root_motion_track()
 	_sync_animation_flags(false, false)
 	_travel_to(STATE_IDLE)
@@ -92,8 +82,6 @@ func _process(delta: float) -> void:
 
 	_apply_root_motion()
 
-	_update_running_loops(is_moving, speed_up)
-
 
 func _update_animation_state(is_moving: bool, speed_up: bool) -> void:
 	if not is_moving:
@@ -104,10 +92,6 @@ func _update_animation_state(is_moving: bool, speed_up: bool) -> void:
 		_travel_to(STATE_WALKING)
 		return
 
-	if _naruto_running_active:
-		_travel_to(STATE_NARUTO_RUNNING)
-		return
-
 	_travel_to(STATE_RUNNING)
 
 
@@ -116,34 +100,7 @@ func _travel_to(state_name: StringName) -> void:
 		return
 
 	_current_state = state_name
-	_running_loops = 0
-	_previous_running_play_position = 0.0
 	_playback.travel(state_name)
-
-
-func _update_running_loops(is_moving: bool, speed_up: bool) -> void:
-	if not is_moving or not speed_up:
-		_running_loops = 0
-		_naruto_running_active = false
-		_previous_running_play_position = 0.0
-		return
-
-	if _current_state == STATE_NARUTO_RUNNING:
-		_naruto_running_active = true
-		_previous_running_play_position = _get_current_play_position()
-		return
-
-	if _current_state != STATE_RUNNING:
-		_running_loops = 0
-		_previous_running_play_position = 0.0
-		return
-
-	var current_animation_position := _get_current_play_position()
-	if current_animation_position < _previous_running_play_position:
-		_running_loops += 1
-		if _running_loops >= RUNNING_LOOPS_TO_NARUTO:
-			_naruto_running_active = true
-	_previous_running_play_position = current_animation_position
 
 
 func _sync_animation_flags(is_moving: bool, speed_up: bool) -> void:
@@ -166,17 +123,8 @@ func _get_current_turn_speed() -> float:
 	match _current_state:
 		STATE_RUNNING:
 			return RUNNING_TURN_SPEED
-		STATE_NARUTO_RUNNING:
-			return NARUTO_RUNNING_TURN_SPEED
 		_:
 			return WALKING_TURN_SPEED
-
-
-func _get_current_play_position() -> float:
-	if _playback == null:
-		return 0.0
-
-	return _playback.get_current_play_position()
 
 
 func _prepare_locomotion_animation(animation_name: StringName, speed_scale: float, _state_name: StringName) -> void:
