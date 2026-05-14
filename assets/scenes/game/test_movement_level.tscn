@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://assets/scenes/common/pickup_item.tscn" id="1_pickup"]
 [ext_resource type="Resource" path="res://assets/data/items/apple_item.tres" id="2_apple_item"]
-[ext_resource type="Resource" path="res://assets/data/items/brass_key_item.tres" id="3_brass_key_item"]
+[ext_resource type="Resource" uid="uid://cd3ssbslaif2y" path="res://assets/data/items/brass_key_item.tres" id="3_brass_key_item"]
 [ext_resource type="Resource" path="res://assets/data/items/birthday_note_item.tres" id="4_birthday_note_item"]
 [ext_resource type="PackedScene" uid="uid://dwinqt4ms18vm" path="res://assets/scenes/game/giant_character_showcase.tscn" id="5_giant_showcase"]
 [ext_resource type="PackedScene" uid="uid://jgs2yvp5lmdi" path="res://addons/Free Forest Nature Pack/Trees/Spruce/Flat_Tree_Spruce_large.glb" id="6_spruce_large"]
@@ -36,6 +36,10 @@ size = Vector2(600, 600)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
 albedo_color = Color(0.439216, 0.529412, 0.372549, 1)
 
+[sub_resource type="NavigationMesh" id="NavigationMesh_test_movement"]
+vertices = PackedVector3Array(-300, 0, -300, 300, 0, -300, 300, 0, 300, -300, 0, 300)
+polygons = [PackedInt32Array(0, 1, 2), PackedInt32Array(0, 2, 3)]
+
 [sub_resource type="BoxMesh" id="BoxMesh_marker_box"]
 size = Vector3(1.8, 1.8, 1.8)
 
@@ -63,10 +67,6 @@ roughness = 0.8
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_marker_capsule"]
 radius = 0.9
 
-[sub_resource type="NavigationMesh" id="NavigationMesh_test_movement"]
-vertices = PackedVector3Array(-300, 0, -300, 300, 0, -300, 300, 0, 300, -300, 0, 300)
-polygons = [PackedInt32Array(0, 1, 2), PackedInt32Array(0, 2, 3)]
-
 [node name="TestMovementLevel" type="Node3D" unique_id=1638308877]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1304216360]
@@ -90,6 +90,7 @@ mesh = SubResource("PlaneMesh_test_movement")
 surface_material_override/0 = SubResource("StandardMaterial3D_ground")
 
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=1695030196]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0315094, 0, -0.001045227)
 navigation_mesh = SubResource("NavigationMesh_test_movement")
 
 [node name="OrientationProps" type="Node3D" parent="." unique_id=1223392466]
@@ -144,46 +145,46 @@ transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, -4, 1.68, 26)
 mesh = SubResource("SphereMesh_marker_sphere")
 surface_material_override/0 = SubResource("StandardMaterial3D_marker_blue")
 
-[node name="ApplePickup" parent="." instance=ExtResource("1_pickup")]
+[node name="ApplePickup" parent="." unique_id=623012748 instance=ExtResource("1_pickup")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0.12, 4.5)
 item_data = ExtResource("2_apple_item")
 quantity = 3
 
-[node name="KeyPickup" parent="." instance=ExtResource("1_pickup")]
+[node name="KeyPickup" parent="." unique_id=50669183 instance=ExtResource("1_pickup")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.12, 7.5)
 item_data = ExtResource("3_brass_key_item")
 
-[node name="QuestPickup" parent="." instance=ExtResource("1_pickup")]
+[node name="QuestPickup" parent="." unique_id=1144469086 instance=ExtResource("1_pickup")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 0.12, 2.2)
 item_data = ExtResource("4_birthday_note_item")
 
-[node name="ApplePickupNorth" parent="." instance=ExtResource("1_pickup")]
+[node name="ApplePickupNorth" parent="." unique_id=846301521 instance=ExtResource("1_pickup")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2, 0.12, -2.4)
 item_data = ExtResource("2_apple_item")
 quantity = 2
 
-[node name="ApplePickupEast" parent="." instance=ExtResource("1_pickup")]
+[node name="ApplePickupEast" parent="." unique_id=2061378006 instance=ExtResource("1_pickup")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.7, 0.12, -3.6)
 item_data = ExtResource("2_apple_item")
 quantity = 4
 
-[node name="KeyPickupWest" parent="." instance=ExtResource("1_pickup")]
+[node name="KeyPickupWest" parent="." unique_id=1521417683 instance=ExtResource("1_pickup")]
 transform = Transform3D(0.9659258, 0, -0.25881904, 0, 1, 0, 0.25881904, 0, 0.9659258, -9.4, 0.12, 6.1)
 item_data = ExtResource("3_brass_key_item")
 
-[node name="KeyPickupNorth" parent="." instance=ExtResource("1_pickup")]
+[node name="KeyPickupNorth" parent="." unique_id=292423650 instance=ExtResource("1_pickup")]
 transform = Transform3D(0.9238795, 0, 0.38268346, 0, 1, 0, -0.38268346, 0, 0.9238795, 1.6, 0.12, -8.8)
 item_data = ExtResource("3_brass_key_item")
 
-[node name="QuestPickupSouth" parent="." instance=ExtResource("1_pickup")]
+[node name="QuestPickupSouth" parent="." unique_id=1085956234 instance=ExtResource("1_pickup")]
 transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, 4.8, 0.12, 11.6)
 item_data = ExtResource("4_birthday_note_item")
 
-[node name="QuestPickupFarWest" parent="." instance=ExtResource("1_pickup")]
+[node name="QuestPickupFarWest" parent="." unique_id=832212003 instance=ExtResource("1_pickup")]
 transform = Transform3D(0.9848077, 0, -0.1736482, 0, 1, 0, 0.1736482, 0, 0.9848077, -13.2, 0.12, -5.4)
 item_data = ExtResource("4_birthday_note_item")
 
-[node name="GiantCharacterShowcase" parent="." unique_id=1656241094 instance=ExtResource("5_giant_showcase")]
+[node name="GiantCharacterShowcase" parent="." unique_id=1778353891 instance=ExtResource("5_giant_showcase")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -108.55545)
 
 [node name="SideSpruces" type="Node3D" parent="." unique_id=207331484]
@@ -457,6 +458,216 @@ transform = Transform3D(0.56394875, 0, -0.1512299, 0, 0.638, 0, 0.1512299, 0, 0.
 
 [node name="InnerRightSlashB" parent="SideSpruces" unique_id=170010090 instance=ExtResource("7_spruce_medium")]
 transform = Transform3D(0.6050424, 0, 0.16210598, 0, 0.686, 0, -0.16210598, 0, 0.6050424, 6.8, 0, -62)
+
+[node name="RightWallNorthA2" parent="SideSpruces" unique_id=1330274792 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.9156168, 0, -0.18506402, 0, 0.934, 0, 0.18506402, 0, 0.9156168, 66.50427, 0, -111.534485)
+
+[node name="RightWallNorthB2" parent="SideSpruces" unique_id=980475051 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.6412168, 0, 0.27979705, 0, 0.7639998, 0, -0.27979705, 0, 0.6412168, 70.79727, 0, -123.30606)
+
+[node name="RightWallNorthC2" parent="SideSpruces" unique_id=1035529069 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.80455637, 0, 0.43819702, 0, 0.916, 0, -0.43819702, 0, 0.80455637, 74.94117, 0, -136.06647)
+
+[node name="RightDoorApproachA2" parent="SideSpruces" unique_id=215179486 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.816502, 0, -0.16496098, 0, 0.8340002, 0, 0.16496098, 0, 0.816502, 61.913116, 0, -101.74054)
+
+[node name="RightDoorApproachB2" parent="SideSpruces" unique_id=464803440 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.5858454, 0, 0.25561714, 0, 0.6999999, 0, -0.25561714, 0, 0.5858454, 56.465416, 0, -113.05481)
+
+[node name="RightDoorApproachC2" parent="SideSpruces" unique_id=162687255 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.7758745, 0, 0.4225336, 0, 0.88399994, 0, -0.4225336, 0, 0.7758745, 60.16512, 0, -124.73694)
+
+[node name="RightDoorApproachD2" parent="SideSpruces" unique_id=1311951089 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.6611988, 0, -0.074463814, 0, 0.7279999, 0, 0.074463814, 0, 0.6611988, 54.71743, 0, -136.05121)
+
+[node name="RightDoorApproachE2" parent="SideSpruces" unique_id=1744192352 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.84158427, 0, -0.17007756, 0, 0.85800004, 0, 0.17007756, 0, 0.84158427, 58.712246, 0, -149.80045)
+
+[node name="RightDoorOuterA2" parent="SideSpruces" unique_id=978126135 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.60868853, 0, -0.06847724, 0, 0.66799986, 0, 0.06847724, 0, 0.60868853, 70.21465, 0, -109.060005)
+
+[node name="RightDoorOuterB2" parent="SideSpruces" unique_id=1944742037 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.7931465, 0, 0.43195492, 0, 0.9029999, 0, -0.43195492, 0, 0.7931465, 68.80283, 0, -145.254)
+
+[node name="RightMidFillA2" parent="SideSpruces" unique_id=131199413 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.5941944, 0, -0.06684574, 0, 0.6519999, 0, 0.06684574, 0, 0.5941944, 55.49186, 0, -92.681984)
+
+[node name="RightMidFillB2" parent="SideSpruces" unique_id=114202973 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.8233631, 0, -0.16635753, 0, 0.84000003, 0, 0.16635753, 0, 0.8233631, 51.426994, 0, -106.22734)
+
+[node name="RightMidFillC2" parent="SideSpruces" unique_id=736047641 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.5858454, 0, 0.25561714, 0, 0.6999999, 0, -0.25561714, 0, 0.5858454, 48.74649, 0, -119.98143)
+
+[node name="RightMidFillD2" parent="SideSpruces" unique_id=1361620785 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.84158427, 0, -0.17007756, 0, 0.85800004, 0, 0.17007756, 0, 0.84158427, 50.416805, 0, -134.3915)
+
+[node name="RightMidFillE2" parent="SideSpruces" unique_id=1441071551 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.6611988, 0, -0.074463814, 0, 0.7279999, 0, 0.074463814, 0, 0.6611988, 46.006622, 0, -146.87349)
+
+[node name="RightNorthBridgeA2" parent="SideSpruces" unique_id=375006247 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.5941944, 0, -0.06684574, 0, 0.6519999, 0, 0.06684574, 0, 0.5941944, 44.38956, 0, -127.41495)
+
+[node name="RightNorthBridgeB2" parent="SideSpruces" unique_id=1818937880 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.5741127, 0, 0.25049803, 0, 0.6859999, 0, -0.25049803, 0, 0.5741127, 41.115757, 0, -141.07957)
+
+[node name="RightGiantGapA2" parent="SideSpruces" unique_id=1203836386 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.5614403, 0, 0.24489957, 0, 0.668, 0, -0.24489957, 0, 0.5614403, 42.442276, 0, -152.4039)
+
+[node name="UpperRightSideA2" parent="SideSpruces" unique_id=1234130620 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.77688205, 0, -0.15782982, 0, 0.79199976, 0, 0.15782982, 0, 0.77688205, 61.458225, 0, -114.81889)
+
+[node name="UpperRightSideC2" parent="SideSpruces" unique_id=973406906 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.75402683, 0, 0.41065043, 0, 0.85799986, 0, -0.41065043, 0, 0.75402683, 59.063675, 0, -142.7743)
+
+[node name="InnerRightSlashA2" parent="SideSpruces" unique_id=356132610 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.58019245, 0, -0.06546252, 0, 0.6380001, 0, 0.06546252, 0, 0.58019245, 48.907784, 0, -102.813614)
+
+[node name="InnerRightSlashB2" parent="SideSpruces" unique_id=805625437 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.5741127, 0, 0.25049803, 0, 0.6859999, 0, -0.25049803, 0, 0.5741127, 44.74862, 0, -110.27695)
+
+[node name="RightWallNorthA3" parent="SideSpruces" unique_id=1477180353 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.933268, 0, -0.040170535, 0, 0.934, 0, 0.040170535, 0, 0.933268, -47.092907, 0, -122.88231)
+
+[node name="RightWallNorthB3" parent="SideSpruces" unique_id=1390958848 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.58980215, 0, 0.37626958, 0, 0.7639998, 0, -0.37626958, 0, 0.58980215, -44.68608, 0, -135.17892)
+
+[node name="RightWallNorthC3" parent="SideSpruces" unique_id=1755643478 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.7264722, 0, 0.5581808, 0, 0.9160001, 0, -0.5581808, 0, 0.7264722, -42.58058, 0, -148.42908)
+
+[node name="RightDoorApproachA3" parent="SideSpruces" unique_id=2072743881 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.8322316, 0, -0.035752967, 0, 0.8340002, 0, 0.035752967, 0, 0.8322316, -50.102318, 0, -112.49272)
+
+[node name="RightDoorApproachB3" parent="SideSpruces" unique_id=171695993 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.53887343, 0, 0.34375918, 0, 0.6999999, 0, -0.34375918, 0, 0.53887343, -57.24604, 0, -122.82023)
+
+[node name="RightDoorApproachC3" parent="SideSpruces" unique_id=413623952 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.7005805, 0, 0.53824043, 0, 0.8839998, 0, -0.53824043, 0, 0.7005805, -55.41134, 0, -134.93607)
+
+[node name="RightDoorApproachD3" parent="SideSpruces" unique_id=1560093381 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.6647267, 0, 0.02944637, 0, 0.72799987, 0, -0.02944637, 0, 0.6647267, -62.55505, 0, -145.26358)
+
+[node name="RightDoorApproachE3" parent="SideSpruces" unique_id=1680379664 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.85780466, 0, -0.03689979, 0, 0.8579999, 0, 0.03689979, 0, 0.85780466, -60.75085, 0, -159.46729)
+
+[node name="RightDoorOuterA3" parent="SideSpruces" unique_id=1594194116 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.61192495, 0, 0.027179845, 0, 0.66799986, 0, -0.027179845, 0, 0.61192495, -43.042347, 0, -121.016045)
+
+[node name="RightDoorOuterB3" parent="SideSpruces" unique_id=72684574 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.716174, 0, 0.5502374, 0, 0.9029999, 0, -0.5502374, 0, 0.716174, -50.075207, 0, -156.54825)
+
+[node name="RightMidFillA3" parent="SideSpruces" unique_id=1905658745 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.5973536, 0, 0.026533552, 0, 0.6519999, 0, -0.026533552, 0, 0.5973536, -55.034046, 0, -102.54446)
+
+[node name="RightMidFillB3" parent="SideSpruces" unique_id=426962901 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.8392265, 0, -0.036063626, 0, 0.84000003, 0, 0.036063626, 0, 0.8392265, -61.159374, 0, -115.29123)
+
+[node name="RightMidFillC3" parent="SideSpruces" unique_id=436972827 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.53887343, 0, 0.34375918, 0, 0.6999999, 0, -0.34375918, 0, 0.53887343, -65.94975, 0, -128.45984)
+
+[node name="RightMidFillD3" parent="SideSpruces" unique_id=845871368 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.85780466, 0, -0.03689979, 0, 0.8579999, 0, 0.03689979, 0, 0.85780466, -66.54462, 0, -142.9542)
+
+[node name="RightMidFillE3" parent="SideSpruces" unique_id=1480169492 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.6647267, 0, 0.02944637, 0, 0.72799987, 0, -0.02944637, 0, 0.6647267, -72.84541, 0, -154.5968)
+
+[node name="RightMidFillF3" parent="SideSpruces" unique_id=409102556 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.7005805, 0, 0.53824043, 0, 0.8839998, 0, -0.53824043, 0, 0.7005805, -72.4715, 0, -168.34848)
+
+[node name="RightNorthBridgeA3" parent="SideSpruces" unique_id=1886663851 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.5973536, 0, 0.026533552, 0, 0.6519999, 0, -0.026533552, 0, 0.5973536, -71.41148, 0, -135.12387)
+
+[node name="RightNorthBridgeB3" parent="SideSpruces" unique_id=445332025 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.5280814, 0, 0.33687484, 0, 0.6859998, 0, -0.33687484, 0, 0.5280814, -76.774, 0, -148.11172)
+
+[node name="RightGiantGapA3" parent="SideSpruces" unique_id=269805250 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.51643586, 0, 0.32937065, 0, 0.668, 0, -0.32937065, 0, 0.51643586, -77.22777, 0, -159.50443)
+
+[node name="RightGiantGapB3" parent="SideSpruces" unique_id=1524640383 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.8392265, 0, -0.036063626, 0, 0.84000003, 0, 0.036063626, 0, 0.8392265, -77.79213, 0, -171.91095)
+
+[node name="UpperRightSideA3" parent="SideSpruces" unique_id=1756282607 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.79198444, 0, -0.03488083, 0, 0.7919999, 0, 0.03488083, 0, 0.79198444, -52.588993, 0, -125.34055)
+
+[node name="UpperRightSideC3" parent="SideSpruces" unique_id=341949645 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(0.68085074, 0, 0.52309895, 0, 0.85799986, 0, -0.52309895, 0, 0.68085074, -59.30919, 0, -152.58167)
+
+[node name="InnerRightSlashA3" parent="SideSpruces" unique_id=1649602034 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.5833071, 0, 0.02571866, 0, 0.63800013, 0, -0.02571866, 0, 0.5833071, -63.116043, 0, -111.52673)
+
+[node name="InnerRightSlashB3" parent="SideSpruces" unique_id=1726245198 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(0.5280814, 0, 0.33687484, 0, 0.6859998, 0, -0.33687484, 0, 0.5280814, -68.38707, 0, -118.251045)
+
+[node name="RightWallNorthA4" parent="SideSpruces" unique_id=56372348 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(-0.87789, 0, -0.319237, 0, 0.934, 0, 0.319237, 0, -0.87789, -84.55941, 0, -89.54011)
+
+[node name="RightWallNorthB4" parent="SideSpruces" unique_id=1589238050 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(-0.40143412, 0, -0.5729712, 0, 0.7639998, 0, 0.5729712, 0, -0.40143412, -82.088455, 0, -77.25621)
+
+[node name="RightWallNorthC4" parent="SideSpruces" unique_id=682680302 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(-0.45828635, 0, -0.7932852, 0, 0.91600025, 0, 0.7932852, 0, -0.45828635, -78.974915, 0, -64.2061)
+
+[node name="RightDoorApproachA4" parent="SideSpruces" unique_id=1164451559 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(-0.7828225, 0, -0.28473955, 0, 0.8340002, 0, 0.28473955, 0, -0.7828225, -85.74524, 0, -100.29157)
+
+[node name="RightDoorApproachB4" parent="SideSpruces" unique_id=953487981 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(-0.36677837, 0, -0.5234774, 0, 0.69999987, 0, 0.5234774, 0, -0.36677837, -75.19932, 0, -93.474396)
+
+[node name="RightDoorApproachC4" parent="SideSpruces" unique_id=261086745 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(-0.44197065, 0, -0.76496917, 0, 0.8839998, 0, 0.76496917, 0, -0.44197065, -72.26862, 0, -81.57605)
+
+[node name="RightDoorApproachD4" parent="SideSpruces" unique_id=1015847074 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(-0.603114, 0, -0.28103757, 0, 0.7279999, 0, 0.28103757, 0, -0.603114, -61.72271, 0, -74.75887)
+
+[node name="RightDoorApproachE4" parent="SideSpruces" unique_id=1683412128 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(-0.8068957, 0, -0.29344454, 0, 0.85800004, 0, 0.29344454, 0, -0.8068957, -57.96659, 0, -60.942513)
+
+[node name="RightDoorOuterA4" parent="SideSpruces" unique_id=409300624 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(-0.55517876, 0, -0.25878075, 0, 0.66799986, 0, 0.25878075, 0, -0.55517876, -89.01566, 0, -89.71828)
+
+[node name="RightDoorOuterB4" parent="SideSpruces" unique_id=1968877566 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(-0.45180154, 0, -0.7820113, 0, 0.903, 0, 0.7820113, 0, -0.45180154, -68.947914, 0, -59.563927)
+
+[node name="RightMidFillA4" parent="SideSpruces" unique_id=1169064491 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(-0.5419583, 0, -0.25261942, 0, 0.6519999, 0, 0.25261942, 0, -0.5419583, -84.9859, 0, -111.36916)
+
+[node name="RightMidFillB4" parent="SideSpruces" unique_id=1509619017 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(-0.78940594, 0, -0.28712338, 0, 0.84, 0, 0.28712338, 0, -0.78940594, -74.45741, 0, -101.92719)
+
+[node name="RightMidFillC4" parent="SideSpruces" unique_id=2146543580 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(-0.36677837, 0, -0.5234774, 0, 0.69999987, 0, 0.5234774, 0, -0.36677837, -65.00165, 0, -91.58559)
+
+[node name="RightMidFillD4" parent="SideSpruces" unique_id=786115501 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(-0.8068957, 0, -0.29344454, 0, 0.85800004, 0, 0.29344454, 0, -0.8068957, -58.917267, 0, -78.41667)
+
+[node name="RightMidFillE4" parent="SideSpruces" unique_id=1797782868 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(-0.603114, 0, -0.28103757, 0, 0.7279999, 0, 0.28103757, 0, -0.603114, -48.64823, 0, -70.062195)
+
+[node name="RightMidFillF4" parent="SideSpruces" unique_id=1224111034 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(-0.44197065, 0, -0.76496917, 0, 0.8839998, 0, 0.76496917, 0, -0.44197065, -43.742813, 0, -57.209747)
+
+[node name="RightNorthBridgeA4" parent="SideSpruces" unique_id=1382021249 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(-0.5419583, 0, -0.25261942, 0, 0.6519999, 0, 0.25261942, 0, -0.5419583, -57.40915, 0, -87.512054)
+
+[node name="RightNorthBridgeB4" parent="SideSpruces" unique_id=394929302 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(-0.35943288, 0, -0.5129938, 0, 0.6859999, 0, 0.5129938, 0, -0.35943288, -47.49362, 0, -77.555984)
+
+[node name="RightGiantGapA4" parent="SideSpruces" unique_id=1655447007 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(-0.35153517, 0, -0.5016115, 0, 0.668, 0, 0.5016115, 0, -0.35153517, -42.724, 0, -67.19982)
+
+[node name="RightGiantGapB4" parent="SideSpruces" unique_id=360848688 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(-0.78940594, 0, -0.28712338, 0, 0.84, 0, 0.28712338, 0, -0.78940594, -37.465027, 0, -55.94888)
+
+[node name="UpperRightSideA4" parent="SideSpruces" unique_id=911485981 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(-0.74529195, 0, -0.2701774, 0, 0.7919998, 0, 0.2701774, 0, -0.74529195, -78.54111, 0, -89.36679)
+
+[node name="UpperRightSideC4" parent="SideSpruces" unique_id=1619340933 instance=ExtResource("6_spruce_large")]
+transform = Transform3D(-0.4295177, 0, -0.7434414, 0, 0.85799986, 0, 0.7434414, 0, -0.4295177, -61.928246, 0, -66.7559)
+
+[node name="InnerRightSlashA4" parent="SideSpruces" unique_id=1029893923 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(-0.5292873, 0, -0.24650271, 0, 0.6380001, 0, 0.24650271, 0, -0.5292873, -74.086464, 0, -106.15358)
+
+[node name="InnerRightSlashB4" parent="SideSpruces" unique_id=1017531 instance=ExtResource("7_spruce_medium")]
+transform = Transform3D(-0.35943288, 0, -0.5129938, 0, 0.6859999, 0, 0.5129938, 0, -0.35943288, -66.6472, 0, -101.95151)
 
 [node name="LowerLeftSideA" parent="SideSpruces" unique_id=170010091 instance=ExtResource("6_spruce_large")]
 transform = Transform3D(0.73084736, 0, -0.2660532, 0, 0.778, 0, 0.2660532, 0, 0.73084736, -23.5, 0, -24)

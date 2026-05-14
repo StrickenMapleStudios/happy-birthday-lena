@@ -22,7 +22,7 @@ dialogue_resource = ExtResource("5_dialogue")
 [node name="WallWithDoor" parent="." unique_id=667245918 instance=ExtResource("6_wall")]
 transform = Transform3D(16, 0, 0, 0, 16, 0, 0, 0, 16, 0, 0, -118)
 
-[node name="MysteryRoomCutscene" parent="." unique_id=1488788868 instance=ExtResource("7_mystery_room_cutscene")]
+[node name="MysteryRoomCutscene" parent="." unique_id=46491078 instance=ExtResource("7_mystery_room_cutscene")]
 transform = Transform3D(3.519, 0, 0, 0, 3.519, 0, 0, 0, 3.519, 0, 0, -122.974205)
 
 [node name="GiantCharacterLeft" parent="." unique_id=741154339 instance=ExtResource("1_giant_character")]
