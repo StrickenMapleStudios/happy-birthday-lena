@@ -122,6 +122,7 @@ func _ready() -> void:
 		camera_rig.connect("labyrinth_view_yaw_changed", Callable(self, "_on_labyrinth_view_yaw_changed"))
 	if RewardService != null:
 		RewardService.call_deferred("spawn_pending_rewards", self)
+	call_deferred("_resume_pending_lap_race_return")
 	_refresh_cursor_mode()
 
 
@@ -1044,3 +1045,27 @@ func _grant_labyrinth_exit_reward() -> void:
 		1,
 		DEFAULT_GAME_SCENE_PATH
 	)
+
+
+func _resume_pending_lap_race_return() -> void:
+	if LapRaceFlow == null or not LapRaceFlow.has_pending_return(DEFAULT_GAME_SCENE_PATH):
+		return
+
+	var context: Dictionary = LapRaceFlow.consume_return_context(DEFAULT_GAME_SCENE_PATH)
+	if context.is_empty():
+		return
+
+	var player_transform: Transform3D = context.get("player_transform", Transform3D.IDENTITY)
+	player.global_transform = player_transform
+
+	var npc_path: NodePath = context.get("npc_path", NodePath())
+	var npc := get_node_or_null(npc_path)
+	if npc == null or not npc.has_method("prepare_post_race_dialogue"):
+		return
+
+	var result: StringName = context.get("result", &"lose")
+	var interaction_target := npc.call("prepare_post_race_dialogue", result) as InteractionTarget
+	if interaction_target == null:
+		return
+
+	request_dialogue_with_target(interaction_target, true)

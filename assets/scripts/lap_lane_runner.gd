@@ -1,5 +1,7 @@
 extends Node
 
+signal lap_completed(total_laps: int)
+
 @export var lap_track_path: NodePath = ^"../LapTrack"
 @export var runner_path: NodePath = ^"../NpcRunner"
 @export_enum("Inner", "Outer") var lane_side := 1
@@ -12,6 +14,7 @@ var _runner: CharacterBody3D
 var _lane_path: Path3D
 var _curve: Curve3D
 var _progress := 0.0
+var _completed_laps := 0
 
 
 func _ready() -> void:
@@ -37,6 +40,7 @@ func restart() -> void:
 
 	var lane_local_position: Vector3 = _lane_path.to_local(_runner.global_position)
 	_progress = _curve.get_closest_offset(lane_local_position)
+	_completed_laps = 0
 	_snap_runner_to_curve()
 
 
@@ -51,7 +55,11 @@ func _physics_process(_delta: float) -> void:
 	if root_motion_step <= 0.0001:
 		return
 
+	var previous_progress := _progress
 	_progress = wrapf(_progress + (root_motion_step * root_motion_speed_multiplier), 0.0, baked_length)
+	if _progress < previous_progress:
+		_completed_laps += 1
+		lap_completed.emit(_completed_laps)
 
 	var current_world: Vector3 = _get_world_point(_progress)
 	var look_offset: float = wrapf(_progress + look_ahead_distance, 0.0, baked_length)
@@ -62,6 +70,10 @@ func _physics_process(_delta: float) -> void:
 	_runner.global_position = current_world + Vector3(0.0, runner_height_offset, 0.0)
 	if _runner.has_method("set_follow_navigation"):
 		_runner.call("set_follow_navigation", direction, 9.0, true)
+
+
+func get_completed_laps() -> int:
+	return _completed_laps
 
 
 func _snap_runner_to_curve() -> void:

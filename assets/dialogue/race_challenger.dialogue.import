@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://bjwu530vx7pvg"
+path="res://.godot/imported/race_challenger.dialogue-7fb822aa9250d671322ed0e0395cba65.tres"
+
+[deps]
+
+source_file="res://assets/dialogue/race_challenger.dialogue"
+dest_files=["res://.godot/imported/race_challenger.dialogue-7fb822aa9250d671322ed0e0395cba65.tres"]
+
+[params]
+
+defaults=true

@@ -6,6 +6,8 @@ const NORMAL_GAME_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
 const LAP_REWARD_SOURCE_ID := &"lap_finish_reward"
 const LAP_REWARD_MARKER_ID := &"lap_finish_reward_marker"
 const BRASS_KEY_ITEM := preload("res://assets/data/items/brass_key_item.tres")
+const RACE_RESULT_WIN := &"win"
+const RACE_RESULT_LOSE := &"lose"
 
 @export var lap_track_path: NodePath = ^"../LapTrack"
 @export var player_path: NodePath = ^"../PlayerCharacter"
@@ -31,11 +33,13 @@ var _race_finished := false
 var _countdown_active := false
 var _race_active := false
 var _completed_laps := 0
+var _npc_completed_laps := 0
 var _checkpoint_visited: Array[bool] = []
 var _connected_start_trigger: Area3D
 var _connected_checkpoint_triggers: Array[Area3D] = []
 var _finish_sequence_running := false
 var _time_scale_tween: Tween
+var _player_won := true
 
 
 func _ready() -> void:
@@ -52,6 +56,7 @@ func _ready() -> void:
 
 	_place_actors_on_lanes()
 	_connect_track_triggers()
+	_connect_npc_runner_signals()
 	_reset_checkpoint_progress()
 	_refresh_lap_counter()
 	call_deferred("_start_race")
@@ -67,9 +72,11 @@ func _start_race() -> void:
 		return
 
 	_completed_laps = 0
+	_npc_completed_laps = 0
 	_race_finished = false
 	_countdown_active = true
 	_race_active = false
+	_player_won = true
 	_reset_checkpoint_progress()
 	_refresh_lap_counter()
 	_set_race_motion_enabled(false)
@@ -122,6 +129,15 @@ func _connect_track_triggers() -> void:
 		_connected_checkpoint_triggers.append(checkpoint)
 
 
+func _connect_npc_runner_signals() -> void:
+	if _npc_lane_runner == null or not _npc_lane_runner.has_signal("lap_completed"):
+		return
+
+	var lap_completed_callable := Callable(self, "_on_npc_lap_completed")
+	if not _npc_lane_runner.is_connected("lap_completed", lap_completed_callable):
+		_npc_lane_runner.connect("lap_completed", lap_completed_callable)
+
+
 func _set_race_motion_enabled(is_enabled: bool) -> void:
 	if _player != null and _player.has_method("set_controls_enabled"):
 		_player.call("set_controls_enabled", is_enabled)
@@ -162,28 +178,31 @@ func _on_start_trigger_body_entered(body: Node3D) -> void:
 	_refresh_lap_counter()
 	_reset_checkpoint_progress()
 	if _completed_laps >= total_laps:
-		_finish_race()
+		_finish_race(true)
 		return
 
 	print("Lap %d/%d complete." % [_completed_laps, total_laps])
 
 
-func _finish_race() -> void:
+func _finish_race(player_won: bool = true) -> void:
 	_race_active = false
 	_race_finished = true
-	print("Lap race finished in %d lap(s)." % total_laps)
+	_player_won = player_won
+	print("Lap race finished in %d lap(s). Result: %s" % [total_laps, "win" if player_won else "lose"])
 	if _finish_sequence_running:
 		return
 	call_deferred("_run_finish_sequence")
 
 
-func complete_lap_state() -> void:
+func complete_lap_state(player_won: bool = true) -> void:
 	if _finish_sequence_running:
 		return
 
 	_race_active = false
 	_race_finished = true
-	_queue_finish_reward()
+	_player_won = player_won
+	if player_won:
+		_queue_finish_reward()
 	call_deferred("_run_finish_sequence")
 
 
@@ -223,12 +242,24 @@ func _all_checkpoints_visited() -> bool:
 	return true
 
 
+func _on_npc_lap_completed(total_completed_laps: int) -> void:
+	if not _race_active or _finish_sequence_running:
+		return
+
+	_npc_completed_laps = total_completed_laps
+	if _npc_completed_laps >= total_laps:
+		_finish_race(false)
+
+
 func _run_finish_sequence() -> void:
 	if _finish_sequence_running:
 		return
 
 	_finish_sequence_running = true
-	_queue_finish_reward()
+	if _player_won:
+		_queue_finish_reward()
+	if LapRaceFlow != null:
+		LapRaceFlow.finish_race(RACE_RESULT_WIN if _player_won else RACE_RESULT_LOSE)
 	_kill_time_scale_tween()
 	_time_scale_tween = create_tween()
 	_time_scale_tween.set_ignore_time_scale(true)
