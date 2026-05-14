@@ -118,10 +118,12 @@ func _start_race() -> void:
 	_reset_checkpoint_progress()
 	_set_race_motion_enabled(false)
 	if _countdown_ui != null:
+		if not _countdown_ui.go_released.is_connected(_on_countdown_go_released):
+			_countdown_ui.go_released.connect(_on_countdown_go_released)
 		await _countdown_ui.play_countdown()
+	else:
+		_on_countdown_go_released()
 	_countdown_active = false
-	_race_active = true
-	_set_race_motion_enabled(true)
 	print("Lap race started. Lap 1/%d" % total_laps)
 
 
@@ -172,6 +174,14 @@ func _finish_race() -> void:
 	_race_finished = true
 	_set_race_motion_enabled(false)
 	print("Lap race finished in %d lap(s)." % total_laps)
+
+
+func _on_countdown_go_released() -> void:
+	if _race_active:
+		return
+
+	_race_active = true
+	_set_race_motion_enabled(true)
 
 
 func _reset_checkpoint_progress() -> void:

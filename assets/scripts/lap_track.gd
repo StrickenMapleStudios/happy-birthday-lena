@@ -248,16 +248,16 @@ func _configure_wall_mesh(lap_model: Node3D, wall_name: String) -> void:
 		return
 
 	wall_mesh.visible = false
-	if _has_convex_collision_child(wall_mesh):
+	if _has_wall_collision_child(wall_mesh):
 		return
 
-	wall_mesh.create_convex_collision()
+	wall_mesh.create_trimesh_collision()
 	var body := _find_static_body_child(wall_mesh)
 	if body != null:
 		body.name = "%sCollider" % wall_name
 
 
-func _has_convex_collision_child(node: Node) -> bool:
+func _has_wall_collision_child(node: Node) -> bool:
 	for child in node.get_children():
 		var body := child as StaticBody3D
 		if body == null:
@@ -265,7 +265,10 @@ func _has_convex_collision_child(node: Node) -> bool:
 		if body.get_child_count() == 0:
 			continue
 		var shape_node := body.get_child(0) as CollisionShape3D
-		if shape_node != null and shape_node.shape is ConvexPolygonShape3D:
+		if (
+			shape_node != null
+			and (shape_node.shape is ConcavePolygonShape3D or shape_node.shape is ConvexPolygonShape3D)
+		):
 			return true
 	return false
 
