@@ -69,6 +69,8 @@ var _inventory_data: InventoryData = InventoryData.new()
 var _hidden_follower_actors: Array[Node3D] = []
 var _inventory_time_scale_tween: Tween
 var _labyrinth_active := false
+var _active_labyrinth_area: LabyrinthArea
+var _ignored_labyrinth_entry_area: WeakRef
 
 
 func _ready() -> void:
@@ -479,6 +481,7 @@ func _exit_labyrinth_from_pause() -> void:
 	if not _pause_active:
 		return
 
+	var labyrinth_area := _active_labyrinth_area
 	get_tree().paused = false
 	_pause_active = false
 	if _active_pause_menu != null:
@@ -486,7 +489,17 @@ func _exit_labyrinth_from_pause() -> void:
 	_active_pause_menu = null
 	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY, AUDIO_PRESET_FADE_DURATION)
 	_sync_input_context()
+	_interaction_locked = true
+	_set_input_context(InputContext.TRANSITION)
+	await SceneTransition.fade_out()
 	_exit_labyrinth_mode()
+	if labyrinth_area != null and is_instance_valid(labyrinth_area):
+		player.global_position = labyrinth_area.get_return_position(player)
+		_ignored_labyrinth_entry_area = weakref(labyrinth_area)
+	await get_tree().process_frame
+	await SceneTransition.fade_in()
+	_interaction_locked = false
+	_sync_input_context()
 
 
 func _return_to_main_menu() -> void:
@@ -947,23 +960,28 @@ func _connect_labyrinth_area_signals() -> void:
 			area.labyrinth_exit_requested.connect(Callable(self, "_on_labyrinth_exit_requested"))
 
 
-func _on_labyrinth_enter_requested(_area: LabyrinthArea) -> void:
+func _on_labyrinth_enter_requested(area: LabyrinthArea) -> void:
+	if _should_ignore_labyrinth_entry(area):
+		_ignored_labyrinth_entry_area = null
+		return
+
 	if _labyrinth_active:
 		_exit_labyrinth_mode()
 		return
 
-	_enter_labyrinth_mode()
+	_enter_labyrinth_mode(area)
 
 
 func _on_labyrinth_exit_requested(_area: LabyrinthArea) -> void:
 	_exit_labyrinth_mode()
 
 
-func _enter_labyrinth_mode() -> void:
+func _enter_labyrinth_mode(area: LabyrinthArea) -> void:
 	if _labyrinth_active or _dialogue_active or _cutscene_active or _interaction_locked:
 		return
 
 	_labyrinth_active = true
+	_active_labyrinth_area = area
 	if camera_rig != null and camera_rig.has_method("enter_labyrinth_view"):
 		camera_rig.call("enter_labyrinth_view")
 	if player != null and player.has_method("enter_labyrinth_state") and camera_rig != null and camera_rig.has_method("get_labyrinth_yaw"):
@@ -976,6 +994,7 @@ func _exit_labyrinth_mode() -> void:
 		return
 
 	_labyrinth_active = false
+	_active_labyrinth_area = null
 	if camera_rig != null and camera_rig.has_method("exit_labyrinth_view"):
 		camera_rig.call("exit_labyrinth_view")
 	if player != null and player.has_method("exit_labyrinth_state"):
@@ -988,3 +1007,15 @@ func _on_labyrinth_view_yaw_changed(yaw: float) -> void:
 		return
 	if player != null and player.has_method("set_labyrinth_view_yaw"):
 		player.call("set_labyrinth_view_yaw", yaw)
+
+
+func _should_ignore_labyrinth_entry(area: LabyrinthArea) -> bool:
+	if _ignored_labyrinth_entry_area == null:
+		return false
+
+	var ignored_area := _ignored_labyrinth_entry_area.get_ref() as LabyrinthArea
+	if ignored_area == null:
+		_ignored_labyrinth_entry_area = null
+		return false
+
+	return ignored_area == area

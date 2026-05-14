@@ -9,6 +9,7 @@ const PLAYER_GROUP := &"player_character"
 
 @onready var entry_trigger: Area3D = $EntryTrigger
 @onready var exit_trigger: Area3D = $ExitTrigger
+@onready var return_point: Node3D = $ReturnPoint
 
 
 func _ready() -> void:
@@ -33,6 +34,13 @@ func _connect_trigger(trigger: Area3D, callback: Callable) -> void:
 
 	if not trigger.body_entered.is_connected(callback):
 		trigger.body_entered.connect(callback)
+
+
+func get_return_position(body: Node3D = null) -> Vector3:
+	var target_position := return_point.global_position if return_point != null else entry_trigger.global_position
+	if body != null:
+		target_position.y = body.global_position.y
+	return target_position
 
 
 func _is_player_body(body: Node) -> bool:

@@ -18,6 +18,9 @@ collision_layer = 0
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EntryTrigger" unique_id=496247715]
 shape = SubResource("BoxShape3D_trigger")
 
+[node name="ReturnPoint" type="Marker3D" parent="." unique_id=546223101]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.6421947)
+
 [node name="ExitTrigger" type="Area3D" parent="." unique_id=467104083]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -68.20542, 0, -75.174)
 collision_layer = 0
