@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="HappyBirthdayLena"
-run/main_scene="uid://cf5y77c0aowei"
+run/main_scene="res://assets/scenes/game/lap_track_showcase.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 

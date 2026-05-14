@@ -1,0 +1,80 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/scenes/common/lap_track.tscn" id="1_lap_track"]
+[ext_resource type="PackedScene" uid="uid://dmb72unyvr0t3" path="res://assets/scenes/characters/player_character.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://assets/scenes/characters/npc_lap_runner.tscn" id="3_npc_runner"]
+[ext_resource type="Script" path="res://assets/scripts/test_movement_camera.gd" id="4_camera"]
+[ext_resource type="Script" path="res://assets/scripts/lap_lane_runner.gd" id="5_lane_runner"]
+[ext_resource type="Script" path="res://assets/scripts/lap_track_showcase.gd" id="6_showcase"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_showcase"]
+sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
+sky_horizon_color = Color(0.729412, 0.882353, 0.984314, 1)
+ground_bottom_color = Color(0.286275, 0.317647, 0.270588, 1)
+ground_horizon_color = Color(0.54902, 0.596078, 0.486275, 1)
+
+[sub_resource type="Sky" id="Sky_showcase"]
+sky_material = SubResource("ProceduralSkyMaterial_showcase")
+
+[sub_resource type="Environment" id="Environment_showcase"]
+background_mode = 2
+sky = SubResource("Sky_showcase")
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.2
+reflected_light_source = 1
+tonemap_mode = 2
+ssao_enabled = true
+ssao_radius = 0.45
+ssao_intensity = 1.6
+ssao_power = 1.8
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_showcase"]
+dof_blur_far_enabled = true
+dof_blur_far_distance = 85.0
+dof_blur_far_transition = 40.0
+
+[node name="LapTrackShowcase" type="Node3D"]
+script = ExtResource("6_showcase")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_showcase")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.6530099, -0.6150685, 0.44191104, -1.1948032e-08, 0.5837285, 0.81194884, -0.75732034, 0.5301067, -0.38136047, 0, 5.18316, 0)
+light_color = Color(1, 0.952941, 0.858824, 1)
+light_energy = 0.85
+light_cull_mask = 1
+shadow_enabled = true
+shadow_bias = 0.02
+shadow_normal_bias = 0.12
+directional_shadow_blend_splits = true
+directional_shadow_fade_start = 0.75
+directional_shadow_max_distance = 1301.8
+
+[node name="LapTrack" parent="." instance=ExtResource("1_lap_track")]
+scale = Vector3(1.5, 1.5, 1.5)
+navigation_inner_margin = 0.05
+navigation_outer_margin = 0.05
+boundary_thickness = 1.1
+
+[node name="PlayerCharacter" parent="." instance=ExtResource("2_player")]
+
+[node name="NpcRunner" parent="." instance=ExtResource("3_npc_runner")]
+
+[node name="NpcLaneRunner" type="Node" parent="."]
+script = ExtResource("5_lane_runner")
+lap_track_path = NodePath("../LapTrack")
+runner_path = NodePath("../NpcRunner")
+root_motion_speed_multiplier = 1.0
+
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("4_camera")
+target_path = NodePath("../PlayerCharacter")
+
+[node name="GameCamera" type="Camera3D" parent="CameraRig"]
+transform = Transform3D(1, -4.712819e-08, 1.6832325e-07, 4.144082e-09, 0.9690889, 0.24671175, -1.7474727e-07, -0.24671175, 0.9690889, -8.6249166e-08, 4.0897617, 8.217516)
+attributes = SubResource("CameraAttributesPractical_showcase")
+current = true
+fov = 60.0
+far = 2000.0

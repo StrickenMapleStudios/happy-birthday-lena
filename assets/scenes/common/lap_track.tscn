@@ -1,13 +1,33 @@
-[gd_scene format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="PackedScene" uid="uid://bdeisougmh5rr" path="res://assets/art/models/game/lap.glb" id="1_lap_model"]
+[ext_resource type="Script" path="res://assets/scripts/lap_track.gd" id="2_script"]
 
 [node name="LapTrack" type="Node3D"]
+script = ExtResource("2_script")
+lap_model_path = NodePath("TrackPivot/LapModel")
+curve_marker_inner_path = NodePath("TrackPivot/CurveMarkerInner")
+curve_marker_outer_path = NodePath("TrackPivot/CurveMarkerOuter")
+inner_lane_path = NodePath("TrackPivot/InnerLanePath")
+outer_lane_path = NodePath("TrackPivot/OuterLanePath")
+navigation_region_path = NodePath("TrackPivot/NavigationRegion3D")
+boundary_root_path = NodePath("TrackPivot/BoundaryColliders")
 
-[node name="LapModel" parent="." instance=ExtResource("1_lap_model")]
+[node name="TrackPivot" type="Node3D" parent="."]
+rotation = Vector3(0, 3.141593, 0)
 
-[node name="CurveMarkerInner" type="Marker3D" parent="."]
+[node name="LapModel" parent="TrackPivot" instance=ExtResource("1_lap_model")]
+
+[node name="CurveMarkerInner" type="Marker3D" parent="TrackPivot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.196419, 0.01, -0.73125)
 
-[node name="CurveMarkerOuter" type="Marker3D" parent="."]
+[node name="CurveMarkerOuter" type="Marker3D" parent="TrackPivot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.79612, 0.01, -0.792187)
+
+[node name="InnerLanePath" type="Path3D" parent="TrackPivot"]
+
+[node name="OuterLanePath" type="Path3D" parent="TrackPivot"]
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="TrackPivot"]
+
+[node name="BoundaryColliders" type="Node3D" parent="TrackPivot"]

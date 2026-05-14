@@ -34,6 +34,7 @@ var _current_state := StringName()
 var _root_motion_track_path := NodePath()
 var _saved_animation_tree: AnimationTree
 var _saved_companion_dialogue_transform := Transform3D.IDENTITY
+var _external_motion_enabled := false
 
 
 func _ready() -> void:
@@ -57,6 +58,9 @@ func _process(delta: float) -> void:
 		return
 
 	_rotate_towards(_follow_direction, delta)
+	if _external_motion_enabled:
+		return
+
 	_apply_root_motion()
 
 
@@ -135,6 +139,19 @@ func set_follow_navigation(direction: Vector3, turn_speed: float = WALKING_TURN_
 	_follow_movement_active = _follow_direction != Vector3.ZERO
 	_follow_running_active = _follow_movement_active and is_running
 	_update_look_tracking_state()
+
+
+func set_external_motion_enabled(value: bool) -> void:
+	_external_motion_enabled = value
+
+
+func consume_root_motion_distance() -> float:
+	if animation_tree == null or animation_tree.root_motion_track.is_empty():
+		return 0.0
+
+	var root_motion: Vector3 = animation_tree.get_root_motion_position()
+	root_motion.y = 0.0
+	return root_motion.length()
 
 
 func pause_as_follower_during_dialogue() -> void:
