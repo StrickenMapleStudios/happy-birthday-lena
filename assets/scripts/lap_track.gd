@@ -1,3 +1,4 @@
+@tool
 extends Node3D
 
 class_name LapTrack
@@ -8,6 +9,11 @@ enum LaneSide {
 }
 
 const FULL_CIRCLE := TAU
+const MARKER_HEIGHT := 0.01
+const MARKER_RADIUS_PADDING := 0.02
+const MARKER_ANGLE_WINDOW := 0.2
+
+@export var lap_model_path: NodePath = ^"TrackPivot/LapModel"
 
 @export var curve_marker_inner_path: NodePath = ^"CurveMarkerInner"
 @export var curve_marker_outer_path: NodePath = ^"CurveMarkerOuter"
@@ -27,10 +33,14 @@ const FULL_CIRCLE := TAU
 
 
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		call_deferred("_refresh_editor_geometry")
 	_rebuild_generated_content()
 
 
 func rebuild() -> void:
+	if Engine.is_editor_hint():
+		_refresh_marker_positions_from_geometry()
 	_rebuild_generated_content()
 
 
@@ -75,8 +85,8 @@ func get_lane_forward_direction(side: LaneSide, look_ahead_distance: float = 1.5
 func _rebuild_generated_content() -> void:
 	_build_lane_curve(LaneSide.INNER)
 	_build_lane_curve(LaneSide.OUTER)
-	_build_navigation_mesh()
-	_build_boundary_colliders()
+	_clear_navigation_mesh()
+	_clear_boundary_colliders()
 
 
 func _build_lane_curve(side: LaneSide) -> void:
@@ -101,87 +111,20 @@ func _build_lane_curve(side: LaneSide) -> void:
 	lane_path.curve = curve
 
 
-func _build_navigation_mesh() -> void:
+func _clear_navigation_mesh() -> void:
 	var navigation_region: NavigationRegion3D = get_node_or_null(navigation_region_path) as NavigationRegion3D
 	if navigation_region == null:
 		return
-
-	var inner_radius: float = get_lane_radius(LaneSide.INNER) - navigation_inner_margin
-	var outer_radius: float = get_lane_radius(LaneSide.OUTER) + navigation_outer_margin
-	if inner_radius <= 0.0 or outer_radius <= inner_radius:
-		return
-
-	var vertices: PackedVector3Array = PackedVector3Array()
-	var polygons: Array[PackedInt32Array] = []
-	var segment_count: int = max(navigation_segment_count, 3)
-
-	for segment_index in range(segment_count):
-		var angle: float = (FULL_CIRCLE * float(segment_index)) / float(segment_count)
-		vertices.append(_point_on_circle(inner_radius, angle, 0.0))
-		vertices.append(_point_on_circle(outer_radius, angle, 0.0))
-
-	for segment_index in range(segment_count):
-		var current_inner: int = segment_index * 2
-		var current_outer: int = current_inner + 1
-		var next_inner: int = int(wrapi(segment_index + 1, 0, segment_count)) * 2
-		var next_outer: int = next_inner + 1
-		polygons.append(PackedInt32Array([current_inner, current_outer, next_outer]))
-		polygons.append(PackedInt32Array([current_inner, next_outer, next_inner]))
-
-	var navigation_mesh: NavigationMesh = NavigationMesh.new()
-	navigation_mesh.vertices = vertices
-	navigation_mesh.polygons = polygons
-	navigation_region.navigation_mesh = navigation_mesh
+	navigation_region.navigation_mesh = null
 
 
-func _build_boundary_colliders() -> void:
+func _clear_boundary_colliders() -> void:
 	var boundary_root: Node3D = get_node_or_null(boundary_root_path) as Node3D
 	if boundary_root == null:
 		return
 
 	for child in boundary_root.get_children():
 		child.queue_free()
-
-	var inner_boundary_radius: float = get_lane_radius(LaneSide.INNER) - navigation_inner_margin - (boundary_thickness * 0.5)
-	var outer_boundary_radius: float = get_lane_radius(LaneSide.OUTER) + navigation_outer_margin + (boundary_thickness * 0.5)
-	if inner_boundary_radius <= 0.0 or outer_boundary_radius <= inner_boundary_radius:
-		return
-
-	_add_boundary_ring(boundary_root, "InnerBoundary", inner_boundary_radius)
-	_add_boundary_ring(boundary_root, "OuterBoundary", outer_boundary_radius)
-
-
-func _add_boundary_ring(boundary_root: Node3D, ring_name: String, radius: float) -> void:
-	var ring_root: Node3D = Node3D.new()
-	ring_root.name = ring_name
-	boundary_root.add_child(ring_root)
-	if Engine.is_editor_hint():
-		ring_root.owner = get_tree().edited_scene_root
-
-	var segment_count: int = max(boundary_segment_count, 3)
-	var half_arc_length: float = radius * sin(PI / float(segment_count))
-
-	for segment_index in range(segment_count):
-		var angle: float = (FULL_CIRCLE * float(segment_index)) / float(segment_count)
-		var body: StaticBody3D = StaticBody3D.new()
-		body.name = "%sSegment%d" % [ring_name, segment_index]
-		ring_root.add_child(body)
-		if Engine.is_editor_hint():
-			body.owner = ring_root.owner
-
-		var collision_shape: CollisionShape3D = CollisionShape3D.new()
-		var box_shape: BoxShape3D = BoxShape3D.new()
-		box_shape.size = Vector3(boundary_thickness, boundary_height, half_arc_length * 2.2)
-		collision_shape.shape = box_shape
-		body.add_child(collision_shape)
-		if Engine.is_editor_hint():
-			collision_shape.owner = ring_root.owner
-
-		var center: Vector3 = _point_on_circle(radius, angle, boundary_vertical_offset)
-		var tangent: Vector3 = Vector3(cos(angle), 0.0, -sin(angle)).normalized()
-		var radial: Vector3 = Vector3(sin(angle), 0.0, cos(angle)).normalized()
-		var basis: Basis = Basis(radial, Vector3.UP, tangent)
-		body.transform = Transform3D(basis.orthonormalized(), center)
 
 
 func _point_on_circle(radius: float, angle: float, y: float) -> Vector3:
@@ -190,3 +133,94 @@ func _point_on_circle(radius: float, angle: float, y: float) -> Vector3:
 
 func _get_lane_path_node_path(side: LaneSide) -> NodePath:
 	return inner_lane_path if side == LaneSide.INNER else outer_lane_path
+
+
+func _refresh_editor_geometry() -> void:
+	_refresh_marker_positions_from_geometry()
+	_rebuild_generated_content()
+
+
+func _refresh_marker_positions_from_geometry() -> void:
+	var lap_model: Node3D = get_node_or_null(lap_model_path) as Node3D
+	var inner_marker: Marker3D = get_lane_marker(LaneSide.INNER)
+	var outer_marker: Marker3D = get_lane_marker(LaneSide.OUTER)
+	if lap_model == null or inner_marker == null or outer_marker == null:
+		return
+
+	var radii := _estimate_track_radii(lap_model)
+	if radii.is_empty():
+		return
+
+	var inner_radius: float = radii["inner"]
+	var outer_radius: float = radii["outer"]
+	if inner_radius <= 0.0 or outer_radius <= inner_radius:
+		return
+
+	_place_marker_on_radius(inner_marker, inner_radius)
+	_place_marker_on_radius(outer_marker, outer_radius)
+
+
+func _estimate_track_radii(lap_model: Node3D) -> Dictionary:
+	var vertices_by_angle: Array[Dictionary] = []
+	for child in lap_model.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance := child as MeshInstance3D
+		if mesh_instance == null or mesh_instance.mesh == null:
+			continue
+		for surface_index in range(mesh_instance.mesh.get_surface_count()):
+			var arrays: Array = mesh_instance.mesh.surface_get_arrays(surface_index)
+			if arrays.is_empty():
+				continue
+			var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+			for vertex in vertices:
+				var local_point: Vector3 = to_local(mesh_instance.to_global(vertex))
+				var radius: float = Vector2(local_point.x, local_point.z).length()
+				if radius > 0.001:
+					vertices_by_angle.append({
+						"radius": radius,
+						"angle": atan2(local_point.x, local_point.z),
+					})
+
+	if vertices_by_angle.is_empty():
+		return {}
+
+	return {
+		"inner": _estimate_radius_for_marker(get_lane_marker(LaneSide.INNER), vertices_by_angle, true),
+		"outer": _estimate_radius_for_marker(get_lane_marker(LaneSide.OUTER), vertices_by_angle, false),
+	}
+
+
+func _place_marker_on_radius(marker: Marker3D, radius: float) -> void:
+	var angle: float = atan2(marker.position.x, marker.position.z)
+	marker.position = Vector3(
+		sin(angle) * radius,
+		MARKER_HEIGHT,
+		cos(angle) * radius
+	)
+
+
+func _estimate_radius_for_marker(
+	marker: Marker3D,
+	vertices_by_angle: Array[Dictionary],
+	is_inner: bool
+) -> float:
+	if marker == null:
+		return 0.0
+
+	var marker_angle: float = atan2(marker.position.x, marker.position.z)
+	var matching_radii: Array[float] = []
+	for vertex_data_variant in vertices_by_angle:
+		var vertex_data: Dictionary = vertex_data_variant
+		var vertex_angle: float = vertex_data["angle"]
+		var angle_delta := absf(wrapf(vertex_angle - marker_angle + PI, 0.0, TAU) - PI)
+		if angle_delta <= MARKER_ANGLE_WINDOW:
+			matching_radii.append(vertex_data["radius"])
+
+	if matching_radii.is_empty():
+		for vertex_data_variant in vertices_by_angle:
+			var vertex_data: Dictionary = vertex_data_variant
+			matching_radii.append(vertex_data["radius"])
+
+	matching_radii.sort()
+	if is_inner:
+		return maxf(matching_radii[0] + MARKER_RADIUS_PADDING, 0.01)
+	return maxf(matching_radii[matching_radii.size() - 1] - MARKER_RADIUS_PADDING, 0.01)
