@@ -27,11 +27,14 @@ const STATE_RUNNING := "Running"
 const PREPARED_SPEED_SCALE_META := &"prepared_speed_scale"
 const CHARACTER_IDENTITY_PATH := ^"CharacterIdentity"
 const MAX_COLLISION_SLIDES := 4
+const CONTROL_MODE_DEFAULT := 0
+const CONTROL_MODE_LABYRINTH := 1
 
 @onready var model: Node3D = $Model
 @onready var animation_tree: AnimationTree = $Model/AnimationPlayer/AnimationTree
 @onready var dialogue_animation_tree: AnimationTree = $Model/AnimationPlayer/DialogueAnimationTree
 @onready var animation_player: AnimationPlayer = $Model/AnimationPlayer
+@onready var first_person_camera_mount: Node3D = $FirstPersonCameraMount
 
 var _playback: AnimationNodeStateMachinePlayback
 var _current_state := StringName()
@@ -39,6 +42,8 @@ var _root_motion_track_path := NodePath()
 var _controls_enabled := true
 var _dialogue_animation_mode_active := false
 var _saved_animation_tree: AnimationTree
+var _control_mode := CONTROL_MODE_DEFAULT
+var _labyrinth_view_yaw := 0.0
 
 
 func _ready() -> void:
@@ -75,6 +80,11 @@ func _process(delta: float) -> void:
 
 	_sync_animation_flags(is_moving, speed_up)
 	_update_animation_state(is_moving, speed_up)
+
+	if _control_mode == CONTROL_MODE_LABYRINTH:
+		_apply_labyrinth_rotation()
+		_apply_labyrinth_movement(input, speed_up, delta)
+		return
 
 	if is_moving:
 		var direction := Vector3(-input.x, 0.0, -input.y).normalized()
@@ -210,6 +220,47 @@ func _apply_root_motion() -> void:
 		remaining_motion = collision.get_remainder().slide(collision.get_normal())
 
 
+func _apply_labyrinth_movement(input: Vector2, _speed_up: bool, _delta: float) -> void:
+	if input.is_zero_approx():
+		return
+
+	var local_direction := Vector3(-input.x, 0.0, -input.y)
+	var world_direction := Basis.from_euler(Vector3(0.0, _labyrinth_view_yaw, 0.0)) * local_direction
+	var motion_distance := _get_current_root_motion_distance()
+	if motion_distance <= 0.000001:
+		return
+	var motion := world_direction.normalized() * motion_distance
+	_move_with_collision_sliding(motion)
+
+
+func _move_with_collision_sliding(motion: Vector3) -> void:
+	var remaining_motion := motion
+	for _slide_index in range(MAX_COLLISION_SLIDES):
+		if remaining_motion.is_zero_approx():
+			break
+
+		var collision := move_and_collide(remaining_motion)
+		if collision == null:
+			break
+
+		remaining_motion = collision.get_remainder().slide(collision.get_normal())
+
+
+func _get_current_root_motion_distance() -> float:
+	if animation_tree == null or animation_tree.root_motion_track.is_empty():
+		return 0.0
+
+	var root_motion: Vector3 = animation_tree.get_root_motion_position()
+	root_motion.y = 0.0
+	return root_motion.length()
+
+
+func _apply_labyrinth_rotation() -> void:
+	var current_transform := global_transform
+	current_transform.basis = Basis.from_euler(Vector3(0.0, _labyrinth_view_yaw, 0.0))
+	global_transform = current_transform
+
+
 func handle_event(event_name: StringName) -> void:
 	match event_name:
 		EVENT_FOOTSTEP:
@@ -261,6 +312,24 @@ func set_character_visible(value: bool) -> void:
 	model.visible = value
 
 
+func enter_labyrinth_state(initial_yaw: float) -> void:
+	_control_mode = CONTROL_MODE_LABYRINTH
+	_labyrinth_view_yaw = initial_yaw
+	model.visible = false
+	_apply_labyrinth_rotation()
+
+
+func exit_labyrinth_state() -> void:
+	_control_mode = CONTROL_MODE_DEFAULT
+	model.visible = true
+
+
+func set_labyrinth_view_yaw(value: float) -> void:
+	_labyrinth_view_yaw = value
+	if _control_mode == CONTROL_MODE_LABYRINTH:
+		_apply_labyrinth_rotation()
+
+
 func enter_dialogue_animation_mode(_is_talking: bool) -> void:
 	if dialogue_animation_tree == null:
 		return
@@ -289,6 +358,10 @@ func exit_dialogue_animation_mode() -> void:
 
 func get_dialogue_camera_mount() -> Node3D:
 	return $DialogueSpeakerPivot
+
+
+func get_first_person_camera_mount() -> Node3D:
+	return first_person_camera_mount
 
 
 func get_dialogue_speaker_name() -> String:

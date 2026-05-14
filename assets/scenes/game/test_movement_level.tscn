@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cgbqg1ajsh5ut"]
 
 [ext_resource type="PackedScene" path="res://assets/scenes/common/pickup_item.tscn" id="1_pickup"]
-[ext_resource type="PackedScene" uid="uid://cx7uqoqpae5yh" path="res://assets/art/models/game/labyrinth.glb" id="1_rtw1c"]
+[ext_resource type="PackedScene" path="res://assets/scenes/common/labyrinth_area.tscn" id="1_rtw1c"]
 [ext_resource type="Resource" path="res://assets/data/items/apple_item.tres" id="2_apple_item"]
 [ext_resource type="Resource" uid="uid://cd3ssbslaif2y" path="res://assets/data/items/brass_key_item.tres" id="3_brass_key_item"]
 [ext_resource type="Resource" path="res://assets/data/items/birthday_note_item.tres" id="4_birthday_note_item"]
@@ -73,8 +73,8 @@ radius = 0.9
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1304216360]
 environment = SubResource("Environment_test_movement")
 
-[node name="labyrinth" parent="." unique_id=298625149 instance=ExtResource("1_rtw1c")]
-transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -125.934105, 0, -66.25955)
+[node name="LabyrinthArea" parent="." unique_id=298625149 instance=ExtResource("1_rtw1c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -125.934105, 0, -66.25955)
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=1646791676]
 transform = Transform3D(-0.6530099, -0.6150685, 0.44191104, -1.1948032e-08, 0.5837285, 0.81194884, -0.75732034, 0.5301067, -0.38136047, 0, 5.18316, 0)

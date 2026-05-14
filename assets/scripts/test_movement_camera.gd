@@ -13,8 +13,18 @@ const RUN_TOWARD_FOV_BOOST := 6.0
 const PAUSE_FOCUS_DURATION := 0.5
 const PAUSE_FOCUS_OFFSET := Vector3(0.0, 4.6, 6.9)
 const PAUSE_FOCUS_FOV_OFFSET := -3.0
+const LABYRINTH_TRANSITION_DURATION := 0.6
+const LABYRINTH_MOUSE_SENSITIVITY := 0.0035
+const LABYRINTH_PITCH_LIMIT := deg_to_rad(75.0)
+const LABYRINTH_FOV := 82.0
+signal labyrinth_view_yaw_changed(yaw: float)
 
 @export var target_path: NodePath = ^"../character"
+
+enum CameraMode {
+	FOLLOW,
+	LABYRINTH,
+}
 
 var _target: Node3D
 var _game_camera: Camera3D
@@ -26,6 +36,11 @@ var _smoothed_target_position := Vector3.ZERO
 var _smoothed_focus_point := Vector3.ZERO
 var _default_camera_local_position := Vector3.ZERO
 var _pause_focus_tween: Tween
+var _labyrinth_transition_tween: Tween
+var _camera_mode := CameraMode.FOLLOW
+var _labyrinth_blend := 0.0
+var _labyrinth_yaw := 0.0
+var _labyrinth_pitch := 0.0
 
 
 func _ready() -> void:
@@ -50,6 +65,27 @@ func _process(delta: float) -> void:
 		return
 
 	_update_camera(delta)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if _camera_mode != CameraMode.LABYRINTH:
+		return
+	if _labyrinth_blend <= 0.0:
+		return
+	if not (event is InputEventMouseMotion):
+		return
+	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+		return
+
+	var mouse_motion := event as InputEventMouseMotion
+	_labyrinth_yaw -= mouse_motion.relative.x * LABYRINTH_MOUSE_SENSITIVITY
+	_labyrinth_pitch = clampf(
+		_labyrinth_pitch - mouse_motion.relative.y * LABYRINTH_MOUSE_SENSITIVITY,
+		-LABYRINTH_PITCH_LIMIT,
+		LABYRINTH_PITCH_LIMIT
+	)
+	labyrinth_view_yaw_changed.emit(_labyrinth_yaw)
+	get_viewport().set_input_as_handled()
 
 
 func _update_camera(delta: float) -> void:
@@ -96,12 +132,39 @@ func _update_camera(delta: float) -> void:
 	_game_camera.fov = BASE_FOV + _fov_offset + (PAUSE_FOCUS_FOV_OFFSET * _pause_focus_weight)
 	_game_camera.look_at(_smoothed_focus_point, Vector3.UP)
 
+	var follow_camera_transform := _game_camera.global_transform
+	var follow_camera_fov := _game_camera.fov
+	if _labyrinth_blend <= 0.0:
+		return
+
+	var labyrinth_transform := _get_labyrinth_camera_transform()
+	_game_camera.global_transform = follow_camera_transform.interpolate_with(labyrinth_transform, _labyrinth_blend)
+	_game_camera.fov = lerpf(follow_camera_fov, LABYRINTH_FOV, _labyrinth_blend)
+
 
 func activate_game_camera() -> void:
 	if _game_camera == null:
 		return
 
 	_game_camera.current = true
+
+
+func enter_labyrinth_view() -> void:
+	if _target == null or _game_camera == null:
+		return
+
+	_camera_mode = CameraMode.LABYRINTH
+	_sync_labyrinth_angles_from_camera()
+	labyrinth_view_yaw_changed.emit(_labyrinth_yaw)
+	_start_labyrinth_transition(1.0)
+
+
+func exit_labyrinth_view() -> void:
+	if _game_camera == null:
+		return
+
+	_camera_mode = CameraMode.FOLLOW
+	_start_labyrinth_transition(0.0)
 
 
 func begin_pause_focus() -> void:
@@ -149,3 +212,48 @@ func _kill_pause_focus_tween() -> void:
 	if _pause_focus_tween != null and _pause_focus_tween.is_valid():
 		_pause_focus_tween.kill()
 	_pause_focus_tween = null
+
+
+func get_labyrinth_yaw() -> float:
+	return _labyrinth_yaw
+
+
+func _get_labyrinth_camera_transform() -> Transform3D:
+	var mount := _get_first_person_mount()
+	var position := mount.global_position if mount != null else _target.global_position + Vector3(0.0, FOCUS_HEIGHT, 0.0)
+	var yaw_offset := 0.0
+	if mount != null:
+		yaw_offset = mount.rotation.y
+	var basis := Basis.from_euler(Vector3(0.0, _labyrinth_yaw + yaw_offset, 0.0)) * Basis.from_euler(Vector3(_labyrinth_pitch, 0.0, 0.0))
+	return Transform3D(basis, position)
+
+
+func _get_first_person_mount() -> Node3D:
+	if _target == null or not _target.has_method("get_first_person_camera_mount"):
+		return null
+
+	return _target.call("get_first_person_camera_mount") as Node3D
+
+
+func _sync_labyrinth_angles_from_camera() -> void:
+	var forward := -_game_camera.global_transform.basis.z
+	var planar_forward := Vector2(forward.x, forward.z)
+	if planar_forward.length_squared() > 0.000001:
+		_labyrinth_yaw = atan2(planar_forward.x, planar_forward.y)
+	if forward.length_squared() > 0.000001:
+		_labyrinth_pitch = clampf(asin(clampf(forward.y, -1.0, 1.0)), -LABYRINTH_PITCH_LIMIT, LABYRINTH_PITCH_LIMIT)
+
+
+func _start_labyrinth_transition(target_blend: float) -> void:
+	_kill_labyrinth_transition_tween()
+	_labyrinth_transition_tween = create_tween()
+	_labyrinth_transition_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_labyrinth_transition_tween.set_trans(Tween.TRANS_CUBIC)
+	_labyrinth_transition_tween.set_ease(Tween.EASE_OUT)
+	_labyrinth_transition_tween.tween_property(self, "_labyrinth_blend", target_blend, LABYRINTH_TRANSITION_DURATION)
+
+
+func _kill_labyrinth_transition_tween() -> void:
+	if _labyrinth_transition_tween != null and _labyrinth_transition_tween.is_valid():
+		_labyrinth_transition_tween.kill()
+	_labyrinth_transition_tween = null

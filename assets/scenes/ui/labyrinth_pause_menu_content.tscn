@@ -1,0 +1,100 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="FontFile" path="res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf" id="1_title_font"]
+[ext_resource type="FontFile" path="res://assets/art/fonts/Paytone_One/PaytoneOne-Regular.ttf" id="2_body_font"]
+[ext_resource type="Texture2D" path="res://assets/art/sprites/play-button-arrowhead.png" id="3_play_icon"]
+[ext_resource type="Texture2D" path="res://assets/art/sprites/exit-icon.png" id="4_exit_icon"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_dark"]
+content_margin_left = 42.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+bg_color = Color(0.235294, 0.235294, 0.235294, 0.65)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.631373, 0.631373, 0.631373, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_gold"]
+content_margin_left = 42.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+bg_color = Color(0.623529, 0.423529, 0, 0.65)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.960784, 0, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="Theme" id="Theme_buttons"]
+Button/fonts/font = ExtResource("2_body_font")
+
+[node name="LabyrinthPauseMenuContent" type="Control"]
+custom_minimum_size = Vector2(520, 260)
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="MenuColumn" type="VBoxContainer" parent="." unique_name_in_owner=true]
+custom_minimum_size = Vector2(520, 260)
+layout_mode = 2
+theme_override_constants/separation = 28
+
+[node name="PausedLabel" type="Label" parent="MenuColumn"]
+theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
+theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_fonts/font = ExtResource("1_title_font")
+theme_override_font_sizes/font_size = 82
+text = "PAUSED"
+uppercase = true
+
+[node name="ButtonStack" type="VBoxContainer" parent="MenuColumn" unique_name_in_owner=true]
+layout_mode = 2
+theme = SubResource("Theme_buttons")
+theme_override_constants/separation = 14
+
+[node name="ResumeButton" type="Button" parent="MenuColumn/ButtonStack" unique_name_in_owner=true]
+custom_minimum_size = Vector2(500, 82)
+theme_override_constants/h_separation = 18
+theme_override_constants/icon_max_width = 30
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
+icon_alignment = 0
+icon = ExtResource("3_play_icon")
+text = "RESUME"
+alignment = 0
+
+[node name="ExitLabyrinthButton" type="Button" parent="MenuColumn/ButtonStack" unique_name_in_owner=true]
+custom_minimum_size = Vector2(500, 82)
+theme_override_constants/h_separation = 18
+theme_override_constants/icon_max_width = 28
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
+icon_alignment = 0
+icon = ExtResource("4_exit_icon")
+text = "EXIT LABYRINTH"
+alignment = 0

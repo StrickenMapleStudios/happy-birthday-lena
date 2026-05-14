@@ -88,6 +88,9 @@ anim_player = NodePath("..")
 
 [node name="DialogueSpeakerPivot" type="Marker3D" parent="." unique_id=941024673]
 
+[node name="FirstPersonCameraMount" type="Marker3D" parent="." unique_id=564820131]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.65, 0.08)
+
 [node name="CharacterIdentity" type="Node" parent="." unique_id=1305145712]
 script = ExtResource("5_identity_component")
 identity_data = ExtResource("6_identity_data")

@@ -3,6 +3,7 @@ extends Node3D
 const MAIN_MENU_SCENE_PATH := "res://assets/scenes/menu/menu_main.tscn"
 const DIALOGUE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/dialogue_pause_menu.tscn")
 const CUTSCENE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/cutscene_pause_menu.tscn")
+const LABYRINTH_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/labyrinth_pause_menu.tscn")
 
 @onready var camera_rig := $CameraRig
 @onready var dialogue_pivot_right := $DialoguePivotRight
@@ -33,6 +34,7 @@ const CURSOR_MODE_UI := Input.MOUSE_MODE_VISIBLE
 
 enum InputContext {
 	GAMEPLAY,
+	LABYRINTH,
 	DIALOGUE,
 	DIALOGUE_RESPONSE_SELECTION,
 	CUTSCENE,
@@ -58,6 +60,7 @@ var _pause_active := false
 var _pause_transition_locked := false
 var _dialogue_pause_menu: Node
 var _cutscene_pause_menu: Node
+var _labyrinth_pause_menu: Node
 var _active_pause_menu: Node
 var _inventory_open := false
 var _input_context := InputContext.GAMEPLAY
@@ -65,6 +68,7 @@ var _focus_before_pause: WeakRef
 var _inventory_data: InventoryData = InventoryData.new()
 var _hidden_follower_actors: Array[Node3D] = []
 var _inventory_time_scale_tween: Tween
+var _labyrinth_active := false
 
 
 func _ready() -> void:
@@ -95,12 +99,21 @@ func _ready() -> void:
 		cutscene_pause_menu_root.visible = false
 	add_child(_cutscene_pause_menu)
 	_connect_pause_menu_signals(_cutscene_pause_menu)
+	_labyrinth_pause_menu = LABYRINTH_PAUSE_MENU_SCENE.instantiate()
+	var labyrinth_pause_menu_root := _labyrinth_pause_menu.get_node_or_null("MenuRoot") as Control
+	if labyrinth_pause_menu_root != null:
+		labyrinth_pause_menu_root.visible = false
+	add_child(_labyrinth_pause_menu)
+	_connect_pause_menu_signals(_labyrinth_pause_menu)
 	if inventory_ui != null:
 		var inventory_menu_root := inventory_ui.get_node_or_null("MenuRoot") as Control
 		if inventory_menu_root != null:
 			inventory_menu_root.visible = false
 		inventory_ui.set_inventory(_inventory_data)
 		inventory_ui.close_requested.connect(_close_inventory)
+	_connect_labyrinth_area_signals()
+	if camera_rig != null and camera_rig.has_signal("labyrinth_view_yaw_changed"):
+		camera_rig.connect("labyrinth_view_yaw_changed", Callable(self, "_on_labyrinth_view_yaw_changed"))
 	_refresh_cursor_mode()
 
 
@@ -141,7 +154,7 @@ func _on_interaction_requested(target: InteractionTarget) -> void:
 
 
 func can_start_dialogue_with_target(target: InteractionTarget, ignore_interaction_availability: bool = false) -> bool:
-	if _interaction_locked or _dialogue_active or _cutscene_active or target == null:
+	if _interaction_locked or _dialogue_active or _cutscene_active or _labyrinth_active or target == null:
 		return false
 
 	if not ignore_interaction_availability and not target.is_interaction_available():
@@ -170,7 +183,7 @@ func request_dialogue_with_target(target: InteractionTarget, ignore_interaction_
 
 
 func can_start_cutscene_with_target(target: Node, _ignore_interaction_availability: bool = true) -> bool:
-	if _interaction_locked or _dialogue_active or _cutscene_active or target == null:
+	if _interaction_locked or _dialogue_active or _cutscene_active or _labyrinth_active or target == null:
 		return false
 
 	if not target.has_method("get_cutscene_camera"):
@@ -377,7 +390,7 @@ func _open_pause_menu() -> void:
 	_pause_active = true
 	_capture_focus_before_pause()
 	_active_pause_menu = _get_pause_menu_for_current_context()
-	if not _dialogue_active and not _cutscene_active and camera_rig != null and camera_rig.has_method("begin_pause_focus"):
+	if not _dialogue_active and not _cutscene_active and not _labyrinth_active and camera_rig != null and camera_rig.has_method("begin_pause_focus"):
 		camera_rig.call("begin_pause_focus")
 	get_tree().paused = true
 	AudioService.apply_mix_preset(AUDIO_PRESET_PAUSE, AUDIO_PRESET_FADE_DURATION)
@@ -395,7 +408,7 @@ func _resume_from_pause() -> void:
 	if _active_pause_menu != null:
 		_active_pause_menu.call("close")
 	_active_pause_menu = null
-	if not _dialogue_active and not _cutscene_active and camera_rig != null and camera_rig.has_method("end_pause_focus"):
+	if not _dialogue_active and not _cutscene_active and not _labyrinth_active and camera_rig != null and camera_rig.has_method("end_pause_focus"):
 		camera_rig.call("end_pause_focus")
 	AudioService.apply_mix_preset(
 		AUDIO_PRESET_DIALOGUE if _dialogue_active else AUDIO_PRESET_GAMEPLAY,
@@ -460,6 +473,20 @@ func _exit_cutscene_from_pause() -> void:
 	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY, AUDIO_PRESET_FADE_DURATION)
 	_sync_input_context()
 	await _exit_cutscene_mode()
+
+
+func _exit_labyrinth_from_pause() -> void:
+	if not _pause_active:
+		return
+
+	get_tree().paused = false
+	_pause_active = false
+	if _active_pause_menu != null:
+		_active_pause_menu.call("close")
+	_active_pause_menu = null
+	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY, AUDIO_PRESET_FADE_DURATION)
+	_sync_input_context()
+	_exit_labyrinth_mode()
 
 
 func _return_to_main_menu() -> void:
@@ -638,6 +665,8 @@ func _connect_pause_menu_signals(menu: Node) -> void:
 		menu.connect("exit_dialogue_requested", Callable(self, "_exit_dialogue_from_pause"))
 	if menu.has_signal("exit_cutscene_requested"):
 		menu.connect("exit_cutscene_requested", Callable(self, "_exit_cutscene_from_pause"))
+	if menu.has_signal("exit_labyrinth_requested"):
+		menu.connect("exit_labyrinth_requested", Callable(self, "_exit_labyrinth_from_pause"))
 
 
 func _get_pause_menu_for_current_context() -> Node:
@@ -645,6 +674,8 @@ func _get_pause_menu_for_current_context() -> Node:
 		return _dialogue_pause_menu
 	if _cutscene_active and _cutscene_pause_menu != null:
 		return _cutscene_pause_menu
+	if _labyrinth_active and _labyrinth_pause_menu != null:
+		return _labyrinth_pause_menu
 
 	return pause_menu
 
@@ -758,6 +789,10 @@ func _sync_input_context() -> void:
 		_set_input_context(InputContext.CUTSCENE)
 		return
 
+	if _labyrinth_active:
+		_set_input_context(InputContext.LABYRINTH)
+		return
+
 	_set_input_context(InputContext.GAMEPLAY)
 
 
@@ -772,7 +807,9 @@ func _set_input_context(value: int) -> void:
 
 
 func _refresh_gameplay_world_ui_visibility() -> void:
-	_set_gameplay_world_ui_visible(_input_context == InputContext.GAMEPLAY)
+	_set_gameplay_world_ui_visible(
+		_input_context == InputContext.GAMEPLAY or _input_context == InputContext.LABYRINTH
+	)
 
 
 func _set_gameplay_world_ui_visible(is_visible: bool) -> void:
@@ -888,7 +925,7 @@ func _restore_follower_actors_after_dialogue() -> void:
 
 
 func _try_handle_non_dialogue_interaction(target: InteractionTarget) -> bool:
-	if _interaction_locked or _dialogue_active or _cutscene_active or target == null or not target.is_interaction_available():
+	if _interaction_locked or _dialogue_active or _cutscene_active or _labyrinth_active or target == null or not target.is_interaction_available():
 		return false
 
 	var interaction_owner := target.get_parent()
@@ -896,3 +933,58 @@ func _try_handle_non_dialogue_interaction(target: InteractionTarget) -> bool:
 		return false
 
 	return bool(interaction_owner.call("handle_interaction", player, _inventory_data))
+
+
+func _connect_labyrinth_area_signals() -> void:
+	for area_node in get_tree().get_nodes_in_group(&"labyrinth_areas"):
+		var area := area_node as LabyrinthArea
+		if area == null:
+			continue
+
+		if not area.labyrinth_enter_requested.is_connected(Callable(self, "_on_labyrinth_enter_requested")):
+			area.labyrinth_enter_requested.connect(Callable(self, "_on_labyrinth_enter_requested"))
+		if not area.labyrinth_exit_requested.is_connected(Callable(self, "_on_labyrinth_exit_requested")):
+			area.labyrinth_exit_requested.connect(Callable(self, "_on_labyrinth_exit_requested"))
+
+
+func _on_labyrinth_enter_requested(_area: LabyrinthArea) -> void:
+	if _labyrinth_active:
+		_exit_labyrinth_mode()
+		return
+
+	_enter_labyrinth_mode()
+
+
+func _on_labyrinth_exit_requested(_area: LabyrinthArea) -> void:
+	_exit_labyrinth_mode()
+
+
+func _enter_labyrinth_mode() -> void:
+	if _labyrinth_active or _dialogue_active or _cutscene_active or _interaction_locked:
+		return
+
+	_labyrinth_active = true
+	if camera_rig != null and camera_rig.has_method("enter_labyrinth_view"):
+		camera_rig.call("enter_labyrinth_view")
+	if player != null and player.has_method("enter_labyrinth_state") and camera_rig != null and camera_rig.has_method("get_labyrinth_yaw"):
+		player.call("enter_labyrinth_state", float(camera_rig.call("get_labyrinth_yaw")))
+	_sync_input_context()
+
+
+func _exit_labyrinth_mode() -> void:
+	if not _labyrinth_active:
+		return
+
+	_labyrinth_active = false
+	if camera_rig != null and camera_rig.has_method("exit_labyrinth_view"):
+		camera_rig.call("exit_labyrinth_view")
+	if player != null and player.has_method("exit_labyrinth_state"):
+		player.call("exit_labyrinth_state")
+	_sync_input_context()
+
+
+func _on_labyrinth_view_yaw_changed(yaw: float) -> void:
+	if not _labyrinth_active:
+		return
+	if player != null and player.has_method("set_labyrinth_view_yaw"):
+		player.call("set_labyrinth_view_yaw", yaw)
