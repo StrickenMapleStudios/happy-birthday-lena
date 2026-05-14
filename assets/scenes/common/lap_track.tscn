@@ -6,11 +6,8 @@
 
 [node name="LapModel" parent="." instance=ExtResource("1_lap_model")]
 
-[node name="StartPointMarker" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.003832, 0.01, 0)
+[node name="CurveMarkerInner" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.196419, 0.01, -0.73125)
 
-[node name="StartLineMin" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.003832, 0.01, -0.2)
-
-[node name="StartLineMax" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.003832, 0.01, 0.2)
+[node name="CurveMarkerOuter" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.79612, 0.01, -0.792187)
