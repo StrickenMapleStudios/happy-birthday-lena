@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="PackedScene" path="res://assets/scenes/common/lap_track.tscn" id="1_lap_track"]
 [ext_resource type="PackedScene" uid="uid://dmb72unyvr0t3" path="res://assets/scenes/characters/player_character.tscn" id="2_player"]
@@ -6,6 +6,8 @@
 [ext_resource type="Script" path="res://assets/scripts/test_movement_camera.gd" id="4_camera"]
 [ext_resource type="Script" path="res://assets/scripts/lap_lane_runner.gd" id="5_lane_runner"]
 [ext_resource type="Script" path="res://assets/scripts/lap_track_showcase.gd" id="6_showcase"]
+[ext_resource type="PackedScene" path="res://assets/scenes/ui/pause_menu.tscn" id="7_pause_menu"]
+[ext_resource type="PackedScene" path="res://assets/scenes/ui/lap_countdown_ui.tscn" id="8_countdown_ui"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_showcase"]
 sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
@@ -54,9 +56,9 @@ directional_shadow_max_distance = 1301.8
 
 [node name="LapTrack" parent="." instance=ExtResource("1_lap_track")]
 scale = Vector3(1.5, 1.5, 1.5)
-navigation_inner_margin = 0.05
-navigation_outer_margin = 0.05
-boundary_thickness = 1.1
+checkpoint_length = 5.4
+checkpoint_track_padding = 0.55
+fallback_start_trigger_length = 6.2
 
 [node name="PlayerCharacter" parent="." instance=ExtResource("2_player")]
 
@@ -79,3 +81,7 @@ attributes = SubResource("CameraAttributesPractical_showcase")
 current = true
 fov = 60.0
 far = 2000.0
+
+[node name="PauseMenu" parent="." instance=ExtResource("7_pause_menu")]
+
+[node name="LapCountdownUi" parent="." instance=ExtResource("8_countdown_ui")]

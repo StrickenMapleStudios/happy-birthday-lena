@@ -12,6 +12,9 @@ const FULL_CIRCLE := TAU
 const MARKER_HEIGHT := 0.01
 const MARKER_RADIUS_PADDING := 0.02
 const MARKER_ANGLE_WINDOW := 0.2
+const INNER_WALL_NODE_NAME := "InnerWall"
+const OUTER_WALL_NODE_NAME := "OuterWall"
+const START_POINT_NODE_NAME := "StartPoint"
 
 @export var lap_model_path: NodePath = ^"TrackPivot/LapModel"
 
@@ -19,17 +22,19 @@ const MARKER_ANGLE_WINDOW := 0.2
 @export var curve_marker_outer_path: NodePath = ^"CurveMarkerOuter"
 @export var inner_lane_path: NodePath = ^"InnerLanePath"
 @export var outer_lane_path: NodePath = ^"OuterLanePath"
-@export var navigation_region_path: NodePath = ^"NavigationRegion3D"
-@export var boundary_root_path: NodePath = ^"BoundaryColliders"
+@export var generated_triggers_root_path: NodePath = ^"TrackPivot/GeneratedTriggers"
+@export var start_trigger_path: NodePath = ^"TrackPivot/GeneratedTriggers/StartTrigger"
+@export var checkpoint_root_path: NodePath = ^"TrackPivot/GeneratedTriggers/CheckpointTriggers"
 @export_range(16, 256, 1) var curve_point_count := 64
-@export_range(16, 256, 1) var navigation_segment_count := 48
-@export_range(16, 256, 1) var boundary_segment_count := 40
-@export_range(0.1, 5.0, 0.05) var navigation_inner_margin := 0.45
-@export_range(0.1, 5.0, 0.05) var navigation_outer_margin := 0.45
-@export_range(0.1, 5.0, 0.05) var boundary_thickness := 0.8
-@export_range(0.1, 8.0, 0.05) var boundary_height := 2.4
-@export_range(0.0, 5.0, 0.05) var boundary_vertical_offset := 1.2
 @export_range(0.1, 3.0, 0.05) var lane_height_offset := 0.0
+@export_range(1, 8, 1) var checkpoint_count := 3
+@export_range(0.5, 12.0, 0.05) var checkpoint_length := 5.0
+@export_range(0.5, 8.0, 0.05) var checkpoint_height := 3.0
+@export_range(0.0, 4.0, 0.05) var checkpoint_vertical_offset := 1.5
+@export_range(0.0, 3.0, 0.05) var checkpoint_track_padding := 0.35
+@export_range(0.5, 8.0, 0.05) var fallback_start_trigger_length := 5.5
+@export_range(0.5, 8.0, 0.05) var start_trigger_height := 3.0
+@export_range(0.0, 4.0, 0.05) var start_trigger_vertical_offset := 1.5
 
 
 func _ready() -> void:
@@ -52,6 +57,23 @@ func get_lane_path(side: LaneSide) -> Path3D:
 func get_lane_marker(side: LaneSide) -> Marker3D:
 	var marker_path: NodePath = curve_marker_inner_path if side == LaneSide.INNER else curve_marker_outer_path
 	return get_node_or_null(marker_path) as Marker3D
+
+
+func get_start_trigger() -> Area3D:
+	return get_node_or_null(start_trigger_path) as Area3D
+
+
+func get_checkpoint_triggers() -> Array[Area3D]:
+	var checkpoint_root: Node = get_node_or_null(checkpoint_root_path)
+	if checkpoint_root == null:
+		return []
+
+	var result: Array[Area3D] = []
+	for child in checkpoint_root.get_children():
+		var area := child as Area3D
+		if area != null:
+			result.append(area)
+	return result
 
 
 func get_lane_radius(side: LaneSide) -> float:
@@ -85,8 +107,9 @@ func get_lane_forward_direction(side: LaneSide, look_ahead_distance: float = 1.5
 func _rebuild_generated_content() -> void:
 	_build_lane_curve(LaneSide.INNER)
 	_build_lane_curve(LaneSide.OUTER)
-	_clear_navigation_mesh()
-	_clear_boundary_colliders()
+	_configure_wall_colliders()
+	_rebuild_start_trigger()
+	_rebuild_checkpoint_triggers()
 
 
 func _build_lane_curve(side: LaneSide) -> void:
@@ -109,22 +132,6 @@ func _build_lane_curve(side: LaneSide) -> void:
 		curve.add_point(_point_on_circle(radius, angle, marker.position.y + lane_height_offset))
 
 	lane_path.curve = curve
-
-
-func _clear_navigation_mesh() -> void:
-	var navigation_region: NavigationRegion3D = get_node_or_null(navigation_region_path) as NavigationRegion3D
-	if navigation_region == null:
-		return
-	navigation_region.navigation_mesh = null
-
-
-func _clear_boundary_colliders() -> void:
-	var boundary_root: Node3D = get_node_or_null(boundary_root_path) as Node3D
-	if boundary_root == null:
-		return
-
-	for child in boundary_root.get_children():
-		child.queue_free()
 
 
 func _point_on_circle(radius: float, angle: float, y: float) -> Vector3:
@@ -224,3 +231,161 @@ func _estimate_radius_for_marker(
 	if is_inner:
 		return maxf(matching_radii[0] + MARKER_RADIUS_PADDING, 0.01)
 	return maxf(matching_radii[matching_radii.size() - 1] - MARKER_RADIUS_PADDING, 0.01)
+
+
+func _configure_wall_colliders() -> void:
+	var lap_model: Node3D = get_node_or_null(lap_model_path) as Node3D
+	if lap_model == null:
+		return
+
+	_configure_wall_mesh(lap_model, INNER_WALL_NODE_NAME)
+	_configure_wall_mesh(lap_model, OUTER_WALL_NODE_NAME)
+
+
+func _configure_wall_mesh(lap_model: Node3D, wall_name: String) -> void:
+	var wall_mesh := _find_named_mesh_instance(lap_model, wall_name)
+	if wall_mesh == null:
+		return
+
+	wall_mesh.visible = false
+	if _has_convex_collision_child(wall_mesh):
+		return
+
+	wall_mesh.create_convex_collision()
+	var body := _find_static_body_child(wall_mesh)
+	if body != null:
+		body.name = "%sCollider" % wall_name
+
+
+func _has_convex_collision_child(node: Node) -> bool:
+	for child in node.get_children():
+		var body := child as StaticBody3D
+		if body == null:
+			continue
+		if body.get_child_count() == 0:
+			continue
+		var shape_node := body.get_child(0) as CollisionShape3D
+		if shape_node != null and shape_node.shape is ConvexPolygonShape3D:
+			return true
+	return false
+
+
+func _find_static_body_child(node: Node) -> StaticBody3D:
+	for child in node.get_children():
+		var body := child as StaticBody3D
+		if body != null:
+			return body
+	return null
+
+
+func _rebuild_start_trigger() -> void:
+	var start_trigger: Area3D = get_node_or_null(start_trigger_path) as Area3D
+	var trigger_root: Node3D = get_node_or_null(generated_triggers_root_path) as Node3D
+	var lap_model: Node3D = get_node_or_null(lap_model_path) as Node3D
+	if start_trigger == null or trigger_root == null or lap_model == null:
+		return
+
+	start_trigger.monitoring = true
+	start_trigger.monitorable = false
+	start_trigger.collision_layer = 0
+	start_trigger.collision_mask = 1
+
+	var collision_shape := start_trigger.get_node_or_null(^"CollisionShape3D") as CollisionShape3D
+	if collision_shape == null:
+		return
+
+	var start_mesh := _find_named_mesh_instance(lap_model, START_POINT_NODE_NAME)
+	if start_mesh != null and start_mesh.mesh != null:
+		start_trigger.transform = trigger_root.global_transform.affine_inverse() * start_mesh.global_transform
+		var start_aabb := start_mesh.get_aabb()
+		var size := start_aabb.size
+		size.x = maxf(size.x, 0.5)
+		size.y = maxf(start_trigger_height, 0.5)
+		size.z = maxf(size.z, 0.5)
+		var box_shape := collision_shape.shape as BoxShape3D
+		if box_shape == null:
+			box_shape = BoxShape3D.new()
+			collision_shape.shape = box_shape
+		box_shape.size = size
+		return
+
+	_rebuild_fallback_start_trigger(start_trigger, collision_shape)
+
+
+func _rebuild_fallback_start_trigger(start_trigger: Area3D, collision_shape: CollisionShape3D) -> void:
+	var inner_marker := get_lane_marker(LaneSide.INNER)
+	var outer_marker := get_lane_marker(LaneSide.OUTER)
+	if inner_marker == null or outer_marker == null:
+		return
+
+	var inner_radius := get_lane_radius(LaneSide.INNER)
+	var outer_radius := get_lane_radius(LaneSide.OUTER)
+	var radius_midpoint: float = lerpf(inner_radius, outer_radius, 0.5)
+	var track_width := maxf((outer_radius - inner_radius) + checkpoint_track_padding, 0.5)
+	var angle := atan2(inner_marker.position.x, inner_marker.position.z)
+	start_trigger.position = _point_on_circle(radius_midpoint, angle, start_trigger_vertical_offset)
+	start_trigger.basis = Basis.from_euler(Vector3(0.0, angle, 0.0))
+
+	var box_shape := collision_shape.shape as BoxShape3D
+	if box_shape == null:
+		box_shape = BoxShape3D.new()
+		collision_shape.shape = box_shape
+	box_shape.size = Vector3(fallback_start_trigger_length, start_trigger_height, track_width)
+
+
+func _rebuild_checkpoint_triggers() -> void:
+	var checkpoint_root: Node3D = get_node_or_null(checkpoint_root_path) as Node3D
+	if checkpoint_root == null:
+		return
+
+	for child in checkpoint_root.get_children():
+		child.queue_free()
+
+	var inner_marker := get_lane_marker(LaneSide.INNER)
+	if inner_marker == null:
+		return
+
+	var inner_radius := get_lane_radius(LaneSide.INNER)
+	var outer_radius := get_lane_radius(LaneSide.OUTER)
+	if outer_radius <= inner_radius:
+		return
+
+	var radius_midpoint: float = lerpf(inner_radius, outer_radius, 0.5)
+	var track_width := maxf((outer_radius - inner_radius) + checkpoint_track_padding, 0.5)
+	var start_angle := atan2(inner_marker.position.x, inner_marker.position.z)
+	var gate_count: int = maxi(checkpoint_count, 1)
+
+	for checkpoint_index in range(gate_count):
+		var area := Area3D.new()
+		area.name = "Checkpoint%02d" % (checkpoint_index + 1)
+		area.monitoring = true
+		area.monitorable = false
+		area.collision_layer = 0
+		area.collision_mask = 1
+		area.set_meta(&"checkpoint_index", checkpoint_index)
+
+		var angle := start_angle + (FULL_CIRCLE * float(checkpoint_index + 1) / float(gate_count + 1))
+		area.position = _point_on_circle(radius_midpoint, angle, checkpoint_vertical_offset)
+		area.basis = Basis.from_euler(Vector3(0.0, angle, 0.0))
+
+		var collision_shape := CollisionShape3D.new()
+		var box_shape := BoxShape3D.new()
+		box_shape.size = Vector3(checkpoint_length, checkpoint_height, track_width)
+		collision_shape.shape = box_shape
+		area.add_child(collision_shape)
+
+		checkpoint_root.add_child(area)
+		if Engine.is_editor_hint():
+			area.owner = get_tree().edited_scene_root
+			collision_shape.owner = get_tree().edited_scene_root
+
+
+func _find_named_mesh_instance(root: Node, mesh_name: String) -> MeshInstance3D:
+	if root == null:
+		return null
+
+	for child in root.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance := child as MeshInstance3D
+		if mesh_instance != null and mesh_instance.name == mesh_name:
+			return mesh_instance
+	return null

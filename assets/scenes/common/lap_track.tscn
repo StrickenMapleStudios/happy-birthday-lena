@@ -10,8 +10,9 @@ curve_marker_inner_path = NodePath("TrackPivot/CurveMarkerInner")
 curve_marker_outer_path = NodePath("TrackPivot/CurveMarkerOuter")
 inner_lane_path = NodePath("TrackPivot/InnerLanePath")
 outer_lane_path = NodePath("TrackPivot/OuterLanePath")
-navigation_region_path = NodePath("TrackPivot/NavigationRegion3D")
-boundary_root_path = NodePath("TrackPivot/BoundaryColliders")
+generated_triggers_root_path = NodePath("TrackPivot/GeneratedTriggers")
+start_trigger_path = NodePath("TrackPivot/GeneratedTriggers/StartTrigger")
+checkpoint_root_path = NodePath("TrackPivot/GeneratedTriggers/CheckpointTriggers")
 
 [node name="TrackPivot" type="Node3D" parent="."]
 
@@ -27,6 +28,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.79612, 0.01, -0.792187)
 
 [node name="OuterLanePath" type="Path3D" parent="TrackPivot"]
 
-[node name="NavigationRegion3D" type="NavigationRegion3D" parent="TrackPivot"]
+[node name="GeneratedTriggers" type="Node3D" parent="TrackPivot"]
 
-[node name="BoundaryColliders" type="Node3D" parent="TrackPivot"]
+[node name="StartTrigger" type="Area3D" parent="TrackPivot/GeneratedTriggers"]
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TrackPivot/GeneratedTriggers/StartTrigger"]
+
+[node name="CheckpointTriggers" type="Node3D" parent="TrackPivot/GeneratedTriggers"]
