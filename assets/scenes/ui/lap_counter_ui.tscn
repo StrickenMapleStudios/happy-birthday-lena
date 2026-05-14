@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://assets/scripts/lap_counter_ui.gd" id="1_script"]
+[ext_resource type="FontFile" path="res://assets/art/fonts/Paytone_One/PaytoneOne-Regular.ttf" id="2_font"]
+
+[node name="LapCounterUi" type="CanvasLayer"]
+script = ExtResource("1_script")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 34.0
+offset_top = 22.0
+offset_right = 214.0
+offset_bottom = 98.0
+mouse_filter = 2
+
+[node name="CounterLabel" type="Label" parent="MarginContainer"]
+custom_minimum_size = Vector2(180, 76)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.956, 0.71, 1)
+theme_override_colors/font_outline_color = Color(0.576, 0.184, 0.023, 1)
+theme_override_constants/outline_size = 7
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 46
+text = "0/1"
+horizontal_alignment = 0
+vertical_alignment = 1

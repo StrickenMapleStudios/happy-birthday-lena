@@ -15,6 +15,8 @@ const MARKER_ANGLE_WINDOW := 0.2
 const INNER_WALL_NODE_NAME := "InnerWall"
 const OUTER_WALL_NODE_NAME := "OuterWall"
 const START_POINT_NODE_NAME := "StartPoint"
+const TRIGGER_HELPER_MATERIAL_COLOR := Color(0.15, 0.55, 1.0, 0.28)
+const CHECKPOINT_HELPER_MATERIAL_COLOR := Color(1.0, 0.25, 0.15, 0.2)
 
 @export var lap_model_path: NodePath = ^"TrackPivot/LapModel"
 
@@ -25,6 +27,7 @@ const START_POINT_NODE_NAME := "StartPoint"
 @export var generated_triggers_root_path: NodePath = ^"TrackPivot/GeneratedTriggers"
 @export var start_trigger_path: NodePath = ^"TrackPivot/GeneratedTriggers/StartTrigger"
 @export var checkpoint_root_path: NodePath = ^"TrackPivot/GeneratedTriggers/CheckpointTriggers"
+@export var auto_refresh_lane_markers_from_geometry := false
 @export_range(16, 256, 1) var curve_point_count := 64
 @export_range(0.1, 3.0, 0.05) var lane_height_offset := 0.0
 @export_range(1, 8, 1) var checkpoint_count := 3
@@ -35,16 +38,18 @@ const START_POINT_NODE_NAME := "StartPoint"
 @export_range(0.5, 8.0, 0.05) var fallback_start_trigger_length := 5.5
 @export_range(0.5, 8.0, 0.05) var start_trigger_height := 3.0
 @export_range(0.0, 4.0, 0.05) var start_trigger_vertical_offset := 1.5
+@export var auto_place_start_trigger := false
+@export var show_trigger_helpers := true
 
 
 func _ready() -> void:
-	if Engine.is_editor_hint():
+	if Engine.is_editor_hint() and auto_refresh_lane_markers_from_geometry:
 		call_deferred("_refresh_editor_geometry")
 	_rebuild_generated_content()
 
 
 func rebuild() -> void:
-	if Engine.is_editor_hint():
+	if Engine.is_editor_hint() and auto_refresh_lane_markers_from_geometry:
 		_refresh_marker_positions_from_geometry()
 	_rebuild_generated_content()
 
@@ -169,9 +174,12 @@ func _refresh_marker_positions_from_geometry() -> void:
 
 func _estimate_track_radii(lap_model: Node3D) -> Dictionary:
 	var vertices_by_angle: Array[Dictionary] = []
+	var generated_triggers_root := get_node_or_null(generated_triggers_root_path)
 	for child in lap_model.find_children("*", "MeshInstance3D", true, false):
 		var mesh_instance := child as MeshInstance3D
 		if mesh_instance == null or mesh_instance.mesh == null:
+			continue
+		if generated_triggers_root != null and generated_triggers_root.is_ancestor_of(mesh_instance):
 			continue
 		for surface_index in range(mesh_instance.mesh.get_surface_count()):
 			var arrays: Array = mesh_instance.mesh.surface_get_arrays(surface_index)
@@ -283,9 +291,8 @@ func _find_static_body_child(node: Node) -> StaticBody3D:
 
 func _rebuild_start_trigger() -> void:
 	var start_trigger: Area3D = get_node_or_null(start_trigger_path) as Area3D
-	var trigger_root: Node3D = get_node_or_null(generated_triggers_root_path) as Node3D
 	var lap_model: Node3D = get_node_or_null(lap_model_path) as Node3D
-	if start_trigger == null or trigger_root == null or lap_model == null:
+	if start_trigger == null or lap_model == null:
 		return
 
 	start_trigger.monitoring = true
@@ -297,25 +304,50 @@ func _rebuild_start_trigger() -> void:
 	if collision_shape == null:
 		return
 
-	var start_mesh := _find_named_mesh_instance(lap_model, START_POINT_NODE_NAME)
-	if start_mesh != null and start_mesh.mesh != null:
-		start_trigger.transform = trigger_root.global_transform.affine_inverse() * start_mesh.global_transform
-		var start_aabb := start_mesh.get_aabb()
-		var size := start_aabb.size
-		size.x = maxf(size.x, 0.5)
-		size.y = maxf(start_trigger_height, 0.5)
-		size.z = maxf(size.z, 0.5)
-		var box_shape := collision_shape.shape as BoxShape3D
-		if box_shape == null:
-			box_shape = BoxShape3D.new()
-			collision_shape.shape = box_shape
-		box_shape.size = size
+	var trigger_box_shape := collision_shape.shape as BoxShape3D
+	if trigger_box_shape == null:
+		trigger_box_shape = BoxShape3D.new()
+		collision_shape.shape = trigger_box_shape
+
+	if auto_place_start_trigger:
+		var start_mesh := _find_named_mesh_instance(lap_model, START_POINT_NODE_NAME)
+		if start_mesh != null:
+			_rebuild_start_trigger_from_position(start_trigger, trigger_box_shape, start_mesh.global_position)
+		else:
+			_rebuild_fallback_start_trigger(start_trigger, trigger_box_shape)
+	else:
+		trigger_box_shape.size = Vector3(fallback_start_trigger_length, start_trigger_height, 4.0)
+
+	_ensure_trigger_helper(
+		start_trigger,
+		trigger_box_shape,
+		"TriggerHelper",
+		TRIGGER_HELPER_MATERIAL_COLOR
+	)
+
+
+func _rebuild_start_trigger_from_position(
+	start_trigger: Area3D,
+	box_shape: BoxShape3D,
+	start_world_position: Vector3
+) -> void:
+	var inner_radius := get_lane_radius(LaneSide.INNER)
+	var outer_radius := get_lane_radius(LaneSide.OUTER)
+	if outer_radius <= inner_radius:
 		return
 
-	_rebuild_fallback_start_trigger(start_trigger, collision_shape)
+	var local_start_position := to_local(start_world_position)
+	var start_radius := Vector2(local_start_position.x, local_start_position.z).length()
+	var angle := atan2(local_start_position.x, local_start_position.z)
+	var track_width := maxf((outer_radius - inner_radius) + checkpoint_track_padding, 0.5)
+	var local_trigger_position := _point_on_circle(start_radius, angle, start_trigger_vertical_offset)
+
+	start_trigger.global_position = to_global(local_trigger_position)
+	start_trigger.global_basis = global_basis * Basis.from_euler(Vector3(0.0, angle + (PI * 0.5), 0.0))
+	box_shape.size = Vector3(fallback_start_trigger_length, start_trigger_height, track_width)
 
 
-func _rebuild_fallback_start_trigger(start_trigger: Area3D, collision_shape: CollisionShape3D) -> void:
+func _rebuild_fallback_start_trigger(start_trigger: Area3D, box_shape: BoxShape3D) -> void:
 	var inner_marker := get_lane_marker(LaneSide.INNER)
 	var outer_marker := get_lane_marker(LaneSide.OUTER)
 	if inner_marker == null or outer_marker == null:
@@ -326,13 +358,9 @@ func _rebuild_fallback_start_trigger(start_trigger: Area3D, collision_shape: Col
 	var radius_midpoint: float = lerpf(inner_radius, outer_radius, 0.5)
 	var track_width := maxf((outer_radius - inner_radius) + checkpoint_track_padding, 0.5)
 	var angle := atan2(inner_marker.position.x, inner_marker.position.z)
-	start_trigger.position = _point_on_circle(radius_midpoint, angle, start_trigger_vertical_offset)
-	start_trigger.basis = Basis.from_euler(Vector3(0.0, angle, 0.0))
-
-	var box_shape := collision_shape.shape as BoxShape3D
-	if box_shape == null:
-		box_shape = BoxShape3D.new()
-		collision_shape.shape = box_shape
+	var local_trigger_position := _point_on_circle(radius_midpoint, angle, start_trigger_vertical_offset)
+	start_trigger.global_position = to_global(local_trigger_position)
+	start_trigger.global_basis = global_basis * Basis.from_euler(Vector3(0.0, angle + (PI * 0.5), 0.0))
 	box_shape.size = Vector3(fallback_start_trigger_length, start_trigger_height, track_width)
 
 
@@ -368,16 +396,18 @@ func _rebuild_checkpoint_triggers() -> void:
 		area.set_meta(&"checkpoint_index", checkpoint_index)
 
 		var angle := start_angle + (FULL_CIRCLE * float(checkpoint_index + 1) / float(gate_count + 1))
-		area.position = _point_on_circle(radius_midpoint, angle, checkpoint_vertical_offset)
-		area.basis = Basis.from_euler(Vector3(0.0, angle, 0.0))
+		var local_checkpoint_position := _point_on_circle(radius_midpoint, angle, checkpoint_vertical_offset)
 
 		var collision_shape := CollisionShape3D.new()
 		var box_shape := BoxShape3D.new()
 		box_shape.size = Vector3(checkpoint_length, checkpoint_height, track_width)
 		collision_shape.shape = box_shape
 		area.add_child(collision_shape)
+		_ensure_trigger_helper(area, box_shape, "CheckpointHelper", CHECKPOINT_HELPER_MATERIAL_COLOR)
 
 		checkpoint_root.add_child(area)
+		area.global_position = to_global(local_checkpoint_position)
+		area.global_basis = global_basis * Basis.from_euler(Vector3(0.0, angle + (PI * 0.5), 0.0))
 		if Engine.is_editor_hint():
 			area.owner = get_tree().edited_scene_root
 			collision_shape.owner = get_tree().edited_scene_root
@@ -392,3 +422,39 @@ func _find_named_mesh_instance(root: Node, mesh_name: String) -> MeshInstance3D:
 		if mesh_instance != null and mesh_instance.name == mesh_name:
 			return mesh_instance
 	return null
+
+
+func _ensure_trigger_helper(
+	area: Area3D,
+	box_shape: BoxShape3D,
+	helper_name: String,
+	helper_color: Color
+) -> void:
+	if area == null or box_shape == null:
+		return
+
+	var helper := area.get_node_or_null(helper_name) as MeshInstance3D
+	if helper == null:
+		helper = MeshInstance3D.new()
+		helper.name = helper_name
+		area.add_child(helper)
+		if Engine.is_editor_hint():
+			helper.owner = get_tree().edited_scene_root
+
+	var box_mesh := helper.mesh as BoxMesh
+	if box_mesh == null:
+		box_mesh = BoxMesh.new()
+		helper.mesh = box_mesh
+
+	box_mesh.size = box_shape.size
+	helper.visible = show_trigger_helpers
+
+	var material := helper.get_active_material(0) as StandardMaterial3D
+	if material == null:
+		material = StandardMaterial3D.new()
+		material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		material.no_depth_test = true
+		helper.set_surface_override_material(0, material)
+
+	material.albedo_color = helper_color

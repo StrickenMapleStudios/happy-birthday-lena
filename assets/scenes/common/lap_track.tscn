@@ -1,40 +1,66 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://ds7rcowipbcrj"]
 
 [ext_resource type="PackedScene" uid="uid://bdeisougmh5rr" path="res://assets/art/models/game/lap.glb" id="1_lap_model"]
-[ext_resource type="Script" path="res://assets/scripts/lap_track.gd" id="2_script"]
+[ext_resource type="Script" uid="uid://kujkf6ahsl7s" path="res://assets/scripts/lap_track.gd" id="2_script"]
 
-[node name="LapTrack" type="Node3D"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_mm8me"]
+size = Vector3(8.4, 3, 4)
+
+[sub_resource type="Curve3D" id="Curve3D_tov3k"]
+closed = true
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -15.612444, 0.01, -0.5947255, 0, 0, 0, 0, 0, 0, -15.595559, 0.01, 0.93842536, 0, 0, 0, 0, 0, 0, -15.42848, 0.01, 2.4625387, 0, 0, 0, 0, 0, 0, -15.112817, 0.01, 3.9629364, 0, 0, 0, 0, 0, 0, -14.651608, 0.01, 5.425169, 0, 0, 0, 0, 0, 0, -14.049297, 0.01, 6.835154, 0, 0, 0, 0, 0, 0, -13.311685, 0.01, 8.179313, 0, 0, 0, 0, 0, 0, -12.445872, 0.01, 9.4447, 0, 0, 0, 0, 0, 0, -11.460199, 0.01, 10.61913, 0, 0, 0, 0, 0, 0, -10.364159, 0.01, 11.691292, 0, 0, 0, 0, 0, 0, -9.168305, 0.01, 12.650861, 0, 0, 0, 0, 0, 0, -7.8841558, 0.01, 13.488594, 0, 0, 0, 0, 0, 0, -6.5240784, 0.01, 14.196425, 0, 0, 0, 0, 0, 0, -5.10117, 0.01, 14.767537, 0, 0, 0, 0, 0, 0, -3.6291347, 0.01, 15.196429, 0, 0, 0, 0, 0, 0, -2.1221488, 0.01, 15.478972, 0, 0, 0, 0, 0, 0, -0.5947255, 0.01, 15.612444, 0, 0, 0, 0, 0, 0, 0.93842536, 0.01, 15.595559, 0, 0, 0, 0, 0, 0, 2.4625387, 0.01, 15.42848, 0, 0, 0, 0, 0, 0, 3.9629364, 0.01, 15.112817, 0, 0, 0, 0, 0, 0, 5.425169, 0.01, 14.651608, 0, 0, 0, 0, 0, 0, 6.835154, 0.01, 14.049297, 0, 0, 0, 0, 0, 0, 8.179313, 0.01, 13.311685, 0, 0, 0, 0, 0, 0, 9.4447, 0.01, 12.445872, 0, 0, 0, 0, 0, 0, 10.61913, 0.01, 11.460199, 0, 0, 0, 0, 0, 0, 11.691292, 0.01, 10.364159, 0, 0, 0, 0, 0, 0, 12.650861, 0.01, 9.168305, 0, 0, 0, 0, 0, 0, 13.488594, 0.01, 7.8841558, 0, 0, 0, 0, 0, 0, 14.196425, 0.01, 6.5240784, 0, 0, 0, 0, 0, 0, 14.767537, 0.01, 5.10117, 0, 0, 0, 0, 0, 0, 15.196429, 0.01, 3.6291347, 0, 0, 0, 0, 0, 0, 15.478972, 0.01, 2.1221488, 0, 0, 0, 0, 0, 0, 15.612444, 0.01, 0.5947255, 0, 0, 0, 0, 0, 0, 15.595559, 0.01, -0.93842536, 0, 0, 0, 0, 0, 0, 15.42848, 0.01, -2.4625387, 0, 0, 0, 0, 0, 0, 15.112817, 0.01, -3.9629364, 0, 0, 0, 0, 0, 0, 14.651608, 0.01, -5.425169, 0, 0, 0, 0, 0, 0, 14.049297, 0.01, -6.835154, 0, 0, 0, 0, 0, 0, 13.311685, 0.01, -8.179313, 0, 0, 0, 0, 0, 0, 12.445872, 0.01, -9.4447, 0, 0, 0, 0, 0, 0, 11.460199, 0.01, -10.61913, 0, 0, 0, 0, 0, 0, 10.364159, 0.01, -11.691292, 0, 0, 0, 0, 0, 0, 9.168305, 0.01, -12.650861, 0, 0, 0, 0, 0, 0, 7.8841558, 0.01, -13.488594, 0, 0, 0, 0, 0, 0, 6.5240784, 0.01, -14.196425, 0, 0, 0, 0, 0, 0, 5.10117, 0.01, -14.767537, 0, 0, 0, 0, 0, 0, 3.6291347, 0.01, -15.196429, 0, 0, 0, 0, 0, 0, 2.1221488, 0.01, -15.478972, 0, 0, 0, 0, 0, 0, 0.5947255, 0.01, -15.612444, 0, 0, 0, 0, 0, 0, -0.93842536, 0.01, -15.595559, 0, 0, 0, 0, 0, 0, -2.4625387, 0.01, -15.42848, 0, 0, 0, 0, 0, 0, -3.9629364, 0.01, -15.112817, 0, 0, 0, 0, 0, 0, -5.425169, 0.01, -14.651608, 0, 0, 0, 0, 0, 0, -6.835154, 0.01, -14.049297, 0, 0, 0, 0, 0, 0, -8.179313, 0.01, -13.311685, 0, 0, 0, 0, 0, 0, -9.4447, 0.01, -12.445872, 0, 0, 0, 0, 0, 0, -10.61913, 0.01, -11.460199, 0, 0, 0, 0, 0, 0, -11.691292, 0.01, -10.364159, 0, 0, 0, 0, 0, 0, -12.650861, 0.01, -9.168305, 0, 0, 0, 0, 0, 0, -13.488594, 0.01, -7.8841558, 0, 0, 0, 0, 0, 0, -14.196425, 0.01, -6.5240784, 0, 0, 0, 0, 0, 0, -14.767537, 0.01, -5.10117, 0, 0, 0, 0, 0, 0, -15.196429, 0.01, -3.6291347, 0, 0, 0, 0, 0, 0, -15.478972, 0.01, -2.1221488),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 64
+
+[sub_resource type="Curve3D" id="Curve3D_2su14"]
+closed = true
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -24.500383, 0.01, -0.9332936, 0, 0, 0, 0, 0, 0, -24.473885, 0.01, 1.4726579, 0, 0, 0, 0, 0, 0, -24.21169, 0.01, 3.8644269, 0, 0, 0, 0, 0, 0, -23.716326, 0.01, 6.2189794, 0, 0, 0, 0, 0, 0, -22.992558, 0.01, 8.513639, 0, 0, 0, 0, 0, 0, -22.04736, 0.01, 10.726309, 0, 0, 0, 0, 0, 0, -20.889833, 0.01, 12.835678, 0, 0, 0, 0, 0, 0, -19.531128, 0.01, 14.821432, 0, 0, 0, 0, 0, 0, -17.984325, 0.01, 16.664448, 0, 0, 0, 0, 0, 0, -16.264324, 0.01, 18.346977, 0, 0, 0, 0, 0, 0, -14.387689, 0.01, 19.852814, 0, 0, 0, 0, 0, 0, -12.372492, 0.01, 21.167458, 0, 0, 0, 0, 0, 0, -10.238141, 0.01, 22.278246, 0, 0, 0, 0, 0, 0, -8.005192, 0.01, 23.174484, 0, 0, 0, 0, 0, 0, -5.695148, 0.01, 23.847538, 0, 0, 0, 0, 0, 0, -3.330257, 0.01, 24.290928, 0, 0, 0, 0, 0, 0, -0.9332936, 0.01, 24.500383, 0, 0, 0, 0, 0, 0, 1.4726579, 0.01, 24.473885, 0, 0, 0, 0, 0, 0, 3.8644269, 0.01, 24.21169, 0, 0, 0, 0, 0, 0, 6.2189794, 0.01, 23.716326, 0, 0, 0, 0, 0, 0, 8.513639, 0.01, 22.992558, 0, 0, 0, 0, 0, 0, 10.726309, 0.01, 22.04736, 0, 0, 0, 0, 0, 0, 12.835678, 0.01, 20.889833, 0, 0, 0, 0, 0, 0, 14.821432, 0.01, 19.531128, 0, 0, 0, 0, 0, 0, 16.664448, 0.01, 17.984325, 0, 0, 0, 0, 0, 0, 18.346977, 0.01, 16.264324, 0, 0, 0, 0, 0, 0, 19.852814, 0.01, 14.387689, 0, 0, 0, 0, 0, 0, 21.167458, 0.01, 12.372492, 0, 0, 0, 0, 0, 0, 22.278246, 0.01, 10.238141, 0, 0, 0, 0, 0, 0, 23.174484, 0.01, 8.005192, 0, 0, 0, 0, 0, 0, 23.847538, 0.01, 5.695148, 0, 0, 0, 0, 0, 0, 24.290928, 0.01, 3.330257, 0, 0, 0, 0, 0, 0, 24.500383, 0.01, 0.9332936, 0, 0, 0, 0, 0, 0, 24.473885, 0.01, -1.4726579, 0, 0, 0, 0, 0, 0, 24.21169, 0.01, -3.8644269, 0, 0, 0, 0, 0, 0, 23.716326, 0.01, -6.2189794, 0, 0, 0, 0, 0, 0, 22.992558, 0.01, -8.513639, 0, 0, 0, 0, 0, 0, 22.04736, 0.01, -10.726309, 0, 0, 0, 0, 0, 0, 20.889833, 0.01, -12.835678, 0, 0, 0, 0, 0, 0, 19.531128, 0.01, -14.821432, 0, 0, 0, 0, 0, 0, 17.984325, 0.01, -16.664448, 0, 0, 0, 0, 0, 0, 16.264324, 0.01, -18.346977, 0, 0, 0, 0, 0, 0, 14.387689, 0.01, -19.852814, 0, 0, 0, 0, 0, 0, 12.372492, 0.01, -21.167458, 0, 0, 0, 0, 0, 0, 10.238141, 0.01, -22.278246, 0, 0, 0, 0, 0, 0, 8.005192, 0.01, -23.174484, 0, 0, 0, 0, 0, 0, 5.695148, 0.01, -23.847538, 0, 0, 0, 0, 0, 0, 3.330257, 0.01, -24.290928, 0, 0, 0, 0, 0, 0, 0.9332936, 0.01, -24.500383, 0, 0, 0, 0, 0, 0, -1.4726579, 0.01, -24.473885, 0, 0, 0, 0, 0, 0, -3.8644269, 0.01, -24.21169, 0, 0, 0, 0, 0, 0, -6.2189794, 0.01, -23.716326, 0, 0, 0, 0, 0, 0, -8.513639, 0.01, -22.992558, 0, 0, 0, 0, 0, 0, -10.726309, 0.01, -22.04736, 0, 0, 0, 0, 0, 0, -12.835678, 0.01, -20.889833, 0, 0, 0, 0, 0, 0, -14.821432, 0.01, -19.531128, 0, 0, 0, 0, 0, 0, -16.664448, 0.01, -17.984325, 0, 0, 0, 0, 0, 0, -18.346977, 0.01, -16.264324, 0, 0, 0, 0, 0, 0, -19.852814, 0.01, -14.387689, 0, 0, 0, 0, 0, 0, -21.167458, 0.01, -12.372492, 0, 0, 0, 0, 0, 0, -22.278246, 0.01, -10.238141, 0, 0, 0, 0, 0, 0, -23.174484, 0.01, -8.005192, 0, 0, 0, 0, 0, 0, -23.847538, 0.01, -5.695148, 0, 0, 0, 0, 0, 0, -24.290928, 0.01, -3.330257),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 64
+
+[node name="LapTrack" type="Node3D" unique_id=1829654925]
 script = ExtResource("2_script")
-lap_model_path = NodePath("TrackPivot/LapModel")
 curve_marker_inner_path = NodePath("TrackPivot/CurveMarkerInner")
 curve_marker_outer_path = NodePath("TrackPivot/CurveMarkerOuter")
 inner_lane_path = NodePath("TrackPivot/InnerLanePath")
 outer_lane_path = NodePath("TrackPivot/OuterLanePath")
-generated_triggers_root_path = NodePath("TrackPivot/GeneratedTriggers")
-start_trigger_path = NodePath("TrackPivot/GeneratedTriggers/StartTrigger")
-checkpoint_root_path = NodePath("TrackPivot/GeneratedTriggers/CheckpointTriggers")
+generated_triggers_root_path = NodePath("TrackPivot/LapModel/GeneratedTriggers")
+start_trigger_path = NodePath("TrackPivot/LapModel/GeneratedTriggers/StartTrigger")
+checkpoint_root_path = NodePath("TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers")
+auto_refresh_lane_markers_from_geometry = null
+auto_place_start_trigger = null
+show_trigger_helpers = null
 
-[node name="TrackPivot" type="Node3D" parent="."]
+[node name="TrackPivot" type="Node3D" parent="." unique_id=1007151735]
 
-[node name="LapModel" parent="TrackPivot" instance=ExtResource("1_lap_model")]
+[node name="LapModel" parent="TrackPivot" unique_id=403279117 instance=ExtResource("1_lap_model")]
 
-[node name="CurveMarkerInner" type="Marker3D" parent="TrackPivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.196419, 0.01, -0.73125)
+[node name="GeneratedTriggers" type="Node3D" parent="TrackPivot/LapModel" unique_id=321933283]
 
-[node name="CurveMarkerOuter" type="Marker3D" parent="TrackPivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.79612, 0.01, -0.792187)
-
-[node name="InnerLanePath" type="Path3D" parent="TrackPivot"]
-
-[node name="OuterLanePath" type="Path3D" parent="TrackPivot"]
-
-[node name="GeneratedTriggers" type="Node3D" parent="TrackPivot"]
-
-[node name="StartTrigger" type="Area3D" parent="TrackPivot/GeneratedTriggers"]
+[node name="StartTrigger" type="Area3D" parent="TrackPivot/LapModel/GeneratedTriggers" unique_id=1610147430]
+transform = Transform3D(-0.99927527, 0, 0.0380655, 0, 1, 0, -0.0380655, 0, -0.99927527, -20.438032, 0.1334629, 2.1145265)
 collision_layer = 0
-collision_mask = 1
 monitorable = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TrackPivot/GeneratedTriggers/StartTrigger"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TrackPivot/LapModel/GeneratedTriggers/StartTrigger" unique_id=508579723]
+shape = SubResource("BoxShape3D_mm8me")
 
-[node name="CheckpointTriggers" type="Node3D" parent="TrackPivot/GeneratedTriggers"]
+[node name="CheckpointTriggers" type="Node3D" parent="TrackPivot/LapModel/GeneratedTriggers" unique_id=1178165157]
+
+[node name="CurveMarkerInner" type="Marker3D" parent="TrackPivot" unique_id=523271142]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.422014, 0.01, -0.5947255)
+
+[node name="CurveMarkerOuter" type="Marker3D" parent="TrackPivot" unique_id=1459934044]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.485601, 0.01, -0.9332936)
+
+[node name="InnerLanePath" type="Path3D" parent="TrackPivot" unique_id=1782135784]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 0, 0, 0)
+curve = SubResource("Curve3D_tov3k")
+
+[node name="OuterLanePath" type="Path3D" parent="TrackPivot" unique_id=428873946]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0, 0, 0)
+curve = SubResource("Curve3D_2su14")
