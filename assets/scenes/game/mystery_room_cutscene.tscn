@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://xu05c85p1o8i" path="res://assets/scripts/camera_cutscene_target.gd" id="2_cutscene"]
 [ext_resource type="PackedScene" uid="uid://bkvweeoliwpaq" path="res://assets/art/models/game/cake.glb" id="3_6toka"]
 [ext_resource type="Script" uid="uid://y7p6yy8847d5" path="res://assets/scripts/proximity_dialogue_trigger.gd" id="3_auto_trigger"]
+[ext_resource type="PackedScene" uid="uid://bbj2hguv3jer5" path="res://assets/scenes/common/torch_light.tscn" id="4_torch_light"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ym06s"]
 size = Vector3(23.349854, 3.1658936, 5.401367)
@@ -13,20 +14,64 @@ script = ExtResource("2_cutscene")
 
 [node name="MysteryRoom" parent="." unique_id=1521331465 instance=ExtResource("1_mystery_room")]
 
-[node name="Walls" parent="MysteryRoom" index="0" unique_id=2083319832]
+[node name="Walls" parent="MysteryRoom" index="0" unique_id=833661101]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.03193283, 0, 0.09068298)
 
-[node name="Columns" parent="MysteryRoom" index="1" unique_id=1650959316]
-
-[node name="Stand_Stairs" parent="MysteryRoom" index="3" unique_id=1393171539]
-
-[node name="Stand" parent="MysteryRoom/Stand_Stairs" index="0" unique_id=497039865]
+[node name="Stand" parent="MysteryRoom/Stand_Stairs" parent_id_path=PackedInt32Array(1521331465, 1253592506) index="0" unique_id=1522440619]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.73884475, 0)
 
 [node name="cake" parent="MysteryRoom/Stand_Stairs/Stand" index="0" unique_id=847802907 instance=ExtResource("3_6toka")]
 transform = Transform3D(0.61, 0, 0, 0, 0.61, 0, 0, 0, 0.61, 0, 3.110065, 0)
 
-[node name="Torch" parent="MysteryRoom" index="4" unique_id=838063887]
+[node name="TorchLights" type="Node3D" parent="MysteryRoom" unique_id=68089764]
+
+[node name="TorchLight01" parent="MysteryRoom/TorchLights" unique_id=15700398 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -14.441)
+
+[node name="TorchLight02" parent="MysteryRoom/TorchLights" unique_id=507694534 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -33.137)
+
+[node name="TorchLight03" parent="MysteryRoom/TorchLights" unique_id=491682127 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -51.833)
+
+[node name="TorchLight04" parent="MysteryRoom/TorchLights" unique_id=626173741 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -70.529)
+
+[node name="TorchLight05" parent="MysteryRoom/TorchLights" unique_id=1300763889 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -89.225)
+
+[node name="TorchLight06" parent="MysteryRoom/TorchLights" unique_id=885808338 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -107.921)
+
+[node name="TorchLight07" parent="MysteryRoom/TorchLights" unique_id=1706173901 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -126.617)
+
+[node name="TorchLight08" parent="MysteryRoom/TorchLights" unique_id=1782715865 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -145.313)
+
+[node name="TorchLight09" parent="MysteryRoom/TorchLights" unique_id=1081487915 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -14.441)
+
+[node name="TorchLight10" parent="MysteryRoom/TorchLights" unique_id=963784904 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -33.137)
+
+[node name="TorchLight11" parent="MysteryRoom/TorchLights" unique_id=1704397810 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -51.833)
+
+[node name="TorchLight12" parent="MysteryRoom/TorchLights" unique_id=965588852 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -70.529)
+
+[node name="TorchLight13" parent="MysteryRoom/TorchLights" unique_id=1588687212 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -89.225)
+
+[node name="TorchLight14" parent="MysteryRoom/TorchLights" unique_id=221670535 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -107.921)
+
+[node name="TorchLight15" parent="MysteryRoom/TorchLights" unique_id=1801465820 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -126.617)
+
+[node name="TorchLight16" parent="MysteryRoom/TorchLights" unique_id=856451466 instance=ExtResource("4_torch_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -145.313)
 
 [node name="CutsceneCamera" type="Camera3D" parent="." unique_id=564982831]
 transform = Transform3D(-1, 8.092387e-15, -8.742279e-08, -5.78652e-08, 0.7495915, 0.6619008, 6.5531374e-08, 0.6619008, -0.7495915, 1.686718, 11.201238, -141.15044)

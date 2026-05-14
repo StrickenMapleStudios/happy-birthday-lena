@@ -5,6 +5,7 @@ class_name InventoryData
 signal inventory_changed
 signal category_changed(category: StringName)
 signal selection_changed(category: StringName, slot_index: int)
+signal item_added(item: InventoryItemData, quantity: int)
 
 const CATEGORY_REGULAR := &"regular"
 const CATEGORY_KEYS := &"keys"
@@ -77,6 +78,7 @@ func add_item(item: InventoryItemData, quantity: int = 1) -> bool:
 
 	_ensure_valid_selection_for_category(category)
 	inventory_changed.emit()
+	item_added.emit(item, quantity - remaining)
 	return true
 
 
