@@ -124,7 +124,7 @@ func _ready() -> void:
 		camera_rig.connect("labyrinth_view_yaw_changed", Callable(self, "_on_labyrinth_view_yaw_changed"))
 	if RewardService != null:
 		RewardService.call_deferred("spawn_pending_rewards", self)
-	call_deferred("_resume_pending_lap_race_return")
+	_resume_pending_lap_race_return()
 	_refresh_cursor_mode()
 
 
@@ -1080,7 +1080,7 @@ func _resume_pending_lap_race_return() -> void:
 		_release_locked_return_transition()
 		return
 
-	await _start_dialogue_with_target_from_transition(interaction_target, true)
+	_start_dialogue_with_target_while_faded(interaction_target, true)
 
 
 func _start_dialogue_with_target_from_transition(
@@ -1126,6 +1126,50 @@ func _start_dialogue_with_target_from_transition(
 	_start_dialogue_balloon(dialogue_resource, target.get_dialogue_start_title())
 	await get_tree().process_frame
 	await SceneTransition.fade_in()
+	_interaction_locked = false
+	_sync_input_context()
+
+
+func _start_dialogue_with_target_while_faded(
+	target: InteractionTarget,
+	ignore_interaction_availability: bool = false
+) -> void:
+	if _dialogue_active or _cutscene_active or _labyrinth_active or target == null:
+		_release_locked_return_transition()
+		return
+	if not ignore_interaction_availability and not target.is_interaction_available():
+		_release_locked_return_transition()
+		return
+
+	var dialogue_resource := target.get_dialogue_resource()
+	var player_dialogue_anchor: Node3D = target.get_player_dialogue_anchor()
+	var restore_player_transform := true
+	var preserve_player_height := false
+	if target.has_method("should_return_player_to_origin_after_dialogue"):
+		restore_player_transform = bool(target.call("should_return_player_to_origin_after_dialogue"))
+	if target.has_method("should_preserve_player_height_during_dialogue"):
+		preserve_player_height = bool(target.call("should_preserve_player_height_during_dialogue"))
+
+	_saved_player_transform = player.global_transform
+	_restore_player_transform_after_sequence = restore_player_transform
+	player.set_controls_enabled(false)
+	interaction_source.set_interaction_enabled(false)
+	_hide_follower_actors_for_dialogue()
+	_move_player_to_anchor(player_dialogue_anchor, preserve_player_height)
+	_dialogue_target_actor = target.get_parent() as Node3D
+	var player_focus_position := target.global_position
+	if _dialogue_target_actor != null and _dialogue_target_actor.has_method("get_dialogue_focus_position"):
+		player_focus_position = _dialogue_target_actor.call("get_dialogue_focus_position")
+	player.face_towards_position(player_focus_position)
+	if _dialogue_target_actor != null and _dialogue_target_actor.has_method("face_towards_position"):
+		_dialogue_target_actor.call("face_towards_position", player.global_position)
+	_dialogue_target = target
+	_dialogue_active = true
+	_dialogue_response_selection_active = false
+	AudioService.apply_mix_preset(AUDIO_PRESET_DIALOGUE, AUDIO_PRESET_FADE_DURATION)
+	_set_dialogue_speaker(_dialogue_target_actor)
+	_sync_input_context()
+	_start_dialogue_balloon(dialogue_resource, target.get_dialogue_start_title())
 	_interaction_locked = false
 	_sync_input_context()
 
