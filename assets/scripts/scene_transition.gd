@@ -53,6 +53,32 @@ func change_scene_to_file(
 	_finish_transition()
 
 
+func change_scene_to_file_from_faded_state(
+	scene_path: String,
+	fade_in_duration: float = default_fade_in_duration
+) -> void:
+	if not _is_transitioning:
+		_is_transitioning = true
+		await _fade_to(1.0, 0.0, Control.MOUSE_FILTER_STOP)
+
+	var packed_scene := await _resolve_scene(scene_path)
+	if packed_scene == null:
+		await _fade_to(0.0, fade_in_duration, Control.MOUSE_FILTER_IGNORE)
+		_finish_transition()
+		return
+
+	var change_result := get_tree().change_scene_to_packed(packed_scene)
+	if change_result != OK:
+		push_error("Failed to change scene to '%s' (error %d)." % [scene_path, change_result])
+		await _fade_to(0.0, fade_in_duration, Control.MOUSE_FILTER_IGNORE)
+		_finish_transition()
+		return
+
+	await get_tree().process_frame
+	await _fade_to(0.0, fade_in_duration, Control.MOUSE_FILTER_IGNORE)
+	_finish_transition()
+
+
 func fade_out(duration: float = default_fade_out_duration) -> void:
 	if _is_transitioning:
 		await transition_finished

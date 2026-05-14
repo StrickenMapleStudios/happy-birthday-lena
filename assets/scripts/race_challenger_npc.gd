@@ -29,15 +29,20 @@ func prepare_post_race_dialogue(result: StringName) -> InteractionTarget:
 	return interaction_target
 
 
-func handle_dialogue_finished(_resource: DialogueResource) -> void:
+func consume_pending_race_start() -> bool:
 	var race_dialogue_state := get_node_or_null(race_dialogue_state_path) as RaceChallengerDialogueState
-	if race_dialogue_state != null and race_dialogue_state.consume_pending_race_start():
-		await _start_lap_race()
-		return
+	return race_dialogue_state != null and race_dialogue_state.consume_pending_race_start()
 
+
+func handle_dialogue_finished(_resource: DialogueResource) -> void:
 	var interaction_target := get_interaction_target()
 	if interaction_target != null and interaction_target.dialogue_start_title != START_TITLE:
 		interaction_target.dialogue_start_title = START_TITLE
+
+
+func start_race_transition() -> void:
+	await _start_lap_race()
+
 
 
 func _start_lap_race() -> void:
@@ -51,4 +56,4 @@ func _start_lap_race() -> void:
 		player.global_transform,
 		current_scene.get_path_to(self)
 	)
-	await SceneTransition.change_scene_to_file(LAP_SCENE_PATH)
+	await SceneTransition.change_scene_to_file_from_faded_state(LAP_SCENE_PATH)

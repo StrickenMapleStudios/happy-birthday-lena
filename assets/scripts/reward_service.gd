@@ -6,6 +6,11 @@ var _pending_rewards: Array[Dictionary] = []
 var _completed_sources: Dictionary = {}
 
 
+func reset_state() -> void:
+	_pending_rewards.clear()
+	_completed_sources.clear()
+
+
 func grant_reward(
 	source_id: StringName,
 	marker_id: StringName,

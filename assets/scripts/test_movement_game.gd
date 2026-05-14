@@ -83,6 +83,8 @@ func _ready() -> void:
 	_refresh_gameplay_world_ui_visibility()
 	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY)
 	add_child(_inventory_data)
+	_restore_inventory_from_session_state()
+	_inventory_data.inventory_changed.connect(Callable(self, "_save_inventory_to_session_state"))
 	if interaction_source != null:
 		interaction_source.interaction_requested.connect(_on_interaction_requested)
 		interaction_source.interaction_target_changed.connect(_on_interaction_target_changed)
@@ -648,6 +650,10 @@ func _on_dialogue_ended(resource: DialogueResource) -> void:
 		return
 
 	var finished_dialogue_actor := _dialogue_target_actor
+	if is_instance_valid(finished_dialogue_actor) and finished_dialogue_actor.has_method("consume_pending_race_start"):
+		if bool(finished_dialogue_actor.call("consume_pending_race_start")):
+			await _transition_from_dialogue_to_race(finished_dialogue_actor)
+			return
 
 	await _exit_dialogue_mode()
 
@@ -1057,15 +1063,130 @@ func _resume_pending_lap_race_return() -> void:
 
 	var player_transform: Transform3D = context.get("player_transform", Transform3D.IDENTITY)
 	player.global_transform = player_transform
+	_interaction_locked = true
+	_set_input_context(InputContext.TRANSITION)
+	player.set_controls_enabled(false)
+	interaction_source.set_interaction_enabled(false)
 
 	var npc_path: NodePath = context.get("npc_path", NodePath())
 	var npc := get_node_or_null(npc_path)
 	if npc == null or not npc.has_method("prepare_post_race_dialogue"):
+		_release_locked_return_transition()
 		return
 
 	var result: StringName = context.get("result", &"lose")
 	var interaction_target := npc.call("prepare_post_race_dialogue", result) as InteractionTarget
 	if interaction_target == null:
+		_release_locked_return_transition()
 		return
 
-	request_dialogue_with_target(interaction_target, true)
+	await _start_dialogue_with_target_from_transition(interaction_target, true)
+
+
+func _start_dialogue_with_target_from_transition(
+	target: InteractionTarget,
+	ignore_interaction_availability: bool = false
+) -> void:
+	if _dialogue_active or _cutscene_active or _labyrinth_active or target == null:
+		_release_locked_return_transition()
+		return
+	if not ignore_interaction_availability and not target.is_interaction_available():
+		_release_locked_return_transition()
+		return
+
+	var dialogue_resource := target.get_dialogue_resource()
+	var player_dialogue_anchor: Node3D = target.get_player_dialogue_anchor()
+	var restore_player_transform := true
+	var preserve_player_height := false
+	if target.has_method("should_return_player_to_origin_after_dialogue"):
+		restore_player_transform = bool(target.call("should_return_player_to_origin_after_dialogue"))
+	if target.has_method("should_preserve_player_height_during_dialogue"):
+		preserve_player_height = bool(target.call("should_preserve_player_height_during_dialogue"))
+
+	_saved_player_transform = player.global_transform
+	_restore_player_transform_after_sequence = restore_player_transform
+	await SceneTransition.fade_out()
+	player.set_controls_enabled(false)
+	interaction_source.set_interaction_enabled(false)
+	_hide_follower_actors_for_dialogue()
+	_move_player_to_anchor(player_dialogue_anchor, preserve_player_height)
+	_dialogue_target_actor = target.get_parent() as Node3D
+	var player_focus_position := target.global_position
+	if _dialogue_target_actor != null and _dialogue_target_actor.has_method("get_dialogue_focus_position"):
+		player_focus_position = _dialogue_target_actor.call("get_dialogue_focus_position")
+	player.face_towards_position(player_focus_position)
+	if _dialogue_target_actor != null and _dialogue_target_actor.has_method("face_towards_position"):
+		_dialogue_target_actor.call("face_towards_position", player.global_position)
+	_dialogue_target = target
+	_dialogue_active = true
+	_dialogue_response_selection_active = false
+	AudioService.apply_mix_preset(AUDIO_PRESET_DIALOGUE, AUDIO_PRESET_FADE_DURATION)
+	_set_dialogue_speaker(_dialogue_target_actor)
+	_sync_input_context()
+	_start_dialogue_balloon(dialogue_resource, target.get_dialogue_start_title())
+	await get_tree().process_frame
+	await SceneTransition.fade_in()
+	_interaction_locked = false
+	_sync_input_context()
+
+
+func _transition_from_dialogue_to_race(actor: Node3D) -> void:
+	_interaction_locked = true
+	_set_input_context(InputContext.TRANSITION)
+	_set_active_dialogue_input_enabled(false)
+	await SceneTransition.fade_out()
+	if is_instance_valid(_active_dialogue_balloon):
+		if _active_dialogue_balloon.has_method("close_balloon"):
+			_active_dialogue_balloon.call("close_balloon")
+		else:
+			_active_dialogue_balloon.queue_free()
+	_active_dialogue_balloon = null
+	_active_dialogue_resource = null
+	_restore_dialogue_animation_mode(player)
+	_restore_dialogue_animation_mode(_dialogue_target_actor)
+	_restore_follower_actors_after_dialogue()
+	player.global_transform = _saved_player_transform
+	player.set_character_visible(true)
+	if is_instance_valid(_dialogue_target_actor) and _dialogue_target_actor.has_method("set_character_visible"):
+		_dialogue_target_actor.call("set_character_visible", true)
+	_set_dialogue_pivots_active(false)
+	camera_rig.activate_game_camera()
+	player.set_controls_enabled(false)
+	interaction_source.set_interaction_enabled(false)
+	_dialogue_active = false
+	_dialogue_response_selection_active = false
+	_dialogue_target = null
+	_dialogue_target_actor = null
+	_current_dialogue_speaker = null
+	_right_pivot_actor = null
+	_restore_player_transform_after_sequence = true
+	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY, AUDIO_PRESET_FADE_DURATION)
+	_sync_input_context()
+	await get_tree().process_frame
+	if is_instance_valid(actor) and actor.has_method("start_race_transition"):
+		await actor.call("start_race_transition")
+
+
+func _release_locked_return_transition() -> void:
+	_interaction_locked = false
+	player.set_controls_enabled(true)
+	interaction_source.set_interaction_enabled(true)
+	_sync_input_context()
+
+
+func _restore_inventory_from_session_state() -> void:
+	if GameSessionState == null:
+		return
+
+	var inventory_state := GameSessionState.get_inventory_state()
+	if inventory_state.is_empty():
+		return
+
+	_inventory_data.restore_state(inventory_state)
+
+
+func _save_inventory_to_session_state() -> void:
+	if GameSessionState == null:
+		return
+
+	GameSessionState.save_inventory_state(_inventory_data.serialize_state())

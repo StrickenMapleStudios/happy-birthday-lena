@@ -25,6 +25,7 @@ AudioService="*res://assets/scripts/audio_service.gd"
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 RewardService="*res://assets/scripts/reward_service.gd"
 LapRaceFlow="*res://assets/scripts/lap_race_flow.gd"
+GameSessionState="*res://assets/scripts/game_session_state.gd"
 
 [display]
 

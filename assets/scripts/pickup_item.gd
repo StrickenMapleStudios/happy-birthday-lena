@@ -18,10 +18,16 @@ var _base_visual_position := Vector3.ZERO
 var _time := 0.0
 var _custom_visual_instance: Node3D
 var _reward_reveal_tween: Tween
+var _session_scene_path := ""
+var _session_node_path := NodePath()
 
 
 func _ready() -> void:
 	add_to_group(&"pickup_items")
+	_cache_session_identity()
+	if _should_hide_from_session_state():
+		queue_free()
+		return
 	if visual_root != null:
 		_base_visual_position = visual_root.position
 	_apply_item_visuals()
@@ -70,6 +76,7 @@ func handle_interaction(_player: Node, inventory: InventoryData) -> bool:
 	if not added:
 		return false
 
+	_record_session_collection()
 	queue_free()
 	return true
 
@@ -221,3 +228,25 @@ func _apply_transparency_to_node(root: Node, value: float) -> void:
 
 	for child in root.get_children():
 		_apply_transparency_to_node(child, value)
+
+
+func _cache_session_identity() -> void:
+	var current_scene := get_tree().current_scene
+	if current_scene == null:
+		return
+
+	_session_scene_path = String(current_scene.scene_file_path)
+	_session_node_path = current_scene.get_path_to(self)
+
+
+func _should_hide_from_session_state() -> bool:
+	if GameSessionState == null:
+		return false
+	return GameSessionState.is_pickup_collected(_session_scene_path, _session_node_path)
+
+
+func _record_session_collection() -> void:
+	if GameSessionState == null:
+		return
+
+	GameSessionState.mark_pickup_collected(_session_scene_path, _session_node_path)

@@ -98,6 +98,12 @@ func _on_save_slot_pressed(_slot_index: int) -> void:
 		return
 
 	_slot_selection_locked = true
+	if GameSessionState != null:
+		GameSessionState.reset_session()
+	if LapRaceFlow != null and LapRaceFlow.has_method("reset_state"):
+		LapRaceFlow.call("reset_state")
+	if RewardService != null and RewardService.has_method("reset_state"):
+		RewardService.call("reset_state")
 	_begin_ui_transition_lock()
 	if menu_character != null and menu_character.has_method("stand_up_and_wait"):
 		await menu_character.call("stand_up_and_wait")

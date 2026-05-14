@@ -228,3 +228,66 @@ func _mark_slot_as_new(category: StringName, slot_index: int) -> void:
 		return
 
 	slots[slot_index]["is_new"] = true
+
+
+func serialize_state() -> Dictionary:
+	var serialized_slots_by_category := {}
+	for category in CATEGORY_ORDER:
+		var serialized_slots: Array[Dictionary] = []
+		var slots: Array = get_slots(category)
+		for slot in slots:
+			var item := slot.get("item") as InventoryItemData
+			serialized_slots.append({
+				"item_path": item.resource_path if item != null else "",
+				"quantity": int(slot.get("quantity", 0)),
+				"is_new": bool(slot.get("is_new", false)),
+			})
+		serialized_slots_by_category[String(category)] = serialized_slots
+
+	return {
+		"selected_category": String(_selected_category),
+		"selected_slot_by_category": {
+			String(CATEGORY_REGULAR): int(_selected_slot_by_category.get(CATEGORY_REGULAR, 0)),
+			String(CATEGORY_KEYS): int(_selected_slot_by_category.get(CATEGORY_KEYS, 0)),
+			String(CATEGORY_QUEST): int(_selected_slot_by_category.get(CATEGORY_QUEST, 0)),
+		},
+		"slots_by_category": serialized_slots_by_category,
+	}
+
+
+func restore_state(state: Dictionary) -> void:
+	_slots_by_category.clear()
+	for category in CATEGORY_ORDER:
+		_slots_by_category[category] = _build_empty_slots()
+
+	var slots_by_category: Dictionary = state.get("slots_by_category", {})
+	for category in CATEGORY_ORDER:
+		var serialized_slots: Array = slots_by_category.get(String(category), [])
+		var restored_slots: Array = _build_empty_slots()
+		for slot_index in range(mini(serialized_slots.size(), restored_slots.size())):
+			var serialized_slot: Dictionary = serialized_slots[slot_index]
+			var item_path := String(serialized_slot.get("item_path", ""))
+			var item: InventoryItemData = load(item_path) as InventoryItemData if not item_path.is_empty() else null
+			restored_slots[slot_index] = {
+				"index": slot_index,
+				"item": item,
+				"quantity": int(serialized_slot.get("quantity", 0)),
+				"is_new": bool(serialized_slot.get("is_new", false)),
+			}
+		_slots_by_category[category] = restored_slots
+		_ensure_valid_selection_for_category(category)
+
+	var selected_slot_state: Dictionary = state.get("selected_slot_by_category", {})
+	for category in CATEGORY_ORDER:
+		_selected_slot_by_category[category] = clampi(
+			int(selected_slot_state.get(String(category), 0)),
+			0,
+			SLOTS_PER_CATEGORY - 1
+		)
+
+	var selected_category_text := String(state.get("selected_category", String(CATEGORY_REGULAR)))
+	var selected_category := StringName(selected_category_text)
+	_selected_category = selected_category if _slots_by_category.has(selected_category) else CATEGORY_REGULAR
+	inventory_changed.emit()
+	category_changed.emit(_selected_category)
+	selection_changed.emit(_selected_category, get_selected_slot_index(_selected_category))

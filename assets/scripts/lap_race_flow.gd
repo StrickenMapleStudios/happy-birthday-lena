@@ -48,6 +48,10 @@ func consume_return_context(scene_path: String = "") -> Dictionary:
 	return context
 
 
+func reset_state() -> void:
+	_reset()
+
+
 func _reset() -> void:
 	_race_started = false
 	_pending_return = false
