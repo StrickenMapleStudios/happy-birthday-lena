@@ -1,16 +1,6 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://assets/scripts/found_item_popup.gd" id="1_script"]
-
-[sub_resource type="Environment" id="Environment_preview"]
-background_mode = 4
-ambient_light_source = 2
-ambient_light_color = Color(1, 1, 1, 1)
-ambient_light_energy = 0.8
-tonemap_mode = 2
-
-[sub_resource type="QuadMesh" id="QuadMesh_shadow"]
-size = Vector2(2.8, 2.8)
 
 [node name="FoundItemPopup" type="CanvasLayer"]
 layer = 190
@@ -55,78 +45,70 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "НАЙДЕН ПРЕДМЕТ"
+text = "РќРђР™Р”Р•Рќ РџР Р•Р”РњР•Рў"
 horizontal_alignment = 1
 vertical_alignment = 1
 uppercase = true
 
-[node name="Content" type="VBoxContainer" parent="Root/Card"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 38.0
-offset_top = 86.0
-offset_right = -38.0
-offset_bottom = -118.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 18
+[node name="BodyGroup" type="Control" parent="Root/Card"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 92.0
+offset_right = 492.0
+offset_bottom = 612.0
+
+[node name="Content" type="VBoxContainer" parent="Root/Card/BodyGroup"]
+layout_mode = 0
+offset_right = 464.0
+offset_bottom = 446.0
+theme_override_constants/separation = 12
 alignment = 1
 
-[node name="PreviewPanel" type="Panel" parent="Root/Card/Content"]
-custom_minimum_size = Vector2(0, 280)
+[node name="PreviewPanel" type="Panel" parent="Root/Card/BodyGroup/Content"]
+custom_minimum_size = Vector2(0, 260)
 layout_mode = 2
-size_flags_vertical = 3
 
-[node name="PreviewViewportContainer" type="SubViewportContainer" parent="Root/Card/Content/PreviewPanel"]
+[node name="PreviewViewportContainer" type="SubViewportContainer" parent="Root/Card/BodyGroup/Content/PreviewPanel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 18.0
-offset_top = 18.0
-offset_right = -18.0
-offset_bottom = -18.0
+offset_left = 28.0
+offset_top = 26.0
+offset_right = -28.0
+offset_bottom = -26.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 stretch = true
 
-[node name="PreviewViewport" type="SubViewport" parent="Root/Card/Content/PreviewPanel/PreviewViewportContainer"]
+[node name="PreviewViewport" type="SubViewport" parent="Root/Card/BodyGroup/Content/PreviewPanel/PreviewViewportContainer"]
 transparent_bg = true
 handle_input_locally = false
 own_world_3d = true
 render_target_update_mode = 4
 
-[node name="PreviewEnvironment" type="WorldEnvironment" parent="Root/Card/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport"]
-environment = SubResource("Environment_preview")
+[node name="PreviewRoot" type="Node3D" parent="Root/Card/BodyGroup/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport"]
 
-[node name="PreviewRoot" type="Node3D" parent="Root/Card/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport"]
+[node name="PreviewAnchor" type="Node3D" parent="Root/Card/BodyGroup/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot"]
 
-[node name="ShadowCard" type="MeshInstance3D" parent="Root/Card/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot"]
-transform = Transform3D(1.6, 0, 0, 0, 1, 0, 0, 0, 1.6, 0, -0.9, 0)
-mesh = SubResource("QuadMesh_shadow")
-
-[node name="PreviewAnchor" type="Node3D" parent="Root/Card/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot"]
-
-[node name="PreviewCamera" type="Camera3D" parent="Root/Card/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot"]
+[node name="PreviewCamera" type="Camera3D" parent="Root/Card/BodyGroup/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.35, 2.1)
 fov = 26.0
 near = 0.05
 
-[node name="PreviewLight" type="DirectionalLight3D" parent="Root/Card/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot"]
+[node name="PreviewLight" type="DirectionalLight3D" parent="Root/Card/BodyGroup/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot"]
 transform = Transform3D(0.848048, 0, -0.529919, -0.326124, 0.788011, -0.521932, 0.417583, 0.615661, 0.668244, 0, 0, 0)
 light_energy = 2.2
 shadow_enabled = false
 
-[node name="PreviewFillLight" type="OmniLight3D" parent="Root/Card/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot"]
+[node name="PreviewFillLight" type="OmniLight3D" parent="Root/Card/BodyGroup/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 0.8, 1.6)
 light_energy = 1.1
 omni_range = 6.0
 shadow_enabled = false
 
-[node name="FallbackIcon" type="TextureRect" parent="Root/Card/Content/PreviewPanel"]
+[node name="FallbackIcon" type="TextureRect" parent="Root/Card/BodyGroup/Content/PreviewPanel"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -144,35 +126,32 @@ texture_filter = 1
 expand_mode = 1
 stretch_mode = 5
 
-[node name="ItemNameLabel" type="Label" parent="Root/Card/Content"]
+[node name="ItemNameLabel" type="Label" parent="Root/Card/BodyGroup/Content"]
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
-text = "КЛЮЧ"
+text = "РљР›Р®Р§"
 horizontal_alignment = 1
+vertical_alignment = 1
 uppercase = true
 
-[node name="DescriptionLabel" type="Label" parent="Root/Card/Content"]
+[node name="DescriptionLabel" type="Label" parent="Root/Card/BodyGroup/Content"]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
-text = "Интересно, от чего же он?"
+text = "РРЅС‚РµСЂРµСЃРЅРѕ, РѕС‚ С‡РµРіРѕ Р¶Рµ РѕРЅ?"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="Divider" type="ColorRect" parent="Root/Card/Content"]
+[node name="Divider" type="ColorRect" parent="Root/Card/BodyGroup/Content"]
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="ContinueButton" type="Button" parent="Root/Card"]
+[node name="ContinueButton" type="Button" parent="Root/Card/BodyGroup"]
 custom_minimum_size = Vector2(0, 78)
-layout_mode = 1
-anchors_preset = 10
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -142.0
-offset_top = 560.0
-offset_right = 142.0
-offset_bottom = 638.0
-grow_horizontal = 2
-text = "ПРОДОЛЖИТЬ"
+layout_mode = 0
+offset_left = 89.0
+offset_top = 442.0
+offset_right = 375.0
+offset_bottom = 520.0
+text = "РџР РћР”РћР›Р–РРўР¬"

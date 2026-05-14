@@ -14,18 +14,20 @@ const PREVIEW_RENDER_LAYER := 1 << 10
 @onready var card: Panel = $Root/Card
 @onready var ribbon: Panel = $Root/Card/Ribbon
 @onready var ribbon_label: Label = $Root/Card/Ribbon/RibbonLabel
-@onready var preview_panel: Panel = $Root/Card/Content/PreviewPanel
-@onready var preview_container: SubViewportContainer = $Root/Card/Content/PreviewPanel/PreviewViewportContainer
-@onready var preview_viewport: SubViewport = $Root/Card/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport
-@onready var preview_camera: Camera3D = $Root/Card/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot/PreviewCamera
-@onready var preview_anchor: Node3D = $Root/Card/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot/PreviewAnchor
-@onready var preview_light: DirectionalLight3D = $Root/Card/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot/PreviewLight
-@onready var preview_fill_light: OmniLight3D = $Root/Card/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot/PreviewFillLight
-@onready var fallback_icon: TextureRect = $Root/Card/Content/PreviewPanel/FallbackIcon
-@onready var item_name_label: Label = $Root/Card/Content/ItemNameLabel
-@onready var description_label: Label = $Root/Card/Content/DescriptionLabel
-@onready var continue_button: Button = $Root/Card/ContinueButton
-@onready var divider: ColorRect = $Root/Card/Content/Divider
+@onready var body_group: Control = $Root/Card/BodyGroup
+@onready var content_root: VBoxContainer = $Root/Card/BodyGroup/Content
+@onready var preview_panel: Panel = $Root/Card/BodyGroup/Content/PreviewPanel
+@onready var preview_container: SubViewportContainer = $Root/Card/BodyGroup/Content/PreviewPanel/PreviewViewportContainer
+@onready var preview_viewport: SubViewport = $Root/Card/BodyGroup/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport
+@onready var preview_camera: Camera3D = $Root/Card/BodyGroup/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot/PreviewCamera
+@onready var preview_anchor: Node3D = $Root/Card/BodyGroup/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot/PreviewAnchor
+@onready var preview_light: DirectionalLight3D = $Root/Card/BodyGroup/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot/PreviewLight
+@onready var preview_fill_light: OmniLight3D = $Root/Card/BodyGroup/Content/PreviewPanel/PreviewViewportContainer/PreviewViewport/PreviewRoot/PreviewFillLight
+@onready var fallback_icon: TextureRect = $Root/Card/BodyGroup/Content/PreviewPanel/FallbackIcon
+@onready var item_name_label: Label = $Root/Card/BodyGroup/Content/ItemNameLabel
+@onready var description_label: Label = $Root/Card/BodyGroup/Content/DescriptionLabel
+@onready var continue_button: Button = $Root/Card/BodyGroup/ContinueButton
+@onready var divider: ColorRect = $Root/Card/BodyGroup/Content/Divider
 
 var _preview_instance: Node3D
 
@@ -120,7 +122,7 @@ func _setup_preview(item: InventoryItemData) -> void:
 		var instance := item.world_model_scene.instantiate() as Node3D
 		if instance != null:
 			preview_anchor.add_child(instance)
-			instance.position = item.world_model_offset
+			instance.position = Vector3.ZERO
 			instance.rotation_degrees = item.world_model_rotation_degrees
 			instance.scale = item.world_model_scale
 			_assign_preview_layer(instance)
@@ -135,27 +137,30 @@ func _setup_preview(item: InventoryItemData) -> void:
 
 
 func _frame_preview_instance(instance: Node3D) -> void:
-	var bounds := _compute_aabb(instance)
-	var center := bounds.get_center()
-	var size := bounds.size
-	var radius := maxf(size.length() * 0.35, 0.45)
+	var bounds: AABB = _compute_aabb(instance)
+	var center: Vector3 = bounds.get_center()
+	var size: Vector3 = bounds.size
+	var max_dimension: float = maxf(size.x, maxf(size.y, size.z))
+	var radius: float = maxf(max_dimension * 0.5, 0.35)
 
 	instance.position += -center
-	preview_camera.position = Vector3(radius * 0.9, radius * 0.48, radius * 2.45)
-	preview_camera.look_at(Vector3(0.0, radius * 0.08, 0.0), Vector3.UP)
+	preview_camera.position = Vector3(radius * 1.35, radius * 0.72, radius * 3.6)
+	preview_camera.look_at(Vector3(0.0, radius * 0.15, 0.0), Vector3.UP)
 	preview_camera.near = 0.05
-	preview_camera.far = maxf(radius * 12.0, 12.0)
-	preview_fill_light.position = Vector3(-radius * 0.6, radius * 0.65, radius * 1.3)
-	preview_fill_light.omni_range = maxf(radius * 8.0, 6.0)
+	preview_camera.far = maxf(radius * 18.0, 18.0)
+	preview_fill_light.position = Vector3(-radius * 1.1, radius * 0.9, radius * 2.2)
+	preview_fill_light.omni_range = maxf(radius * 10.0, 8.0)
+	preview_light.light_energy = 2.6
+	preview_fill_light.light_energy = 1.35
 
 
-func _compute_aabb(root_node: Node3D) -> Aabb:
+func _compute_aabb(root_node: Node3D) -> AABB:
 	var has_bounds := false
-	var merged := Aabb()
+	var merged: AABB = AABB()
 	var stack: Array[Node] = [root_node]
 
 	while not stack.is_empty():
-		var current := stack.pop_back()
+		var current: Node = stack.pop_back()
 		for child in current.get_children():
 			stack.append(child)
 
@@ -163,10 +168,13 @@ func _compute_aabb(root_node: Node3D) -> Aabb:
 		if mesh_instance == null or mesh_instance.mesh == null:
 			continue
 
-		var transformed_points := _get_transformed_aabb_points(mesh_instance.global_transform, mesh_instance.mesh.get_aabb())
+		var transformed_points: Array[Vector3] = _get_transformed_aabb_points(
+			mesh_instance.global_transform,
+			mesh_instance.mesh.get_aabb()
+		)
 		for point in transformed_points:
 			if not has_bounds:
-				merged = Aabb(point, Vector3.ZERO)
+				merged = AABB(point, Vector3.ZERO)
 				has_bounds = true
 			else:
 				merged = merged.expand(point)
@@ -174,10 +182,10 @@ func _compute_aabb(root_node: Node3D) -> Aabb:
 	if has_bounds:
 		return merged
 
-	return Aabb(Vector3(-0.5, -0.5, -0.5), Vector3.ONE)
+	return AABB(Vector3(-0.5, -0.5, -0.5), Vector3.ONE)
 
 
-func _get_transformed_aabb_points(transform: Transform3D, bounds: Aabb) -> Array[Vector3]:
+func _get_transformed_aabb_points(transform: Transform3D, bounds: AABB) -> Array[Vector3]:
 	var points: Array[Vector3] = []
 	for x in [bounds.position.x, bounds.end.x]:
 		for y in [bounds.position.y, bounds.end.y]:
@@ -209,13 +217,13 @@ func _focus_continue_button() -> void:
 
 
 func _update_layout() -> void:
-	if card == null:
+	if card == null or body_group == null or content_root == null or continue_button == null:
 		return
 
 	var viewport_size := get_viewport().get_visible_rect().size
 	var card_size := Vector2(
-		clampf(viewport_size.x * 0.39, 420.0, 680.0),
-		clampf(viewport_size.y * 0.76, 500.0, 820.0)
+		clampf(viewport_size.x * 0.40, 440.0, 680.0),
+		clampf(viewport_size.y * 0.78, 540.0, 820.0)
 	)
 	card.size = card_size
 	card.position = (viewport_size - card_size) * 0.5
@@ -223,6 +231,23 @@ func _update_layout() -> void:
 	var ribbon_size := Vector2(card_size.x * 0.88, clampf(card_size.y * 0.15, 72.0, 104.0))
 	ribbon.size = ribbon_size
 	ribbon.position = Vector2((card_size.x - ribbon_size.x) * 0.5, -ribbon_size.y * 0.32)
+
+	var body_margin_x := clampf(card_size.x * 0.055, 24.0, 34.0)
+	var body_top := clampf(card_size.y * 0.135, 84.0, 104.0)
+	var body_bottom := clampf(card_size.y * 0.04, 22.0, 30.0)
+	body_group.position = Vector2(body_margin_x, body_top)
+	body_group.size = Vector2(card_size.x - body_margin_x * 2.0, card_size.y - body_top - body_bottom)
+
+	var button_size := Vector2(clampf(card_size.x * 0.40, 250.0, 310.0), 76.0)
+	continue_button.size = button_size
+	continue_button.position = Vector2((body_group.size.x - button_size.x) * 0.5, body_group.size.y - button_size.y)
+
+	var content_bottom_padding := button_size.y * 0.72
+	content_root.position = Vector2.ZERO
+	content_root.size = Vector2(body_group.size.x, body_group.size.y - content_bottom_padding)
+
+	var preview_height := clampf(content_root.size.y * 0.58, 240.0, 320.0)
+	preview_panel.custom_minimum_size = Vector2(0.0, preview_height)
 	_update_preview_viewport_size()
 
 
@@ -248,10 +273,11 @@ func _apply_theme() -> void:
 	ribbon_label.text = "НАЙДЕН ПРЕДМЕТ"
 
 	item_name_label.add_theme_font_override("font", TITLE_FONT)
-	item_name_label.add_theme_font_size_override("font_size", 38)
+	item_name_label.add_theme_font_size_override("font_size", 30)
 	item_name_label.add_theme_constant_override("outline_size", 4)
 	item_name_label.add_theme_color_override("font_color", Color(0.42, 0.25, 0.02, 1.0))
 	item_name_label.add_theme_color_override("font_outline_color", Color(1.0, 0.93, 0.75, 0.7))
+	item_name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 
 	description_label.add_theme_font_override("font", BODY_FONT)
 	description_label.add_theme_font_size_override("font_size", 24)
