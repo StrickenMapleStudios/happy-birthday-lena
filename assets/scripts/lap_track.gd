@@ -24,9 +24,9 @@ const CHECKPOINT_HELPER_MATERIAL_COLOR := Color(1.0, 0.25, 0.15, 0.2)
 @export var curve_marker_outer_path: NodePath = ^"CurveMarkerOuter"
 @export var inner_lane_path: NodePath = ^"InnerLanePath"
 @export var outer_lane_path: NodePath = ^"OuterLanePath"
-@export var generated_triggers_root_path: NodePath = ^"TrackPivot/GeneratedTriggers"
-@export var start_trigger_path: NodePath = ^"TrackPivot/GeneratedTriggers/StartTrigger"
-@export var checkpoint_root_path: NodePath = ^"TrackPivot/GeneratedTriggers/CheckpointTriggers"
+@export var generated_triggers_root_path: NodePath = ^"TrackPivot/LapModel/GeneratedTriggers"
+@export var start_trigger_path: NodePath = ^"TrackPivot/LapModel/GeneratedTriggers/StartTrigger"
+@export var checkpoint_root_path: NodePath = ^"TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers"
 @export var auto_refresh_lane_markers_from_geometry := false
 @export_range(16, 256, 1) var curve_point_count := 64
 @export_range(0.1, 3.0, 0.05) var lane_height_offset := 0.0
@@ -39,7 +39,7 @@ const CHECKPOINT_HELPER_MATERIAL_COLOR := Color(1.0, 0.25, 0.15, 0.2)
 @export_range(0.5, 8.0, 0.05) var start_trigger_height := 3.0
 @export_range(0.0, 4.0, 0.05) var start_trigger_vertical_offset := 1.5
 @export var auto_place_start_trigger := false
-@export var show_trigger_helpers := true
+@export var show_trigger_helpers := false
 
 
 func _ready() -> void:

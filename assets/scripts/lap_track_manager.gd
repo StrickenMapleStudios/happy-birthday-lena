@@ -2,18 +2,21 @@ extends Node
 
 class_name LapTrackManager
 
+const NORMAL_GAME_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
+
 @export var lap_track_path: NodePath = ^"../LapTrack"
 @export var player_path: NodePath = ^"../PlayerCharacter"
 @export var npc_runner_path: NodePath = ^"../NpcRunner"
 @export var npc_lane_runner_path: NodePath = ^"../NpcLaneRunner"
 @export var countdown_ui_path: NodePath = ^"../LapCountdownUi"
 @export var lap_counter_ui_path: NodePath = ^"../LapCounterUi"
-@export var lap_debug_ui_path: NodePath = ^"../LapDebugUi"
 @export_enum("Inner", "Outer") var player_lane := 0
 @export_enum("Inner", "Outer") var npc_lane := 1
 @export_range(1, 12, 1) var total_laps := 1
 @export_range(0.1, 4.0, 0.05) var finish_slowdown_duration := 1.35
 @export_range(0.1, 4.0, 0.05) var finish_fade_duration := 1.1
+@export var auto_place_player_on_lane := false
+@export var auto_place_npc_on_lane := false
 
 var _lap_track: LapTrack
 var _player: CharacterBody3D
@@ -21,7 +24,6 @@ var _npc_runner: CharacterBody3D
 var _npc_lane_runner: Node
 var _countdown_ui: LapCountdownUi
 var _lap_counter_ui: LapCounterUi
-var _lap_debug_ui: LapDebugUi
 var _race_finished := false
 var _countdown_active := false
 var _race_active := false
@@ -41,7 +43,6 @@ func _ready() -> void:
 	_npc_lane_runner = get_node_or_null(npc_lane_runner_path)
 	_countdown_ui = get_node_or_null(countdown_ui_path) as LapCountdownUi
 	_lap_counter_ui = get_node_or_null(lap_counter_ui_path) as LapCounterUi
-	_lap_debug_ui = get_node_or_null(lap_debug_ui_path) as LapDebugUi
 
 	if _lap_track == null:
 		return
@@ -50,7 +51,6 @@ func _ready() -> void:
 	_connect_track_triggers()
 	_reset_checkpoint_progress()
 	_refresh_lap_counter()
-	_refresh_debug_ui("ready")
 	call_deferred("_start_race")
 
 
@@ -70,7 +70,6 @@ func _start_race() -> void:
 	_reset_checkpoint_progress()
 	_refresh_lap_counter()
 	_set_race_motion_enabled(false)
-	_refresh_debug_ui("countdown")
 	if _countdown_ui != null:
 		var go_callable := Callable(self, "_on_countdown_go_released")
 		if not _countdown_ui.go_released.is_connected(go_callable):
@@ -80,15 +79,16 @@ func _start_race() -> void:
 		_on_countdown_go_released()
 	_countdown_active = false
 	print("Lap race started. Total laps: %d" % total_laps)
-	_refresh_debug_ui("race started")
 
 
 func _place_actors_on_lanes() -> void:
-	if _player != null:
+	if auto_place_player_on_lane and _player != null:
 		_place_actor_on_lane(_player, _lap_track, player_lane)
 
-	if _npc_runner != null:
+	if auto_place_npc_on_lane and _npc_runner != null:
 		_place_actor_on_lane(_npc_runner, _lap_track, npc_lane)
+
+	if _npc_runner != null:
 		_disable_npc_interaction(_npc_runner)
 
 	if _npc_lane_runner != null:
@@ -118,8 +118,6 @@ func _connect_track_triggers() -> void:
 			checkpoint.body_entered.connect(checkpoint_callable)
 		_connected_checkpoint_triggers.append(checkpoint)
 
-	_refresh_debug_ui("triggers connected")
-
 
 func _set_race_motion_enabled(is_enabled: bool) -> void:
 	if _player != null and _player.has_method("set_controls_enabled"):
@@ -141,31 +139,25 @@ func _on_checkpoint_trigger_body_entered(body: Node3D, checkpoint_index: int) ->
 	if checkpoint_index < 0 or checkpoint_index >= _checkpoint_visited.size():
 		return
 	if _checkpoint_visited[checkpoint_index]:
-		_refresh_debug_ui("checkpoint %d repeat" % checkpoint_index)
 		return
 
 	_checkpoint_visited[checkpoint_index] = true
 	print("Checkpoint %d/%d" % [_get_visited_checkpoint_count(), _checkpoint_visited.size()])
-	_refresh_debug_ui("checkpoint %d entered" % checkpoint_index)
 
 
 func _on_start_trigger_body_entered(body: Node3D) -> void:
 	if _finish_sequence_running:
 		return
 	if body != _player:
-		_refresh_debug_ui("finish entered by non-player")
 		return
 	if not _race_active:
-		_refresh_debug_ui("finish entered while inactive")
 		return
 	if not _all_checkpoints_visited():
-		_refresh_debug_ui("finish entered before checkpoints complete")
 		return
 
 	_completed_laps += 1
 	_refresh_lap_counter()
 	_reset_checkpoint_progress()
-	_refresh_debug_ui("lap accepted")
 	if _completed_laps >= total_laps:
 		_finish_race()
 		return
@@ -177,7 +169,6 @@ func _finish_race() -> void:
 	_race_active = false
 	_race_finished = true
 	print("Lap race finished in %d lap(s)." % total_laps)
-	_refresh_debug_ui("race finished")
 	if _finish_sequence_running:
 		return
 	call_deferred("_run_finish_sequence")
@@ -189,7 +180,6 @@ func _on_countdown_go_released() -> void:
 
 	_race_active = true
 	_set_race_motion_enabled(true)
-	_refresh_debug_ui("go released")
 
 
 func _refresh_lap_counter() -> void:
@@ -200,8 +190,6 @@ func _refresh_lap_counter() -> void:
 func _reset_checkpoint_progress() -> void:
 	for checkpoint_index in range(_checkpoint_visited.size()):
 		_checkpoint_visited[checkpoint_index] = false
-
-	_refresh_debug_ui("checkpoints reset")
 
 
 func _get_visited_checkpoint_count() -> int:
@@ -222,40 +210,11 @@ func _all_checkpoints_visited() -> bool:
 	return true
 
 
-func _refresh_debug_ui(last_event: String) -> void:
-	if _lap_debug_ui == null:
-		return
-
-	var checkpoint_flags: Array[String] = []
-	for checkpoint_index in range(_checkpoint_visited.size()):
-		checkpoint_flags.append("%d:%s" % [checkpoint_index + 1, "Y" if _checkpoint_visited[checkpoint_index] else "N"])
-
-	var start_position_text := "missing"
-	var start_trigger := _lap_track.get_start_trigger() if _lap_track != null else null
-	if start_trigger != null:
-		start_position_text = "(%.2f, %.2f, %.2f)" % [
-			start_trigger.global_position.x,
-			start_trigger.global_position.y,
-			start_trigger.global_position.z,
-		]
-
-	_lap_debug_ui.set_lines([
-		"event: %s" % last_event,
-		"laps: %d/%d" % [_completed_laps, total_laps],
-		"race_active: %s" % String.num_int64(int(_race_active)),
-		"countdown: %s" % String.num_int64(int(_countdown_active)),
-		"checkpoints: %s" % ", ".join(checkpoint_flags),
-		"finish ready: %s" % String.num_int64(int(_all_checkpoints_visited())),
-		"finish pos: %s" % start_position_text,
-	])
-
-
 func _run_finish_sequence() -> void:
 	if _finish_sequence_running:
 		return
 
 	_finish_sequence_running = true
-	_refresh_debug_ui("finish slowdown")
 	_kill_time_scale_tween()
 	_time_scale_tween = create_tween()
 	_time_scale_tween.set_ignore_time_scale(true)
@@ -268,9 +227,7 @@ func _run_finish_sequence() -> void:
 		0.0,
 		finish_slowdown_duration
 	)
-	await SceneTransition.fade_out(finish_fade_duration)
-	if _player != null and _player.has_method("set_controls_enabled"):
-		_player.call("set_controls_enabled", false)
+	await SceneTransition.change_scene_to_file(NORMAL_GAME_SCENE_PATH, finish_fade_duration, 0.35)
 
 
 func _set_finish_time_scale(value: float) -> void:

@@ -86,6 +86,8 @@ func _fade_to(target_alpha: float, duration: float, mouse_filter: Control.MouseF
 		return
 
 	var tween := create_tween()
+	tween.set_ignore_time_scale(true)
+	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tween.tween_property(_overlay, "modulate:a", target_alpha, duration)
 	await tween.finished
 	_overlay.visible = target_alpha > 0.0

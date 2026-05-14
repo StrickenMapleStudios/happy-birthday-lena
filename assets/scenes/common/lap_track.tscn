@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://kujkf6ahsl7s" path="res://assets/scripts/lap_track.gd" id="2_script"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_mm8me"]
-size = Vector3(8.4, 3, 4)
+size = Vector3(5.8, 3, 4)
 
 [sub_resource type="Curve3D" id="Curve3D_tov3k"]
 closed = true
@@ -28,9 +28,6 @@ curve_marker_inner_path = NodePath("TrackPivot/CurveMarkerInner")
 curve_marker_outer_path = NodePath("TrackPivot/CurveMarkerOuter")
 inner_lane_path = NodePath("TrackPivot/InnerLanePath")
 outer_lane_path = NodePath("TrackPivot/OuterLanePath")
-generated_triggers_root_path = NodePath("TrackPivot/LapModel/GeneratedTriggers")
-start_trigger_path = NodePath("TrackPivot/LapModel/GeneratedTriggers/StartTrigger")
-checkpoint_root_path = NodePath("TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers")
 auto_refresh_lane_markers_from_geometry = null
 auto_place_start_trigger = null
 show_trigger_helpers = null
@@ -55,7 +52,7 @@ shape = SubResource("BoxShape3D_mm8me")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.422014, 0.01, -0.5947255)
 
 [node name="CurveMarkerOuter" type="Marker3D" parent="TrackPivot" unique_id=1459934044]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.485601, 0.01, -0.9332936)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.485601, 0.01, -0.6860459)
 
 [node name="InnerLanePath" type="Path3D" parent="TrackPivot" unique_id=1782135784]
 transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 0, 0, 0)

@@ -10,7 +10,6 @@
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/lap_countdown_ui.tscn" id="8_countdown_ui"]
 [ext_resource type="Script" uid="uid://bf1tm2r3la4yy" path="res://assets/scripts/lap_track_manager.gd" id="9_manager"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/lap_counter_ui.tscn" id="10_counter_ui"]
-[ext_resource type="PackedScene" path="res://assets/scenes/ui/lap_debug_ui.tscn" id="11_debug_ui"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_showcase"]
 sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
@@ -67,7 +66,7 @@ checkpoint_height = 4.0
 checkpoint_track_padding = 1.1
 fallback_start_trigger_length = 5.8
 auto_place_start_trigger = false
-show_trigger_helpers = true
+show_trigger_helpers = false
 
 [node name="PlayerCharacter" parent="." unique_id=546921540 instance=ExtResource("2_player")]
 
@@ -95,7 +94,7 @@ far = 2000.0
 
 [node name="LapCounterUi" parent="." unique_id=1809343157 instance=ExtResource("10_counter_ui")]
 
-[node name="LapDebugUi" parent="." unique_id=37252076 instance=ExtResource("11_debug_ui")]
-
 [node name="LapTrackManager" type="Node" parent="." unique_id=1030630952]
 script = ExtResource("9_manager")
+auto_place_player_on_lane = true
+auto_place_npc_on_lane = true
