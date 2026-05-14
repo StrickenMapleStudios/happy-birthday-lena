@@ -14,7 +14,6 @@ navigation_region_path = NodePath("TrackPivot/NavigationRegion3D")
 boundary_root_path = NodePath("TrackPivot/BoundaryColliders")
 
 [node name="TrackPivot" type="Node3D" parent="."]
-rotation = Vector3(0, 3.141593, 0)
 
 [node name="LapModel" parent="TrackPivot" instance=ExtResource("1_lap_model")]
 

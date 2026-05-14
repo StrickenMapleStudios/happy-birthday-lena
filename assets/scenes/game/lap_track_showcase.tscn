@@ -69,6 +69,7 @@ runner_path = NodePath("../NpcRunner")
 root_motion_speed_multiplier = 1.0
 
 [node name="CameraRig" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 script = ExtResource("4_camera")
 target_path = NodePath("../PlayerCharacter")
 
