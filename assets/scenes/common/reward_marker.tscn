@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://assets/scripts/reward_marker.gd" id="1_script"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_helper"]
+top_radius = 0.22
+bottom_radius = 0.36
+height = 1.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_helper"]
+albedo_color = Color(1, 0.827451, 0.345098, 0.85)
+emission_enabled = true
+emission = Color(0.564706, 0.427451, 0.0666667, 1)
+emission_energy_multiplier = 0.6
+transparency = 1
+
+[node name="RewardMarker" type="Marker3D"]
+script = ExtResource("1_script")
+
+[node name="HelperMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+mesh = SubResource("CylinderMesh_helper")
+material_override = SubResource("StandardMaterial3D_helper")

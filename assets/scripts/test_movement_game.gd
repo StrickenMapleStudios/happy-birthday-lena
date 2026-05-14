@@ -28,6 +28,10 @@ const AUDIO_PRESET_FADE_DURATION := 0.15
 const INVENTORY_TIME_SCALE_DURATION := 0.5
 const INVENTORY_TIME_SCALE_CLOSED := 1.0
 const INVENTORY_TIME_SCALE_OPEN := 0.0
+const DEFAULT_GAME_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
+const LABYRINTH_REWARD_SOURCE_ID := &"labyrinth_exit_reward"
+const LABYRINTH_REWARD_MARKER_ID := &"labyrinth_exit_reward_marker"
+const BRASS_KEY_ITEM := preload("res://assets/data/items/brass_key_item.tres")
 
 const CURSOR_MODE_INGAME := Input.MOUSE_MODE_CAPTURED
 const CURSOR_MODE_UI := Input.MOUSE_MODE_VISIBLE
@@ -116,6 +120,8 @@ func _ready() -> void:
 	_connect_labyrinth_area_signals()
 	if camera_rig != null and camera_rig.has_signal("labyrinth_view_yaw_changed"):
 		camera_rig.connect("labyrinth_view_yaw_changed", Callable(self, "_on_labyrinth_view_yaw_changed"))
+	if RewardService != null:
+		RewardService.call_deferred("spawn_pending_rewards", self)
 	_refresh_cursor_mode()
 
 
@@ -975,6 +981,7 @@ func _on_labyrinth_enter_requested(area: LabyrinthArea) -> void:
 func _on_labyrinth_exit_requested(_area: LabyrinthArea) -> void:
 	if _labyrinth_active:
 		_exit_labyrinth_mode()
+		_grant_labyrinth_exit_reward()
 		return
 
 	_enter_labyrinth_mode(_area)
@@ -1023,3 +1030,17 @@ func _should_ignore_labyrinth_entry(area: LabyrinthArea) -> bool:
 		return false
 
 	return ignored_area == area
+
+
+func _grant_labyrinth_exit_reward() -> void:
+	if RewardService == null:
+		return
+
+	RewardService.call(
+		"grant_reward",
+		LABYRINTH_REWARD_SOURCE_ID,
+		LABYRINTH_REWARD_MARKER_ID,
+		BRASS_KEY_ITEM,
+		1,
+		DEFAULT_GAME_SCENE_PATH
+	)

@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dwinqt4ms18vm" path="res://assets/scenes/game/giant_character_showcase.tscn" id="5_giant_showcase"]
 [ext_resource type="PackedScene" uid="uid://jgs2yvp5lmdi" path="res://addons/Free Forest Nature Pack/Trees/Spruce/Flat_Tree_Spruce_large.glb" id="6_spruce_large"]
 [ext_resource type="PackedScene" uid="uid://berhpqhc32tqf" path="res://addons/Free Forest Nature Pack/Trees/Spruce/Flat_Tree_Spruce_medium.glb" id="7_spruce_medium"]
+[ext_resource type="PackedScene" path="res://assets/scenes/common/reward_marker.tscn" id="8_reward_marker"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_test_movement"]
 sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
@@ -75,6 +76,14 @@ environment = SubResource("Environment_test_movement")
 
 [node name="LabyrinthArea" parent="." unique_id=298625149 instance=ExtResource("1_rtw1c")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -125.934105, 0, -66.25955)
+
+[node name="LabyrinthExitRewardMarker" parent="." instance=ExtResource("8_reward_marker")]
+transform = Transform3D(0.9469301, 0, -0.32143947, 0, 1, 0, 0.32143947, 0, 0.9469301, -126.4, 0.12, -61.2)
+marker_id = &"labyrinth_exit_reward_marker"
+
+[node name="LapFinishRewardMarker" parent="." instance=ExtResource("8_reward_marker")]
+transform = Transform3D(0.97437006, 0, -0.22495106, 0, 1, 0, 0.22495106, 0, 0.97437006, 10.8, 0.12, -16.4)
+marker_id = &"lap_finish_reward_marker"
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=1646791676]
 transform = Transform3D(-0.6530099, -0.6150685, 0.44191104, -1.1948032e-08, 0.5837285, 0.81194884, -0.75732034, 0.5301067, -0.38136047, 0, 5.18316, 0)

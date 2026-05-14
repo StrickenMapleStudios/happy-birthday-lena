@@ -22,6 +22,7 @@ GameSettings="*res://assets/scripts/game_settings.gd"
 DialogueManager="*uid://c3rodes2l3gxb"
 InputBindings="*res://assets/scripts/input_bindings.gd"
 AudioService="*res://assets/scripts/audio_service.gd"
+RewardService="*res://assets/scripts/reward_service.gd"
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]

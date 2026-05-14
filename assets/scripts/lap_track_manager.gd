@@ -3,6 +3,9 @@ extends Node
 class_name LapTrackManager
 
 const NORMAL_GAME_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
+const LAP_REWARD_SOURCE_ID := &"lap_finish_reward"
+const LAP_REWARD_MARKER_ID := &"lap_finish_reward_marker"
+const BRASS_KEY_ITEM := preload("res://assets/data/items/brass_key_item.tres")
 
 @export var lap_track_path: NodePath = ^"../LapTrack"
 @export var player_path: NodePath = ^"../PlayerCharacter"
@@ -174,6 +177,16 @@ func _finish_race() -> void:
 	call_deferred("_run_finish_sequence")
 
 
+func complete_lap_state() -> void:
+	if _finish_sequence_running:
+		return
+
+	_race_active = false
+	_race_finished = true
+	_queue_finish_reward()
+	call_deferred("_run_finish_sequence")
+
+
 func _on_countdown_go_released() -> void:
 	if _race_active:
 		return
@@ -215,6 +228,7 @@ func _run_finish_sequence() -> void:
 		return
 
 	_finish_sequence_running = true
+	_queue_finish_reward()
 	_kill_time_scale_tween()
 	_time_scale_tween = create_tween()
 	_time_scale_tween.set_ignore_time_scale(true)
@@ -228,6 +242,20 @@ func _run_finish_sequence() -> void:
 		finish_slowdown_duration
 	)
 	await SceneTransition.change_scene_to_file(NORMAL_GAME_SCENE_PATH, finish_fade_duration, 0.35)
+
+
+func _queue_finish_reward() -> void:
+	if RewardService == null:
+		return
+
+	RewardService.call(
+		"grant_reward",
+		LAP_REWARD_SOURCE_ID,
+		LAP_REWARD_MARKER_ID,
+		BRASS_KEY_ITEM,
+		1,
+		NORMAL_GAME_SCENE_PATH
+	)
 
 
 func _set_finish_time_scale(value: float) -> void:

@@ -17,6 +17,7 @@ class_name PickupItem
 var _base_visual_position := Vector3.ZERO
 var _time := 0.0
 var _custom_visual_instance: Node3D
+var _reward_reveal_tween: Tween
 
 
 func _ready() -> void:
@@ -33,6 +34,32 @@ func _process(delta: float) -> void:
 	_time += delta * bob_speed
 	visual_root.position = _base_visual_position + Vector3(0.0, sin(_time) * bob_height, 0.0)
 	visual_root.rotation.y += delta * 0.45
+
+
+func play_reward_reveal(duration: float = 0.45) -> void:
+	if visual_root == null:
+		return
+
+	if _reward_reveal_tween != null and _reward_reveal_tween.is_valid():
+		_reward_reveal_tween.kill()
+
+	_set_visual_transparency(1.0)
+	visual_root.scale = Vector3.ONE * 0.7
+	if highlight_light != null and highlight_light.visible:
+		highlight_light.light_energy = 0.0
+
+	_reward_reveal_tween = create_tween()
+	_reward_reveal_tween.set_trans(Tween.TRANS_CUBIC)
+	_reward_reveal_tween.set_ease(Tween.EASE_OUT)
+	_reward_reveal_tween.parallel().tween_method(Callable(self, "_set_visual_transparency"), 1.0, 0.0, duration)
+	_reward_reveal_tween.parallel().tween_property(visual_root, "scale", Vector3.ONE, duration)
+	if highlight_light != null and highlight_light.visible and item_data != null:
+		_reward_reveal_tween.parallel().tween_property(
+			highlight_light,
+			"light_energy",
+			item_data.world_light_energy,
+			duration
+		)
 
 
 func handle_interaction(_player: Node, inventory: InventoryData) -> bool:
@@ -177,3 +204,20 @@ func _clear_custom_visual() -> void:
 
 	_custom_visual_instance.queue_free()
 	_custom_visual_instance = null
+
+
+func _set_visual_transparency(value: float) -> void:
+	var clamped_value := clampf(value, 0.0, 1.0)
+	_apply_transparency_to_node(visual_root, clamped_value)
+
+
+func _apply_transparency_to_node(root: Node, value: float) -> void:
+	if root == null:
+		return
+
+	var geometry := root as GeometryInstance3D
+	if geometry != null:
+		geometry.transparency = value
+
+	for child in root.get_children():
+		_apply_transparency_to_node(child, value)
