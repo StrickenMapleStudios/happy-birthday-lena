@@ -494,7 +494,7 @@ func _exit_labyrinth_from_pause() -> void:
 	await SceneTransition.fade_out()
 	_exit_labyrinth_mode()
 	if labyrinth_area != null and is_instance_valid(labyrinth_area):
-		player.global_position = labyrinth_area.get_return_position(player)
+		player.global_transform = labyrinth_area.get_return_transform(player)
 		_ignored_labyrinth_entry_area = weakref(labyrinth_area)
 	await get_tree().process_frame
 	await SceneTransition.fade_in()
@@ -973,7 +973,11 @@ func _on_labyrinth_enter_requested(area: LabyrinthArea) -> void:
 
 
 func _on_labyrinth_exit_requested(_area: LabyrinthArea) -> void:
-	_exit_labyrinth_mode()
+	if _labyrinth_active:
+		_exit_labyrinth_mode()
+		return
+
+	_enter_labyrinth_mode(_area)
 
 
 func _enter_labyrinth_mode(area: LabyrinthArea) -> void:

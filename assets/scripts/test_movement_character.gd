@@ -7,6 +7,8 @@ const ANIMATION_RUNNING := "Running"
 const ANIMATION_EVENT_METHOD := &"handle_event"
 const WALKING_SPEED_SCALE := 2.0
 const RUNNING_SPEED_SCALE := 5.0
+const LABYRINTH_WALK_SPEED := 4.0
+const LABYRINTH_RUN_SPEED := 7.0
 const EVENT_FOOTSTEP := &"footstep"
 const FOOTSTEP_SOUND_ID := &"footstep_grass"
 const PREPARED_FOOTSTEP_META := &"prepared_footstep_events"
@@ -220,16 +222,13 @@ func _apply_root_motion() -> void:
 		remaining_motion = collision.get_remainder().slide(collision.get_normal())
 
 
-func _apply_labyrinth_movement(input: Vector2, _speed_up: bool, _delta: float) -> void:
+func _apply_labyrinth_movement(input: Vector2, speed_up: bool, delta: float) -> void:
 	if input.is_zero_approx():
 		return
 
 	var local_direction := Vector3(-input.x, 0.0, -input.y)
 	var world_direction := Basis.from_euler(Vector3(0.0, _labyrinth_view_yaw, 0.0)) * local_direction
-	var motion_distance := _get_current_root_motion_distance()
-	if motion_distance <= 0.000001:
-		return
-	var motion := world_direction.normalized() * motion_distance
+	var motion := world_direction.normalized() * _get_labyrinth_speed(speed_up) * delta
 	_move_with_collision_sliding(motion)
 
 
@@ -246,13 +245,8 @@ func _move_with_collision_sliding(motion: Vector3) -> void:
 		remaining_motion = collision.get_remainder().slide(collision.get_normal())
 
 
-func _get_current_root_motion_distance() -> float:
-	if animation_tree == null or animation_tree.root_motion_track.is_empty():
-		return 0.0
-
-	var root_motion: Vector3 = animation_tree.get_root_motion_position()
-	root_motion.y = 0.0
-	return root_motion.length()
+func _get_labyrinth_speed(speed_up: bool) -> float:
+	return LABYRINTH_RUN_SPEED if speed_up else LABYRINTH_WALK_SPEED
 
 
 func _apply_labyrinth_rotation() -> void:
