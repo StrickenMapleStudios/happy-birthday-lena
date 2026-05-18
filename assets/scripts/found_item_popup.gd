@@ -155,7 +155,7 @@ func _compute_aabb(root_node: Node3D) -> AABB:
 	var stack: Array[Node] = [root_node]
 
 	while not stack.is_empty():
-		var current: MeshInstance3D = stack.pop_back()
+		var current : Node = stack.pop_back()
 		for child in current.get_children():
 			stack.append(child)
 

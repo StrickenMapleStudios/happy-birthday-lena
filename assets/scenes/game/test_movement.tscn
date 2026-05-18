@@ -64,6 +64,8 @@ transform = Transform3D(-0.65744096, 0, 0.753506, 0, 1, 0, -0.753506, 0, -0.6574
 
 [node name="RaceChallenger" parent="." unique_id=1552964193 instance=ExtResource("11_race_npc")]
 transform = Transform3D(-0.9921147, 0, -0.12533323, 0, 1, 0, 0.12533323, 0, -0.9921147, 7.9, 0, 13.8)
+interaction_target_path = NodePath("InteractionTarget")
+race_dialogue_state_path = NodePath("RaceDialogueState")
 
 [node name="CameraRig" type="Node3D" parent="." unique_id=1843382860]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
