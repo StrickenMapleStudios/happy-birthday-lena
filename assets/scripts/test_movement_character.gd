@@ -46,6 +46,7 @@ var _dialogue_animation_mode_active := false
 var _saved_animation_tree: AnimationTree
 var _control_mode := CONTROL_MODE_DEFAULT
 var _labyrinth_view_yaw := 0.0
+var _camera_relative_movement_enabled := false
 
 
 func _ready() -> void:
@@ -89,7 +90,7 @@ func _process(delta: float) -> void:
 		return
 
 	if is_moving:
-		var direction := Vector3(-input.x, 0.0, -input.y).normalized()
+		var direction := _get_default_movement_direction(input)
 		_rotate_towards(direction, delta)
 
 	_apply_root_motion()
@@ -247,6 +248,32 @@ func _move_with_collision_sliding(motion: Vector3) -> void:
 
 func _get_labyrinth_speed(speed_up: bool) -> float:
 	return LABYRINTH_RUN_SPEED if speed_up else LABYRINTH_WALK_SPEED
+
+
+func _get_default_movement_direction(input: Vector2) -> Vector3:
+	if not _camera_relative_movement_enabled:
+		return Vector3(-input.x, 0.0, -input.y).normalized()
+
+	var camera := get_viewport().get_camera_3d()
+	if camera == null:
+		return Vector3(-input.x, 0.0, -input.y).normalized()
+
+	var camera_forward := -camera.global_basis.z
+	camera_forward.y = 0.0
+
+	if camera_forward.length_squared() <= 0.000001:
+		return Vector3(-input.x, 0.0, -input.y).normalized()
+
+	camera_forward = camera_forward.normalized()
+	var camera_right := camera_forward.cross(Vector3.UP)
+	if camera_right.length_squared() <= 0.000001:
+		return Vector3(-input.x, 0.0, -input.y).normalized()
+	camera_right = camera_right.normalized()
+	return (camera_right * -input.x + camera_forward * -input.y).normalized()
+
+
+func set_camera_relative_movement_enabled(value: bool) -> void:
+	_camera_relative_movement_enabled = value
 
 
 func _apply_labyrinth_rotation() -> void:

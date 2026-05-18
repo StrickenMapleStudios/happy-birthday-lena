@@ -27,9 +27,10 @@ transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition
 graph_offset = Vector2(-26, 4)
 
 [node name="NpcLapRunner" instance=ExtResource("1_base")]
+locomotion_speed_multiplier = 0.65
 
 [node name="AnimationPlayer" parent="Model" index="1"]
-speed_scale = 0.54
+speed_scale = 1.0
 
 [node name="AnimationTree" parent="Model/AnimationPlayer" index="0"]
 tree_root = SubResource("AnimationNodeStateMachine_lap_runner")

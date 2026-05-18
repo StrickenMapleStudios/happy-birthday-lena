@@ -13,6 +13,7 @@ const RACE_RESULT_LOSE := &"lose"
 @export var player_path: NodePath = ^"../PlayerCharacter"
 @export var npc_runner_path: NodePath = ^"../NpcRunner"
 @export var npc_lane_runner_path: NodePath = ^"../NpcLaneRunner"
+@export var camera_rig_path: NodePath = ^"../CameraRig"
 @export var countdown_ui_path: NodePath = ^"../LapCountdownUi"
 @export var lap_counter_ui_path: NodePath = ^"../LapCounterUi"
 @export_enum("Inner", "Outer") var player_lane := 0
@@ -27,6 +28,7 @@ var _lap_track: LapTrack
 var _player: CharacterBody3D
 var _npc_runner: CharacterBody3D
 var _npc_lane_runner: Node
+var _camera_rig: Node3D
 var _countdown_ui: LapCountdownUi
 var _lap_counter_ui: LapCounterUi
 var _race_finished := false
@@ -48,6 +50,7 @@ func _ready() -> void:
 	_player = get_node_or_null(player_path) as CharacterBody3D
 	_npc_runner = get_node_or_null(npc_runner_path) as CharacterBody3D
 	_npc_lane_runner = get_node_or_null(npc_lane_runner_path)
+	_camera_rig = get_node_or_null(camera_rig_path) as Node3D
 	_countdown_ui = get_node_or_null(countdown_ui_path) as LapCountdownUi
 	_lap_counter_ui = get_node_or_null(lap_counter_ui_path) as LapCounterUi
 
@@ -141,6 +144,8 @@ func _connect_npc_runner_signals() -> void:
 func _set_race_motion_enabled(is_enabled: bool) -> void:
 	if _player != null and _player.has_method("set_controls_enabled"):
 		_player.call("set_controls_enabled", is_enabled)
+	if _player != null and _player.has_method("set_camera_relative_movement_enabled"):
+		_player.call("set_camera_relative_movement_enabled", is_enabled)
 
 	if _npc_runner != null and _npc_runner.has_method("set_follow_navigation"):
 		_npc_runner.call("set_follow_navigation", Vector3.ZERO, 0.0, false)
@@ -150,6 +155,9 @@ func _set_race_motion_enabled(is_enabled: bool) -> void:
 		_npc_lane_runner.set_physics_process(is_enabled)
 		if is_enabled and _npc_lane_runner.has_method("restart"):
 			_npc_lane_runner.call("restart")
+
+	if _camera_rig != null and _camera_rig.has_method("set_follow_active"):
+		_camera_rig.call("set_follow_active", is_enabled)
 
 
 func _on_checkpoint_trigger_body_entered(body: Node3D, checkpoint_index: int) -> void:

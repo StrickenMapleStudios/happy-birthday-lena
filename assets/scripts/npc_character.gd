@@ -19,6 +19,7 @@ const MAX_COLLISION_SLIDES := 4
 
 @export var visual_root_path: NodePath = ^"Model/Rig"
 @export var player_dialogue_anchor_path: NodePath = ^"PlayerDialogueAnchor"
+@export_range(0.1, 3.0, 0.05) var locomotion_speed_multiplier := 1.0
 
 @onready var animation_player: AnimationPlayer = $Model/AnimationPlayer
 @onready var animation_tree: AnimationTree = $Model/AnimationPlayer/AnimationTree
@@ -43,8 +44,8 @@ func _ready() -> void:
 	if dialogue_animation_tree != null:
 		dialogue_animation_tree.active = false
 	_playback = animation_tree.get("parameters/playback") as AnimationNodeStateMachinePlayback
-	_prepare_locomotion_animation(ANIMATION_WALKING, WALKING_SPEED_SCALE)
-	_prepare_locomotion_animation(ANIMATION_RUNNING, RUNNING_SPEED_SCALE)
+	_prepare_locomotion_animation(ANIMATION_WALKING, WALKING_SPEED_SCALE * locomotion_speed_multiplier)
+	_prepare_locomotion_animation(ANIMATION_RUNNING, RUNNING_SPEED_SCALE * locomotion_speed_multiplier)
 	_configure_root_motion_track()
 	_travel_to(STATE_IDLE)
 

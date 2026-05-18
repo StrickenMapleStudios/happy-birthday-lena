@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://ds7rcowipbcrj" path="res://assets/scenes/common/lap_track.tscn" id="1_lap_track"]
 [ext_resource type="PackedScene" uid="uid://dmb72unyvr0t3" path="res://assets/scenes/characters/player_character.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://assets/scenes/characters/npc_lap_runner.tscn" id="3_npc_runner"]
-[ext_resource type="Script" uid="uid://b84roxoxwu700" path="res://assets/scripts/test_movement_camera.gd" id="4_camera"]
+[ext_resource type="Script" uid="uid://ctna501i4g0fw" path="res://assets/scripts/lap_follow_camera.gd" id="4_camera"]
 [ext_resource type="Script" uid="uid://cb5u8hgv00ycv" path="res://assets/scripts/lap_lane_runner.gd" id="5_lane_runner"]
 [ext_resource type="Script" uid="uid://dbjn2yb148gdq" path="res://assets/scripts/lap_track_showcase.gd" id="6_showcase"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/pause_menu.tscn" id="7_pause_menu"]
@@ -58,9 +58,7 @@ directional_shadow_max_distance = 1301.8
 
 [node name="LapTrack" parent="." unique_id=164276639 instance=ExtResource("1_lap_track")]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
-generated_triggers_root_path = NodePath("TrackPivot/LapModel/GeneratedTriggers")
-start_trigger_path = NodePath("TrackPivot/LapModel/GeneratedTriggers/StartTrigger")
-checkpoint_root_path = NodePath("TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers")
+auto_refresh_lane_markers_from_geometry = false
 checkpoint_length = 7.0
 checkpoint_height = 4.0
 checkpoint_track_padding = 1.1
@@ -74,12 +72,11 @@ show_trigger_helpers = false
 
 [node name="NpcLaneRunner" type="Node" parent="." unique_id=2068378393]
 script = ExtResource("5_lane_runner")
-root_motion_speed_multiplier = 1.0
+root_motion_speed_multiplier = 0.72
 
 [node name="CameraRig" type="Node3D" parent="." unique_id=25535630]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -29.863482, 0, -1.8647308)
 script = ExtResource("4_camera")
-target_path = NodePath("../PlayerCharacter")
 
 [node name="GameCamera" type="Camera3D" parent="CameraRig" unique_id=1468171338]
 transform = Transform3D(1, -4.712819e-08, 1.6832325e-07, 4.144082e-09, 0.9690889, 0.24671175, -1.7474727e-07, -0.24671175, 0.9690889, -8.6249166e-08, 4.0897617, 8.217516)
