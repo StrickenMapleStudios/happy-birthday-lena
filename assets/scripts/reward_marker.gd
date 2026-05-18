@@ -33,11 +33,11 @@ func spawn_reward(item_data: InventoryItemData, quantity: int = 1, play_reveal: 
 	if pickup == null:
 		return null
 
+	pickup.item_data = item_data
+	pickup.quantity = max(quantity, 1)
 	add_child(pickup)
 	pickup.owner = owner
 	pickup.position = Vector3.ZERO
-	pickup.item_data = item_data
-	pickup.quantity = max(quantity, 1)
 	_spawned_reward = pickup
 	pickup.tree_exited.connect(_on_spawned_reward_tree_exited, CONNECT_ONE_SHOT)
 	if play_reveal and pickup.has_method("play_reward_reveal"):

@@ -23,7 +23,7 @@ shape = SubResource("BoxShape3D_trigger")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.6421947)
 
 [node name="LabyrinthExitRewardMarker" parent="." unique_id=1051672805 instance=ExtResource("3_reward_marker")]
-transform = Transform3D(0.9469301, 0, -0.32143947, 0, 1, 0, 0.32143947, 0, 0.9469301, -68.01579, 0.12, -99.83907)
+transform = Transform3D(0.9469301, 0, -0.32143947, 0, 1, 0, 0.32143947, 0, 0.9469301, -62.078648, 0.12, -99.83907)
 marker_id = &"labyrinth_exit_reward_marker"
 
 [node name="ExitTrigger" type="Area3D" parent="." unique_id=467104083]
