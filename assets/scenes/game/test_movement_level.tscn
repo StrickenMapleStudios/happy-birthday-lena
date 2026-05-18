@@ -77,10 +77,6 @@ environment = SubResource("Environment_test_movement")
 [node name="LabyrinthArea" parent="." unique_id=298625149 instance=ExtResource("1_rtw1c")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -125.934105, 0, -66.25955)
 
-[node name="LabyrinthExitRewardMarker" parent="." instance=ExtResource("8_reward_marker")]
-transform = Transform3D(0.9469301, 0, -0.32143947, 0, 1, 0, 0.32143947, 0, 0.9469301, -126.4, 0.12, -61.2)
-marker_id = &"labyrinth_exit_reward_marker"
-
 [node name="LapFinishRewardMarker" parent="." instance=ExtResource("8_reward_marker")]
 transform = Transform3D(0.97437006, 0, -0.22495106, 0, 1, 0, 0.22495106, 0, 0.97437006, 10.8, 0.12, -16.4)
 marker_id = &"lap_finish_reward_marker"

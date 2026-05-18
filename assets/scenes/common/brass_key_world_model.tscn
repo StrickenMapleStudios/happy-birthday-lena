@@ -1,0 +1,35 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/art/models/items/key.glb" id="1_key_model"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_glow"]
+size = Vector2(2.1, 2.1)
+
+[sub_resource type="Shader" id="Shader_glow"]
+code = "shader_type spatial;\nrender_mode unshaded, blend_add, depth_draw_never, cull_disabled;\n\nuniform vec4 glow_color : source_color = vec4(1.0, 0.84, 0.34, 0.85);\nuniform float glow_radius = 0.48;\n\nvoid fragment() {\n\tvec2 centered_uv = UV - vec2(0.5);\n\tfloat dist = length(centered_uv);\n\tfloat glow = smoothstep(glow_radius, 0.0, dist);\n\tALBEDO = glow_color.rgb * glow;\n\tEMISSION = glow_color.rgb * glow * 1.35;\n\tALPHA = glow * glow_color.a;\n}\n"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_glow"]
+shader = SubResource("Shader_glow")
+
+[node name="BrassKeyWorldModel" type="Node3D"]
+
+[node name="KeyModel" parent="." instance=ExtResource("1_key_model")]
+
+[node name="GlowHalo" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_glow")
+material_override = SubResource("ShaderMaterial_glow")
+
+[node name="GlowHaloCross" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0.9, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_glow")
+material_override = SubResource("ShaderMaterial_glow")
+
+[node name="GlowLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+light_color = Color(1, 0.854902, 0.360784, 1)
+light_energy = 0.55
+omni_range = 3.6
+shadow_enabled = false
