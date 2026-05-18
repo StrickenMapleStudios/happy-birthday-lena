@@ -149,13 +149,13 @@ func _frame_preview_instance(instance: Node3D) -> void:
 	preview_fill_light.omni_range = maxf(radius * 8.0, 6.0)
 
 
-func _compute_aabb(root_node: Node3D) -> Aabb:
+func _compute_aabb(root_node: Node3D) -> AABB:
 	var has_bounds := false
-	var merged := Aabb()
+	var merged := AABB()
 	var stack: Array[Node] = [root_node]
 
 	while not stack.is_empty():
-		var current := stack.pop_back()
+		var current: MeshInstance3D = stack.pop_back()
 		for child in current.get_children():
 			stack.append(child)
 
@@ -166,7 +166,7 @@ func _compute_aabb(root_node: Node3D) -> Aabb:
 		var transformed_points := _get_transformed_aabb_points(mesh_instance.global_transform, mesh_instance.mesh.get_aabb())
 		for point in transformed_points:
 			if not has_bounds:
-				merged = Aabb(point, Vector3.ZERO)
+				merged = AABB(point, Vector3.ZERO)
 				has_bounds = true
 			else:
 				merged = merged.expand(point)
@@ -174,10 +174,10 @@ func _compute_aabb(root_node: Node3D) -> Aabb:
 	if has_bounds:
 		return merged
 
-	return Aabb(Vector3(-0.5, -0.5, -0.5), Vector3.ONE)
+	return AABB(Vector3(-0.5, -0.5, -0.5), Vector3.ONE)
 
 
-func _get_transformed_aabb_points(transform: Transform3D, bounds: Aabb) -> Array[Vector3]:
+func _get_transformed_aabb_points(transform: Transform3D, bounds: AABB) -> Array[Vector3]:
 	var points: Array[Vector3] = []
 	for x in [bounds.position.x, bounds.end.x]:
 		for y in [bounds.position.y, bounds.end.y]:

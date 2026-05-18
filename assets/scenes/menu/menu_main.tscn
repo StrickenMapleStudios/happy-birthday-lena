@@ -2,8 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://c3pfhf3o67ojp" path="res://assets/scenes/menu/menu_environment.tscn" id="1_ko25s"]
 [ext_resource type="PackedScene" uid="uid://df155h7gooru8" path="res://assets/scenes/menu/menu_ui.tscn" id="2_h7tvt"]
-[ext_resource type="Script" path="res://assets/scripts/menu_main.gd" id="3_l77y1"]
-[ext_resource type="AudioStream" uid="uid://byai2vskgnh43" path="res://assets/audio/menu_music.mp3" id="4_qk1w3"]
+[ext_resource type="Script" uid="uid://dpr2bsw1b7ows" path="res://assets/scripts/menu_main.gd" id="3_l77y1"]
+[ext_resource type="AudioStream" uid="uid://b1tgyi23dwpmm" path="res://assets/audio/menu_music.mp3" id="4_qk1w3"]
 
 [node name="menuMain" type="Node3D" unique_id=1000388063]
 script = ExtResource("3_l77y1")
@@ -12,6 +12,5 @@ script = ExtResource("3_l77y1")
 
 [node name="menuUI" parent="." unique_id=899699264 instance=ExtResource("2_h7tvt")]
 
-[node name="MenuMusic" type="AudioStreamPlayer" parent="."]
+[node name="MenuMusic" type="AudioStreamPlayer" parent="." unique_id=721423506]
 stream = ExtResource("4_qk1w3")
-bus = &"Music"
