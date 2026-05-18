@@ -135,6 +135,7 @@ func _ready() -> void:
 		RewardService.call_deferred("spawn_pending_rewards", self)
 	_resume_pending_lap_race_return()
 	_refresh_cursor_mode()
+	_sync_follower_gameplay_state()
 
 
 func _exit_tree() -> void:
@@ -846,6 +847,7 @@ func _set_input_context(value: int) -> void:
 	_set_active_dialogue_input_enabled(value != InputContext.TRANSITION)
 	_refresh_cursor_mode()
 	_refresh_gameplay_world_ui_visibility()
+	_sync_follower_gameplay_state()
 
 
 func _refresh_gameplay_world_ui_visibility() -> void:
@@ -964,6 +966,21 @@ func _restore_follower_actors_after_dialogue() -> void:
 			actor.call("resume_as_follower_after_dialogue")
 
 	_hidden_follower_actors.clear()
+
+
+func _sync_follower_gameplay_state() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+
+	var follow_enabled := _input_context == InputContext.GAMEPLAY
+	for actor in tree.get_nodes_in_group(&"friendly_followers"):
+		if actor == null:
+			continue
+
+		var friend_follow_state := actor.get_node_or_null(^"FriendFollowState")
+		if friend_follow_state != null and friend_follow_state.has_method("set_gameplay_follow_enabled"):
+			friend_follow_state.call("set_gameplay_follow_enabled", follow_enabled)
 
 
 func _try_handle_non_dialogue_interaction(target: InteractionTarget) -> bool:

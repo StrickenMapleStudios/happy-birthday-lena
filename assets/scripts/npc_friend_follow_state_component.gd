@@ -21,6 +21,7 @@ const INTERACTION_TARGET_PATH := ^"../InteractionTarget"
 var _target_actor: Node3D
 var _follow_paused := false
 var _follow_active := false
+var _gameplay_follow_enabled := true
 var _last_requested_target := Vector3.INF
 
 
@@ -35,7 +36,7 @@ func _physics_process(delta: float) -> void:
 	if actor == null:
 		return
 
-	if not is_friend or _follow_paused:
+	if not is_friend or _follow_paused or not _gameplay_follow_enabled:
 		_stop_following(actor, delta)
 		return
 
@@ -110,6 +111,17 @@ func resume_following() -> void:
 	_follow_active = false
 	_target_actor = _find_target_actor()
 	_last_requested_target = Vector3.INF
+
+
+func set_gameplay_follow_enabled(value: bool) -> void:
+	if _gameplay_follow_enabled == value:
+		return
+
+	_gameplay_follow_enabled = value
+	_follow_active = false
+	_last_requested_target = Vector3.INF
+	if value and is_friend and not _follow_paused:
+		_target_actor = _find_target_actor()
 
 
 func _find_target_actor() -> Node3D:
