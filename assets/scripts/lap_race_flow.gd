@@ -27,6 +27,13 @@ func finish_race(result: StringName) -> void:
 	_result = result
 
 
+func get_return_scene_path(default_scene_path: String = "") -> String:
+	if _return_scene_path.is_empty():
+		return default_scene_path
+
+	return _return_scene_path
+
+
 func has_pending_return(scene_path: String = "") -> bool:
 	if not _pending_return:
 		return false

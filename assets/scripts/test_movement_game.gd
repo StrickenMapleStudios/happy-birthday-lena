@@ -42,6 +42,7 @@ enum InputContext {
 	LABYRINTH,
 	DIALOGUE,
 	DIALOGUE_RESPONSE_SELECTION,
+	DEMONSTRATION,
 	CUTSCENE,
 	INVENTORY,
 	PAUSE,
@@ -51,6 +52,7 @@ enum InputContext {
 var _interaction_locked := false
 var _dialogue_active := false
 var _dialogue_response_selection_active := false
+var _demonstration_active := false
 var _cutscene_active := false
 var _cutscene_target: Node
 var _dialogue_target: InteractionTarget
@@ -73,11 +75,14 @@ var _input_context := InputContext.GAMEPLAY
 var _focus_before_pause: WeakRef
 var _inventory_data: InventoryData = InventoryData.new()
 var _hidden_follower_actors: Array[Node3D] = []
+var _queued_reward_demonstration_cameras: Array[WeakRef] = []
 var _inventory_time_scale_tween: Tween
 var _labyrinth_active := false
 var _active_labyrinth_area: LabyrinthArea
 var _ignored_labyrinth_entry_area: WeakRef
 var _found_item_popup: FoundItemPopup
+var _pending_lap_return_context: Dictionary = {}
+var _reward_demonstration_start_pending := false
 
 
 func _ready() -> void:
@@ -132,8 +137,12 @@ func _ready() -> void:
 	if camera_rig != null and camera_rig.has_signal("labyrinth_view_yaw_changed"):
 		camera_rig.connect("labyrinth_view_yaw_changed", Callable(self, "_on_labyrinth_view_yaw_changed"))
 	if RewardService != null:
-		RewardService.call_deferred("spawn_pending_rewards", self)
-	_resume_pending_lap_race_return()
+		if RewardService.has_signal("reward_spawned") and not RewardService.is_connected("reward_spawned", Callable(self, "_on_reward_spawned")):
+			RewardService.connect("reward_spawned", Callable(self, "_on_reward_spawned"))
+		RewardService.call("spawn_pending_rewards", self)
+	_capture_pending_lap_race_return()
+	_try_start_reward_demonstration()
+	_resume_pending_lap_race_return_if_ready()
 	_refresh_cursor_mode()
 	_sync_follower_gameplay_state()
 
@@ -148,6 +157,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if _inventory_open:
+		return
+
+	if _demonstration_active:
 		return
 
 	if _pause_active or _pause_transition_locked:
@@ -828,6 +840,10 @@ func _sync_input_context() -> void:
 			_set_input_context(InputContext.DIALOGUE)
 		return
 
+	if _demonstration_active:
+		_set_input_context(InputContext.DEMONSTRATION)
+		return
+
 	if _cutscene_active:
 		_set_input_context(InputContext.CUTSCENE)
 		return
@@ -968,6 +984,89 @@ func _restore_follower_actors_after_dialogue() -> void:
 	_hidden_follower_actors.clear()
 
 
+func _on_reward_spawned(_source_id: StringName, marker: RewardMarker, _pickup: PickupItem) -> void:
+	if marker == null or not is_instance_valid(marker):
+		return
+	if marker.get_tree() != get_tree():
+		return
+
+	var demonstration_camera := _find_reward_demonstration_camera(marker.marker_id)
+	if demonstration_camera == null:
+		_resume_pending_lap_race_return_if_ready()
+		return
+
+	_queued_reward_demonstration_cameras.append(weakref(demonstration_camera))
+	_try_start_reward_demonstration()
+
+
+func _try_start_reward_demonstration() -> void:
+	if _reward_demonstration_start_pending or _demonstration_active or _interaction_locked:
+		return
+	if _dialogue_active or _cutscene_active or _pause_active or _inventory_open or _found_item_popup_open:
+		return
+
+	var demonstration_camera := _consume_next_reward_demonstration_camera()
+	if demonstration_camera == null:
+		_resume_pending_lap_race_return_if_ready()
+		return
+
+	_reward_demonstration_start_pending = true
+	call_deferred("_start_reward_demonstration", demonstration_camera)
+
+
+func _consume_next_reward_demonstration_camera() -> RewardDemonstrationCamera:
+	while not _queued_reward_demonstration_cameras.is_empty():
+		var demonstration_camera := _queued_reward_demonstration_cameras[0].get_ref() as RewardDemonstrationCamera
+		_queued_reward_demonstration_cameras.remove_at(0)
+		if demonstration_camera != null and is_instance_valid(demonstration_camera):
+			return demonstration_camera
+
+	return null
+
+
+func _start_reward_demonstration(demonstration_camera: RewardDemonstrationCamera) -> void:
+	_reward_demonstration_start_pending = false
+	if demonstration_camera == null or not is_instance_valid(demonstration_camera):
+		_resume_pending_lap_race_return_if_ready()
+		_try_start_reward_demonstration()
+		return
+
+	_demonstration_active = true
+	_interaction_locked = true
+	_set_input_context(InputContext.TRANSITION)
+	player.set_controls_enabled(false)
+	interaction_source.set_interaction_enabled(false)
+	await SceneTransition.fade_out()
+	_set_dialogue_pivots_active(false)
+	if gameplay_ui_layer != null:
+		gameplay_ui_layer.set_cinematic_bars_visible(true)
+	demonstration_camera.current = true
+	await get_tree().process_frame
+	_interaction_locked = false
+	_set_input_context(InputContext.DEMONSTRATION)
+	await SceneTransition.fade_in()
+
+	var duration := demonstration_camera.get_demonstration_duration()
+	if duration > 0.0:
+		await get_tree().create_timer(duration).timeout
+
+	_interaction_locked = true
+	_set_input_context(InputContext.TRANSITION)
+	await SceneTransition.fade_out()
+	if gameplay_ui_layer != null:
+		gameplay_ui_layer.set_cinematic_bars_visible(false)
+	camera_rig.activate_game_camera()
+	_demonstration_active = false
+	player.set_controls_enabled(true)
+	interaction_source.set_interaction_enabled(true)
+	await get_tree().process_frame
+	_interaction_locked = false
+	_sync_input_context()
+	await SceneTransition.fade_in()
+	_resume_pending_lap_race_return_if_ready()
+	_try_start_reward_demonstration()
+
+
 func _sync_follower_gameplay_state() -> void:
 	var tree := get_tree()
 	if tree == null:
@@ -1086,14 +1185,28 @@ func _grant_labyrinth_exit_reward() -> void:
 	)
 
 
-func _resume_pending_lap_race_return() -> void:
-	if LapRaceFlow == null or not LapRaceFlow.has_pending_return(DEFAULT_GAME_SCENE_PATH):
+func _capture_pending_lap_race_return() -> void:
+	if LapRaceFlow == null:
 		return
 
-	var context: Dictionary = LapRaceFlow.consume_return_context(DEFAULT_GAME_SCENE_PATH)
-	if context.is_empty():
+	var current_scene := get_tree().current_scene
+	var current_scene_path := String(current_scene.scene_file_path) if current_scene != null else ""
+	if not LapRaceFlow.has_pending_return(current_scene_path):
 		return
 
+	_pending_lap_return_context = LapRaceFlow.consume_return_context(current_scene_path)
+
+
+func _resume_pending_lap_race_return_if_ready() -> void:
+	if _pending_lap_return_context.is_empty():
+		return
+	if _demonstration_active or _reward_demonstration_start_pending:
+		return
+	if _has_queued_reward_demonstration():
+		return
+
+	var context := _pending_lap_return_context
+	_pending_lap_return_context = {}
 	var player_transform: Transform3D = context.get("player_transform", Transform3D.IDENTITY)
 	player.global_transform = player_transform
 	_interaction_locked = true
@@ -1114,6 +1227,38 @@ func _resume_pending_lap_race_return() -> void:
 		return
 
 	_start_dialogue_with_target_while_faded(interaction_target, true)
+
+
+func _has_queued_reward_demonstration() -> bool:
+	for camera_ref in _queued_reward_demonstration_cameras:
+		var demonstration_camera := camera_ref.get_ref() as RewardDemonstrationCamera
+		if demonstration_camera != null and is_instance_valid(demonstration_camera):
+			return true
+
+	return false
+
+
+func _find_reward_demonstration_camera(marker_id: StringName) -> RewardDemonstrationCamera:
+	if marker_id.is_empty():
+		return null
+
+	var tree := get_tree()
+	if tree == null:
+		return null
+	var current_scene := tree.current_scene
+	if current_scene == null:
+		return null
+
+	for camera_node in tree.get_nodes_in_group(&"reward_demonstration_cameras"):
+		var demonstration_camera := camera_node as RewardDemonstrationCamera
+		if demonstration_camera == null or demonstration_camera.get_tree() != tree:
+			continue
+		if not current_scene.is_ancestor_of(demonstration_camera) and current_scene != demonstration_camera:
+			continue
+		if demonstration_camera.matches_marker(marker_id):
+			return demonstration_camera
+
+	return null
 
 
 func _start_dialogue_with_target_from_transition(

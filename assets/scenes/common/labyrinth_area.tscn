@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://cx7uqoqpae5yh" path="res://assets/art/models/game/labyrinth.glb" id="1_labyrinth_model"]
 [ext_resource type="Script" uid="uid://bj4ag638jujau" path="res://assets/scripts/labyrinth_area.gd" id="2_script"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/reward_marker.tscn" id="3_reward_marker"]
+[ext_resource type="Script" uid="uid://d1tdb5cfv171" path="res://assets/scripts/reward_demonstration_camera.gd" id="4_demo_camera_script"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
 size = Vector3(6, 4, 6)
@@ -23,7 +24,13 @@ shape = SubResource("BoxShape3D_trigger")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.6421947)
 
 [node name="LabyrinthExitRewardMarker" parent="." unique_id=1051672805 instance=ExtResource("3_reward_marker")]
-transform = Transform3D(0.9469301, 0, -0.32143947, 0, 1, 0, 0.32143947, 0, 0.9469301, -62.078648, 0.12, -99.83907)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -62.078648, 0.12, -91.9266)
+marker_id = &"labyrinth_exit_reward_marker"
+
+[node name="LabyrinthExitRewardDemonstrationCamera" type="Camera3D" parent="." unique_id=1672085791]
+transform = Transform3D(0.937786, -0.11875408, 0.32627442, 0, 0.93969274, 0.34201992, -0.34721395, -0.32074147, 0.88123065, -59.12434, 3.9870334, -83.9724)
+fov = 35.0
+script = ExtResource("4_demo_camera_script")
 marker_id = &"labyrinth_exit_reward_marker"
 
 [node name="ExitTrigger" type="Area3D" parent="." unique_id=467104083]

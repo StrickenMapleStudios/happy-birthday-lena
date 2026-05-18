@@ -6,9 +6,11 @@ const LAP_SCENE_PATH := "res://assets/scenes/game/lap_track_showcase.tscn"
 const START_TITLE := "start"
 const POST_RACE_WIN_TITLE := "post_race_win"
 const POST_RACE_LOSE_TITLE := "post_race_lose"
+const DEFAULT_POST_RACE_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
 
 @export var interaction_target_path: NodePath = ^"InteractionTarget"
 @export var race_dialogue_state_path: NodePath = ^"RaceDialogueState"
+@export_file("*.tscn") var post_race_scene_path := DEFAULT_POST_RACE_SCENE_PATH
 
 
 func get_interaction_target() -> InteractionTarget:
@@ -52,7 +54,7 @@ func _start_lap_race() -> void:
 		return
 
 	LapRaceFlow.start_race(
-		String(current_scene.scene_file_path),
+		post_race_scene_path if not post_race_scene_path.is_empty() else String(current_scene.scene_file_path),
 		player.global_transform,
 		current_scene.get_path_to(self)
 	)

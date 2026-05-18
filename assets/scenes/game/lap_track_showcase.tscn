@@ -74,7 +74,7 @@ show_trigger_helpers = false
 
 [node name="NpcLaneRunner" type="Node" parent="." unique_id=2068378393]
 script = ExtResource("5_lane_runner")
-root_motion_speed_multiplier = 0.85
+root_motion_speed_multiplier = 1.0
 
 [node name="CameraRig" type="Node3D" parent="." unique_id=25535630]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)

@@ -2,7 +2,7 @@ extends Node
 
 class_name LapTrackManager
 
-const NORMAL_GAME_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
+const DEFAULT_RETURN_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
 const LAP_REWARD_SOURCE_ID := &"lap_finish_reward"
 const LAP_REWARD_MARKER_ID := &"lap_finish_reward_marker"
 const BRASS_KEY_ITEM := preload("res://assets/data/items/brass_key_item.tres")
@@ -272,7 +272,10 @@ func _run_finish_sequence() -> void:
 		0.0,
 		finish_slowdown_duration
 	)
-	await SceneTransition.change_scene_to_file(NORMAL_GAME_SCENE_PATH, finish_fade_duration, 0.35)
+	var return_scene_path := DEFAULT_RETURN_SCENE_PATH
+	if LapRaceFlow != null and LapRaceFlow.has_method("get_return_scene_path"):
+		return_scene_path = String(LapRaceFlow.call("get_return_scene_path", DEFAULT_RETURN_SCENE_PATH))
+	await SceneTransition.change_scene_to_file(return_scene_path, finish_fade_duration, 0.35)
 
 
 func _queue_finish_reward() -> void:
@@ -285,7 +288,7 @@ func _queue_finish_reward() -> void:
 		LAP_REWARD_MARKER_ID,
 		BRASS_KEY_ITEM,
 		1,
-		NORMAL_GAME_SCENE_PATH
+		String(LapRaceFlow.call("get_return_scene_path", DEFAULT_RETURN_SCENE_PATH)) if LapRaceFlow != null else DEFAULT_RETURN_SCENE_PATH
 	)
 
 

@@ -29,7 +29,7 @@ graph_offset = Vector2(-26, 4)
 [node name="NpcLapRunner" instance=ExtResource("1_base")]
 
 [node name="AnimationPlayer" parent="Model" index="1"]
-speed_scale = 0.9
+speed_scale = 0.54
 
 [node name="AnimationTree" parent="Model/AnimationPlayer" index="0"]
 tree_root = SubResource("AnimationNodeStateMachine_lap_runner")

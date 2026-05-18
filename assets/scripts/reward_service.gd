@@ -2,6 +2,8 @@ extends Node
 
 const DEFAULT_TARGET_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
 
+signal reward_spawned(source_id: StringName, marker: RewardMarker, pickup: PickupItem)
+
 var _pending_rewards: Array[Dictionary] = []
 var _completed_sources: Dictionary = {}
 
@@ -26,8 +28,10 @@ func grant_reward(
 	var current_scene := get_tree().current_scene
 	if _can_spawn_in_scene(current_scene, target_scene_path):
 		var marker := _find_marker(current_scene, marker_id)
-		if marker != null and marker.spawn_reward(item_data, quantity) != null:
+		var pickup := marker.spawn_reward(item_data, quantity) if marker != null else null
+		if pickup != null:
 			_completed_sources[source_id] = true
+			reward_spawned.emit(source_id, marker, pickup)
 			return true
 
 	_pending_rewards.append({
@@ -63,12 +67,14 @@ func spawn_pending_rewards(scene_root: Node) -> void:
 
 		var item_data := pending_reward.get("item_data") as InventoryItemData
 		var quantity := int(pending_reward.get("quantity", 1))
-		if marker.spawn_reward(item_data, quantity) == null:
+		var pickup := marker.spawn_reward(item_data, quantity)
+		if pickup == null:
 			remaining_rewards.append(pending_reward)
 			continue
 
 		var source_id: StringName = pending_reward.get("source_id", &"")
 		_completed_sources[source_id] = true
+		reward_spawned.emit(source_id, marker, pickup)
 
 	_pending_rewards = remaining_rewards
 
