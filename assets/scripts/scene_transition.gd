@@ -102,6 +102,10 @@ func preload_scene(scene_path: String, use_sub_threads: bool = true) -> void:
 		push_error("Failed to preload scene '%s' (error %d)." % [scene_path, request_result])
 
 
+func is_transitioning() -> bool:
+	return _is_transitioning
+
+
 func _fade_to(target_alpha: float, duration: float, mouse_filter: Control.MouseFilter) -> void:
 	_overlay.visible = true
 	_overlay.mouse_filter = mouse_filter

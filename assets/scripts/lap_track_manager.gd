@@ -42,6 +42,12 @@ var _connected_checkpoint_triggers: Array[Area3D] = []
 var _finish_sequence_running := false
 var _time_scale_tween: Tween
 var _player_won := true
+var _player_lane_path: Path3D
+var _player_lane_curve: Curve3D
+var _player_last_progress := 0.0
+var _player_start_progress := 0.0
+var _player_checkpoint_progresses: Array[float] = []
+var _player_progress_initialized := false
 
 
 func _ready() -> void:
@@ -60,8 +66,10 @@ func _ready() -> void:
 	_place_actors_on_lanes()
 	_connect_track_triggers()
 	_connect_npc_runner_signals()
+	_configure_player_progress_tracking()
 	_reset_checkpoint_progress()
 	_refresh_lap_counter()
+	call_deferred("_refresh_track_triggers_after_setup")
 	call_deferred("_start_race")
 
 
@@ -80,6 +88,8 @@ func _start_race() -> void:
 	_countdown_active = true
 	_race_active = false
 	_player_won = true
+	_configure_player_progress_tracking()
+	_refresh_track_triggers_after_setup()
 	_reset_checkpoint_progress()
 	_refresh_lap_counter()
 	_set_race_motion_enabled(false)
@@ -132,6 +142,12 @@ func _connect_track_triggers() -> void:
 		_connected_checkpoint_triggers.append(checkpoint)
 
 
+func _refresh_track_triggers_after_setup() -> void:
+	_connect_track_triggers()
+	_configure_player_progress_tracking()
+	_reset_checkpoint_progress()
+
+
 func _connect_npc_runner_signals() -> void:
 	if _npc_lane_runner == null or not _npc_lane_runner.has_signal("lap_completed"):
 		return
@@ -158,6 +174,9 @@ func _set_race_motion_enabled(is_enabled: bool) -> void:
 
 	if _camera_rig != null and _camera_rig.has_method("set_follow_active"):
 		_camera_rig.call("set_follow_active", is_enabled)
+
+	if is_enabled:
+		_player_progress_initialized = false
 
 
 func _on_checkpoint_trigger_body_entered(body: Node3D, checkpoint_index: int) -> void:
@@ -190,6 +209,35 @@ func _on_start_trigger_body_entered(body: Node3D) -> void:
 		return
 
 	print("Lap %d/%d complete." % [_completed_laps, total_laps])
+
+
+func _physics_process(_delta: float) -> void:
+	if not _race_active or _finish_sequence_running or _player == null:
+		return
+	if _player_lane_path == null or _player_lane_curve == null:
+		return
+
+	var current_progress := _get_player_lane_progress()
+	if not _player_progress_initialized:
+		_player_last_progress = current_progress
+		_player_progress_initialized = true
+		return
+
+	var progress_delta := _get_wrapped_progress_delta(_player_last_progress, current_progress)
+	if absf(progress_delta) <= 0.001:
+		return
+
+	_mark_progress_checkpoints(_player_last_progress, current_progress, progress_delta)
+	if _all_checkpoints_visited() and _crossed_progress_target(_player_last_progress, current_progress, _player_start_progress, progress_delta):
+		_completed_laps += 1
+		_refresh_lap_counter()
+		_reset_checkpoint_progress()
+		if _completed_laps >= total_laps:
+			_finish_race(true)
+		else:
+			print("Lap %d/%d complete." % [_completed_laps, total_laps])
+
+	_player_last_progress = current_progress
 
 
 func _finish_race(player_won: bool = true) -> void:
@@ -242,12 +290,67 @@ func _get_visited_checkpoint_count() -> int:
 
 func _all_checkpoints_visited() -> bool:
 	if _checkpoint_visited.is_empty():
-		return false
+		return true
 
 	for is_visited in _checkpoint_visited:
 		if not is_visited:
 			return false
 	return true
+
+
+func _configure_player_progress_tracking() -> void:
+	if _lap_track == null:
+		return
+
+	_player_lane_path = _lap_track.get_lane_path(player_lane)
+	_player_lane_curve = _player_lane_path.curve if _player_lane_path != null else null
+	_player_checkpoint_progresses.clear()
+	if _player_lane_path == null or _player_lane_curve == null:
+		return
+
+	var start_trigger := _lap_track.get_start_trigger()
+	_player_start_progress = _get_progress_for_world_position(start_trigger.global_position) if start_trigger != null else 0.0
+
+	for checkpoint in _lap_track.get_checkpoint_triggers():
+		if checkpoint != null:
+			_player_checkpoint_progresses.append(_get_progress_for_world_position(checkpoint.global_position))
+
+	_player_last_progress = _get_player_lane_progress() if _player != null else 0.0
+	_player_progress_initialized = false
+
+
+func _get_player_lane_progress() -> float:
+	return _get_progress_for_world_position(_player.global_position)
+
+
+func _get_progress_for_world_position(world_position: Vector3) -> float:
+	var lane_local_position := _player_lane_path.to_local(world_position)
+	return _player_lane_curve.get_closest_offset(lane_local_position)
+
+
+func _get_wrapped_progress_delta(from_progress: float, to_progress: float) -> float:
+	var baked_length := maxf(_player_lane_curve.get_baked_length(), 0.001)
+	return wrapf((to_progress - from_progress) + (baked_length * 0.5), 0.0, baked_length) - (baked_length * 0.5)
+
+
+func _mark_progress_checkpoints(from_progress: float, to_progress: float, progress_delta: float) -> void:
+	for checkpoint_index in range(mini(_checkpoint_visited.size(), _player_checkpoint_progresses.size())):
+		if _checkpoint_visited[checkpoint_index]:
+			continue
+		if _crossed_progress_target(from_progress, to_progress, _player_checkpoint_progresses[checkpoint_index], progress_delta):
+			_checkpoint_visited[checkpoint_index] = true
+
+
+func _crossed_progress_target(from_progress: float, to_progress: float, target_progress: float, progress_delta: float) -> bool:
+	var baked_length := maxf(_player_lane_curve.get_baked_length(), 0.001)
+	if progress_delta > 0.0:
+		var forward_to_target := wrapf(target_progress - from_progress, 0.0, baked_length)
+		var forward_travel := wrapf(to_progress - from_progress, 0.0, baked_length)
+		return forward_to_target > 0.0 and forward_to_target <= forward_travel
+
+	var backward_to_target := wrapf(from_progress - target_progress, 0.0, baked_length)
+	var backward_travel := wrapf(from_progress - to_progress, 0.0, baked_length)
+	return backward_to_target > 0.0 and backward_to_target <= backward_travel
 
 
 func _on_npc_lap_completed(total_completed_laps: int) -> void:

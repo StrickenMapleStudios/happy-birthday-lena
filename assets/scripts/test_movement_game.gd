@@ -420,7 +420,15 @@ func _cancel_active_dialogue() -> void:
 
 
 func _open_pause_menu() -> void:
-	if _pause_active or _interaction_locked or _inventory_open or _found_item_popup_open or pause_menu == null:
+	if (
+		_pause_active
+		or _interaction_locked
+		or _inventory_open
+		or _found_item_popup_open
+		or pause_menu == null
+		or _input_context == InputContext.TRANSITION
+		or (SceneTransition != null and SceneTransition.has_method("is_transitioning") and bool(SceneTransition.call("is_transitioning")))
+	):
 		return
 
 	_pause_active = true
@@ -860,6 +868,17 @@ func _set_input_context(value: int) -> void:
 		return
 
 	_input_context = value
+	if _input_context == InputContext.TRANSITION:
+		if _pause_active:
+			get_tree().paused = false
+			_pause_active = false
+			if _active_pause_menu != null:
+				_active_pause_menu.call("close")
+			_active_pause_menu = null
+		if player != null:
+			player.set_controls_enabled(false)
+		if interaction_source != null:
+			interaction_source.set_interaction_enabled(false)
 	_set_active_dialogue_input_enabled(value != InputContext.TRANSITION)
 	_refresh_cursor_mode()
 	_refresh_gameplay_world_ui_visibility()
