@@ -14,6 +14,9 @@ special_form_node_path = NodePath("Model/Rig/Skeleton3D/hat_2/ThirdRaceLightning
 [node name="hat_2" parent="RaceChallenger/Model/Rig/Skeleton3D" index="0"]
 visible = true
 
+[node name="hat" parent="RaceChallenger/Model/Rig/Skeleton3D/hat_2" index="0"]
+visible = false
+
 [node name="ThirdRaceLightning" parent="RaceChallenger/Model/Rig/Skeleton3D/hat_2" instance=ExtResource("4_lightning")]
 transform = Transform3D(1.15, 0, 0, 0, 1.15, 0, 0, 0, 1.15, 0.0, 1.05, 0.0)
 visible = false
