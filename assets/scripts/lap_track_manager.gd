@@ -93,6 +93,8 @@ func _start_race() -> void:
 	_reset_checkpoint_progress()
 	_refresh_lap_counter()
 	_set_race_motion_enabled(false)
+	if _camera_rig != null and _camera_rig.has_method("begin_intro"):
+		_camera_rig.call("begin_intro")
 	if _countdown_ui != null:
 		var go_callable := Callable(self, "_on_countdown_go_released")
 		if not _countdown_ui.go_released.is_connected(go_callable):

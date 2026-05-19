@@ -16,9 +16,12 @@ const ANGLE_LOOK_AHEAD := 0.08
 const MIN_DIRECTION_LENGTH_SQUARED := 0.0001
 const MIN_LOOK_FORWARD_DISTANCE := 3.0
 const MIN_TARGET_MOVE_DISTANCE := 0.02
+const MOVEMENT_CAMERA_EFFECTS_DELAY := 0.3
+const INTRO_FLY_DURATION := 0.65
 
 @export var target_path: NodePath = ^"../PlayerCharacter"
 @export var lap_track_path: NodePath = ^"../LapTrack"
+@export var intro_start_marker_path: NodePath = ^"IntroCameraStart"
 @export_enum("Inner", "Outer") var lane_side := 1
 
 var _target: Node3D
@@ -26,6 +29,7 @@ var _lap_track: LapTrack
 var _lane_path: Path3D
 var _curve: Curve3D
 var _game_camera: Camera3D
+var _intro_start_marker: Node3D
 var _last_target_position := Vector3.ZERO
 var _look_height_offset := 0.0
 var _fov_offset := 0.0
@@ -40,6 +44,8 @@ var _camera_height := 0.0
 var _camera_angle_offset := 0.0
 var _camera_angle := 0.0
 var _last_progress_sample_position := Vector3.ZERO
+var _follow_active_time := 0.0
+var _intro_tween: Tween
 
 
 func _ready() -> void:
@@ -47,6 +53,7 @@ func _ready() -> void:
 	_target = get_node_or_null(target_path) as Node3D
 	_lap_track = get_node_or_null(lap_track_path) as LapTrack
 	_game_camera = $GameCamera
+	_intro_start_marker = get_node_or_null(intro_start_marker_path) as Node3D
 
 	if _target == null or _lap_track == null or _game_camera == null:
 		set_process(false)
@@ -64,10 +71,17 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if _target == null or _curve == null or _lane_path == null or not _is_initialized:
 		return
-	if not _follow_active:
-		return
+
+	if _follow_active:
+		_follow_active_time += delta
 
 	_update_target_progress()
+	if _intro_tween != null and _intro_tween.is_valid():
+		_game_camera.fov = BASE_FOV
+		_game_camera.look_at(_get_clamped_focus_point(), Vector3.UP)
+		return
+	if not _follow_active:
+		return
 	_update_camera_transform(delta)
 
 
@@ -78,6 +92,28 @@ func activate_game_camera() -> void:
 
 func set_follow_active(value: bool) -> void:
 	_follow_active = value
+	_follow_active_time = 0.0
+	_look_height_offset = 0.0
+	_fov_offset = 0.0
+	if _target != null:
+		_last_target_position = _target.global_position
+		_last_progress_sample_position = _target.global_position
+		_smoothed_focus_point = _target.global_position + Vector3(0.0, FOCUS_HEIGHT, 0.0)
+	if _game_camera != null:
+		_game_camera.fov = BASE_FOV
+		_game_camera.look_at(_get_clamped_focus_point(), Vector3.UP)
+
+
+func begin_intro() -> void:
+	if not _is_initialized:
+		return
+	_follow_active_time = 0.0
+	_look_height_offset = 0.0
+	_fov_offset = 0.0
+	if _game_camera != null:
+		_game_camera.fov = BASE_FOV
+		_game_camera.look_at(_get_clamped_focus_point(), Vector3.UP)
+	_start_intro_fly_tween()
 
 
 func _initialize_from_track_state() -> void:
@@ -92,12 +128,24 @@ func _initialize_from_track_state() -> void:
 	var local_camera_position := _lap_track.to_local(global_position)
 	_camera_radius = Vector2(local_camera_position.x, local_camera_position.z).length()
 	_camera_height = local_camera_position.y
-	_camera_angle = atan2(local_camera_position.x, local_camera_position.z)
-	_camera_angle_offset = _get_wrapped_angle_delta(target_angle, _camera_angle)
+	_camera_angle = target_angle
+	_camera_angle_offset = 0.0
+	if _intro_start_marker != null:
+		global_position = _intro_start_marker.global_position
+	else:
+		global_position = _get_world_position_for_angle(_camera_angle)
+
+	var tangent := _get_camera_tangent_world(_camera_angle)
+	if tangent.length_squared() > MIN_DIRECTION_LENGTH_SQUARED:
+		global_basis = Basis.looking_at(tangent.normalized(), Vector3.UP)
 
 	_last_target_position = _target.global_position
 	_last_progress_sample_position = _target.global_position
 	_smoothed_focus_point = _target.global_position + Vector3(0.0, FOCUS_HEIGHT, 0.0)
+	_look_height_offset = 0.0
+	_fov_offset = 0.0
+	_game_camera.fov = BASE_FOV
+	_game_camera.look_at(_get_clamped_focus_point(), Vector3.UP)
 	_is_initialized = true
 
 
@@ -126,13 +174,7 @@ func _update_camera_transform(delta: float) -> void:
 		PI
 	)
 
-	var desired_world_position := _lap_track.to_global(
-		Vector3(
-			sin(_camera_angle) * _camera_radius,
-			_camera_height,
-			cos(_camera_angle) * _camera_radius
-		)
-	)
+	var desired_world_position := _get_world_position_for_angle(_camera_angle)
 	global_position = global_position.lerp(
 		desired_world_position,
 		minf(delta * FOLLOW_POSITION_LERP_SPEED, 1.0)
@@ -150,7 +192,7 @@ func _update_camera_transform(delta: float) -> void:
 	var desired_look_height_offset := 0.0
 	var desired_fov_offset := 0.0
 	var planar_delta := Vector2(move_delta.x, move_delta.z)
-	if planar_delta.length_squared() > 0.000001:
+	if _follow_active_time >= MOVEMENT_CAMERA_EFFECTS_DELAY and planar_delta.length_squared() > 0.000001:
 		var planar_speed := planar_delta.length() / maxf(delta, 0.000001)
 		var move_direction := planar_delta.normalized()
 		var to_camera := Vector2(
@@ -179,6 +221,27 @@ func _update_camera_transform(delta: float) -> void:
 	_smoothed_focus_point = _smoothed_focus_point.lerp(focus_point, look_weight)
 	_game_camera.fov = BASE_FOV + _fov_offset
 	_game_camera.look_at(_get_clamped_focus_point(), Vector3.UP)
+
+
+func _start_intro_fly_tween() -> void:
+	_kill_intro_tween()
+	var destination := _get_world_position_for_angle(_camera_angle)
+	_intro_tween = create_tween()
+	_intro_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_intro_tween.set_trans(Tween.TRANS_CUBIC)
+	_intro_tween.set_ease(Tween.EASE_OUT)
+	_intro_tween.tween_property(self, "global_position", destination, INTRO_FLY_DURATION)
+	_intro_tween.finished.connect(_on_intro_fly_finished)
+
+
+func _on_intro_fly_finished() -> void:
+	_intro_tween = null
+
+
+func _kill_intro_tween() -> void:
+	if _intro_tween != null and _intro_tween.is_valid():
+		_intro_tween.kill()
+	_intro_tween = null
 
 
 func _get_closest_progress_for_target() -> float:
@@ -215,21 +278,21 @@ func _infer_track_direction_sign(progress: float) -> float:
 
 
 func _get_camera_tangent_world(angle: float) -> Vector3:
-	var current_local := Vector3(
-		sin(angle) * _camera_radius,
-		_camera_height,
-		cos(angle) * _camera_radius
-	)
-	var next_local := Vector3(
-		sin(angle + (ANGLE_LOOK_AHEAD * _track_direction_sign)) * _camera_radius,
-		_camera_height,
-		cos(angle + (ANGLE_LOOK_AHEAD * _track_direction_sign)) * _camera_radius
-	)
-	var current_world := _lap_track.to_global(current_local)
-	var next_world := _lap_track.to_global(next_local)
+	var current_world := _get_world_position_for_angle(angle)
+	var next_world := _get_world_position_for_angle(angle + (ANGLE_LOOK_AHEAD * _track_direction_sign))
 	var tangent := next_world - current_world
 	tangent.y = 0.0
 	return tangent
+
+
+func _get_world_position_for_angle(angle: float) -> Vector3:
+	return _lap_track.to_global(
+		Vector3(
+			sin(angle) * _camera_radius,
+			_camera_height,
+			cos(angle) * _camera_radius
+		)
+	)
 
 
 func _get_clamped_focus_point() -> Vector3:

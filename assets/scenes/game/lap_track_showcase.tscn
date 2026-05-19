@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://ds7rcowipbcrj" path="res://assets/scenes/common/lap_track.tscn" id="1_lap_track"]
 [ext_resource type="PackedScene" uid="uid://dmb72unyvr0t3" path="res://assets/scenes/characters/player_character.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://assets/scenes/characters/npc_lap_runner.tscn" id="3_npc_runner"]
-[ext_resource type="Script" uid="uid://ctna501i4g0fw" path="res://assets/scripts/lap_follow_camera.gd" id="4_camera"]
+[ext_resource type="PackedScene" path="res://assets/scenes/common/lap_camera_rig.tscn" id="4_camera_rig"]
 [ext_resource type="Script" uid="uid://cb5u8hgv00ycv" path="res://assets/scripts/lap_lane_runner.gd" id="5_lane_runner"]
 [ext_resource type="Script" uid="uid://dbjn2yb148gdq" path="res://assets/scripts/lap_track_showcase.gd" id="6_showcase"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/pause_menu.tscn" id="7_pause_menu"]
@@ -33,11 +33,6 @@ ssao_radius = 0.45
 ssao_intensity = 1.6
 ssao_power = 1.8
 
-[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_showcase"]
-dof_blur_far_enabled = true
-dof_blur_far_distance = 85.0
-dof_blur_far_transition = 40.0
-
 [node name="LapTrackShowcase" type="Node3D" unique_id=745662620]
 script = ExtResource("6_showcase")
 
@@ -58,13 +53,10 @@ directional_shadow_max_distance = 1301.8
 
 [node name="LapTrack" parent="." unique_id=164276639 instance=ExtResource("1_lap_track")]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
-auto_refresh_lane_markers_from_geometry = false
 checkpoint_length = 7.0
 checkpoint_height = 4.0
 checkpoint_track_padding = 1.1
 fallback_start_trigger_length = 5.8
-auto_place_start_trigger = false
-show_trigger_helpers = false
 
 [node name="PlayerCharacter" parent="." unique_id=546921540 instance=ExtResource("2_player")]
 
@@ -74,16 +66,11 @@ show_trigger_helpers = false
 script = ExtResource("5_lane_runner")
 root_motion_speed_multiplier = 0.72
 
-[node name="CameraRig" type="Node3D" parent="." unique_id=25535630]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -29.863482, 0, -1.8647308)
-script = ExtResource("4_camera")
+[node name="CameraRig" parent="." unique_id=25535630 instance=ExtResource("4_camera_rig")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -27.538864, 0, -4.341112)
 
-[node name="GameCamera" type="Camera3D" parent="CameraRig" unique_id=1468171338]
-transform = Transform3D(1, -4.712819e-08, 1.6832325e-07, 4.144082e-09, 0.9690889, 0.24671175, -1.7474727e-07, -0.24671175, 0.9690889, -8.6249166e-08, 4.0897617, 8.217516)
-attributes = SubResource("CameraAttributesPractical_showcase")
-current = true
-fov = 60.0
-far = 2000.0
+[node name="IntroCameraStart" parent="CameraRig" index="1"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0.17126083, 5.3159456, 14.482183)
 
 [node name="PauseMenu" parent="." unique_id=1707361659 instance=ExtResource("7_pause_menu")]
 
@@ -95,3 +82,5 @@ far = 2000.0
 script = ExtResource("9_manager")
 auto_place_player_on_lane = true
 auto_place_npc_on_lane = true
+
+[editable path="CameraRig"]
