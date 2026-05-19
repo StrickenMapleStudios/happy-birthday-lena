@@ -17,7 +17,7 @@ const MIN_DIRECTION_LENGTH_SQUARED := 0.0001
 const MIN_LOOK_FORWARD_DISTANCE := 3.0
 const MIN_TARGET_MOVE_DISTANCE := 0.02
 const MOVEMENT_CAMERA_EFFECTS_DELAY := 0.3
-const INTRO_FLY_DURATION := 0.65
+const INTRO_FLY_DURATION := 1.0
 
 @export var target_path: NodePath = ^"../PlayerCharacter"
 @export var lap_track_path: NodePath = ^"../LapTrack"

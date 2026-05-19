@@ -70,7 +70,7 @@ root_motion_speed_multiplier = 0.72
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -27.538864, 0, -4.341112)
 
 [node name="IntroCameraStart" parent="CameraRig" index="1"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0.17126083, 5.3159456, 14.482183)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1.477108, 3.6126814, 13.131762)
 
 [node name="PauseMenu" parent="." unique_id=1707361659 instance=ExtResource("7_pause_menu")]
 
