@@ -14,6 +14,9 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _is_scene_transition_active():
+		return
+
 	if _pause_active:
 		return
 
@@ -39,12 +42,16 @@ func _configure_pause_menu() -> void:
 
 
 func _open_pause_menu() -> void:
-	if _pause_active or _pause_menu == null:
+	if _pause_active or _pause_menu == null or _is_scene_transition_active():
 		return
 
 	_pause_active = true
 	get_tree().paused = true
 	_pause_menu.call("open")
+
+
+func _is_scene_transition_active() -> bool:
+	return SceneTransition != null and SceneTransition.has_method("is_transitioning") and bool(SceneTransition.call("is_transitioning"))
 
 
 func _resume_from_pause() -> void:

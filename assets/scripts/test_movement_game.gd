@@ -153,6 +153,9 @@ func _exit_tree() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _is_scene_transition_active():
+		return
+
 	if _found_item_popup_open:
 		return
 
@@ -427,7 +430,7 @@ func _open_pause_menu() -> void:
 		or _found_item_popup_open
 		or pause_menu == null
 		or _input_context == InputContext.TRANSITION
-		or (SceneTransition != null and SceneTransition.has_method("is_transitioning") and bool(SceneTransition.call("is_transitioning")))
+		or _is_scene_transition_active()
 	):
 		return
 
@@ -883,6 +886,10 @@ func _set_input_context(value: int) -> void:
 	_refresh_cursor_mode()
 	_refresh_gameplay_world_ui_visibility()
 	_sync_follower_gameplay_state()
+
+
+func _is_scene_transition_active() -> bool:
+	return SceneTransition != null and SceneTransition.has_method("is_transitioning") and bool(SceneTransition.call("is_transitioning"))
 
 
 func _refresh_gameplay_world_ui_visibility() -> void:

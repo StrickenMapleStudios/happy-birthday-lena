@@ -89,12 +89,11 @@ func _initialize_from_track_state() -> void:
 	_movement_direction_sign = _track_direction_sign
 
 	var target_angle := _get_angle_for_progress(_target_progress)
-	var target_local_position := _lap_track.to_local(_target.global_position)
-	_camera_radius = Vector2(target_local_position.x, target_local_position.z).length()
-	_camera_height = target_local_position.y
-	_camera_angle = target_angle
-	_camera_angle_offset = 0.0
-	global_position = _target.global_position
+	var local_camera_position := _lap_track.to_local(global_position)
+	_camera_radius = Vector2(local_camera_position.x, local_camera_position.z).length()
+	_camera_height = local_camera_position.y
+	_camera_angle = atan2(local_camera_position.x, local_camera_position.z)
+	_camera_angle_offset = _get_wrapped_angle_delta(target_angle, _camera_angle)
 
 	_last_target_position = _target.global_position
 	_last_progress_sample_position = _target.global_position
