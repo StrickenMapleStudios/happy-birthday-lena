@@ -10,6 +10,8 @@
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/lap_countdown_ui.tscn" id="8_countdown_ui"]
 [ext_resource type="Script" uid="uid://bf1tm2r3la4yy" path="res://assets/scripts/lap_track_manager.gd" id="9_manager"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/lap_counter_ui.tscn" id="10_counter_ui"]
+[ext_resource type="PackedScene" uid="uid://jgs2yvp5lmdi" path="res://addons/Free Forest Nature Pack/Trees/Spruce/Flat_Tree_Spruce_large.glb" id="11_spruce_large"]
+[ext_resource type="PackedScene" uid="uid://berhpqhc32tqf" path="res://addons/Free Forest Nature Pack/Trees/Spruce/Flat_Tree_Spruce_medium.glb" id="12_spruce_medium"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_showcase"]
 sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
@@ -32,6 +34,12 @@ ssao_enabled = true
 ssao_radius = 0.45
 ssao_intensity = 1.6
 ssao_power = 1.8
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_showcase_ground"]
+size = Vector2(320, 320)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_showcase_ground"]
+albedo_color = Color(0.439216, 0.529412, 0.372549, 1)
 
 [node name="LapTrackShowcase" type="Node3D" unique_id=745662620]
 script = ExtResource("6_showcase")
@@ -58,6 +66,100 @@ checkpoint_height = 4.0
 checkpoint_track_padding = 1.1
 fallback_start_trigger_length = 5.8
 
+[node name="Ground" type="MeshInstance3D" parent="." unique_id=1042498367]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.014071941, -0.029748935, 0.002511382)
+mesh = SubResource("PlaneMesh_showcase_ground")
+surface_material_override/0 = SubResource("StandardMaterial3D_showcase_ground")
+
+[node name="Forest" type="Node3D" parent="." unique_id=1963441689]
+
+[node name="NorthwestOuterA" parent="Forest" unique_id=927690998 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.90630776, 0, -0.42261827, 0, 0.98, 0, 0.42261827, 0, 0.90630776, -58, 0, -46)
+
+[node name="NorthwestOuterB" parent="Forest" unique_id=189236320 instance=ExtResource("12_spruce_medium")]
+transform = Transform3D(0.5795555, 0, -0.15529142, 0, 0.656, 0, 0.15529142, 0, 0.5795555, -47, 0, -34)
+
+[node name="NorthwestFarA" parent="Forest" unique_id=105384359 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.76642984, 0, -0.35741395, 0, 0.828, 0, 0.35741395, 0, 0.76642984, -74, 0, -63)
+
+[node name="NorthwestFarB" parent="Forest" unique_id=1084997387 instance=ExtResource("12_spruce_medium")]
+transform = Transform3D(0.62646174, 0, 0.16785985, 0, 0.71, 0, -0.16785985, 0, 0.62646174, -66, 0, -49)
+
+[node name="NorthArcA" parent="Forest" unique_id=1906249491 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.92, 0, 0, 0, 0.98, 0, 0, 0, 0.92, -14, 0, -66)
+
+[node name="NorthArcB" parent="Forest" unique_id=1887539242 instance=ExtResource("12_spruce_medium")]
+transform = Transform3D(0.64, 0, -0.12, 0, 0.72, 0, 0.12, 0, 0.64, 4, 0, -52)
+
+[node name="NorthArcFar" parent="Forest" unique_id=202926539 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.84, 0, 0.18, 0, 0.9, 0, -0.18, 0, 0.84, 10, 0, -82)
+
+[node name="NortheastOuterA" parent="Forest" unique_id=799290638 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.81915206, 0, 0.57357645, 0, 0.94, 0, -0.57357645, 0, 0.81915206, 44, 0, -56)
+
+[node name="NortheastOuterB" parent="Forest" unique_id=1125934942 instance=ExtResource("12_spruce_medium")]
+transform = Transform3D(0.5897147, 0, 0.20647334, 0, 0.7, 0, -0.20647334, 0, 0.5897147, 58, 0, -38)
+
+[node name="NortheastFarA" parent="Forest" unique_id=733991772 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.70706636, 0, 0.49497473, 0, 0.81, 0, -0.49497473, 0, 0.70706636, 71, 0, -68)
+
+[node name="EastArcA" parent="Forest" unique_id=2107251631 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.81915206, 0, 0.57357645, 0, 0.93, 0, -0.57357645, 0, 0.81915206, 72, 0, -12)
+
+[node name="EastArcB" parent="Forest" unique_id=6801478 instance=ExtResource("12_spruce_medium")]
+transform = Transform3D(0.60368794, 0, -0.21972099, 0, 0.688, 0, 0.21972099, 0, 0.60368794, 57, 0, 8)
+
+[node name="EastArcFar" parent="Forest" unique_id=1115319139 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.76642984, 0, -0.27898556, 0, 0.874, 0, 0.27898556, 0, 0.76642984, 88, 0, 18)
+
+[node name="SoutheastOuterA" parent="Forest" unique_id=54326328 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.7313537, 0, -0.42224693, 0, 0.844, 0, 0.42224693, 0, 0.7313537, 63, 0, 49)
+
+[node name="SoutheastOuterB" parent="Forest" unique_id=2024444208 instance=ExtResource("12_spruce_medium")]
+transform = Transform3D(0.57581514, 0, 0.15421197, 0, 0.652, 0, -0.15421197, 0, 0.57581514, 48, 0, 37)
+
+[node name="SoutheastFarA" parent="Forest" unique_id=1131082989 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.84572333, 0, -0.30780798, 0, 0.902, 0, 0.30780798, 0, 0.84572333, 80, 0, 65)
+
+[node name="SouthArcA" parent="Forest" unique_id=976063534 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.884, 0, 0.234, 0, 0.944, 0, -0.234, 0, 0.884, 8, 0, 66)
+
+[node name="SouthArcB" parent="Forest" unique_id=760857182 instance=ExtResource("12_spruce_medium")]
+transform = Transform3D(0.62430793, 0, -0.16726913, 0, 0.706, 0, 0.16726913, 0, 0.62430793, -12, 0, 55)
+
+[node name="SouthArcFar" parent="Forest" unique_id=1484972685 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.73, 0, 0.31, 0, 0.83, 0, -0.31, 0, 0.73, -2, 0, 84)
+
+[node name="SouthwestOuterA" parent="Forest" unique_id=466451426 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.874, 0, 0.318, 0, 0.934, 0, -0.318, 0, 0.874, -52, 0, 50)
+
+[node name="SouthwestOuterB" parent="Forest" unique_id=707849524 instance=ExtResource("12_spruce_medium")]
+transform = Transform3D(0.5897147, 0, -0.20647334, 0, 0.7, 0, 0.20647334, 0, 0.5897147, -41, 0, 31)
+
+[node name="SouthwestFarA" parent="Forest" unique_id=1511258884 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.7838373, 0, 0.45632154, 0, 0.88, 0, -0.45632154, 0, 0.7838373, -71, 0, 67)
+
+[node name="WestArcA" parent="Forest" unique_id=2108375304 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.93, 0, -0.12, 0, 0.99, 0, 0.12, 0, 0.93, -70, 0, 2)
+
+[node name="WestArcB" parent="Forest" unique_id=1383448149 instance=ExtResource("12_spruce_medium")]
+transform = Transform3D(0.6017281, 0, 0.16122723, 0, 0.68, 0, -0.16122723, 0, 0.6017281, -56, 0, -17)
+
+[node name="WestArcFar" parent="Forest" unique_id=1784631254 instance=ExtResource("11_spruce_large")]
+transform = Transform3D(0.8121776, 0, -0.29571685, 0, 0.874, 0, 0.29571685, 0, 0.8121776, -86, 0, -8)
+
+[node name="InnerNorthwestFill" parent="Forest" unique_id=740147539 instance=ExtResource("12_spruce_medium")]
+transform = Transform3D(0.60204864, 0, 0.1613131, 0, 0.6819999, 0, -0.1613131, 0, 0.60204864, -33, 0, -28)
+
+[node name="InnerNortheastFill" parent="Forest" unique_id=533411289 instance=ExtResource("12_spruce_medium")]
+transform = Transform3D(0.5903984, 0, -0.21489495, 0, 0.692, 0, 0.21489495, 0, 0.5903984, 36, 0, -24)
+
+[node name="InnerSouthwestFill" parent="Forest" unique_id=499676874 instance=ExtResource("12_spruce_medium")]
+transform = Transform3D(0.56696934, 0, 0.15177198, 0, 0.642, 0, -0.15177198, 0, 0.56696934, -30, 0, 24)
+
+[node name="InnerSoutheastFill" parent="Forest" unique_id=50804230 instance=ExtResource("12_spruce_medium")]
+transform = Transform3D(0.5897147, 0, -0.20647334, 0, 0.7, 0, 0.20647334, 0, 0.5897147, 32, 0, 28)
+
 [node name="PlayerCharacter" parent="." unique_id=546921540 instance=ExtResource("2_player")]
 
 [node name="NpcRunner" parent="." unique_id=1175272748 instance=ExtResource("3_npc_runner")]
@@ -67,10 +169,6 @@ script = ExtResource("5_lane_runner")
 root_motion_speed_multiplier = 0.72
 
 [node name="CameraRig" parent="." unique_id=25535630 instance=ExtResource("4_camera_rig")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -27.538864, 0, -4.341112)
-
-[node name="IntroCameraStart" parent="CameraRig" index="1"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1.477108, 3.6126814, 13.131762)
 
 [node name="PauseMenu" parent="." unique_id=1707361659 instance=ExtResource("7_pause_menu")]
 

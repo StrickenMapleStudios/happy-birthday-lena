@@ -8,7 +8,7 @@ dof_blur_far_distance = 85.0
 dof_blur_far_transition = 40.0
 
 [node name="CameraRig" type="Node3D"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -27.538864, 0, -4.341112)
 script = ExtResource("1_script")
 
 [node name="GameCamera" type="Camera3D" parent="."]
@@ -19,4 +19,4 @@ fov = 60.0
 far = 2000.0
 
 [node name="IntroCameraStart" type="Marker3D" parent="."]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -27.757738, 0, -2.3239002)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1.477108, 3.6126814, 13.131762)
