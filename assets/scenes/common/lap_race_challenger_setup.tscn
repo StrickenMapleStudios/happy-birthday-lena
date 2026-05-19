@@ -1,13 +1,22 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="PackedScene" path="res://assets/scenes/characters/race_challenger_npc.tscn" id="1_race_npc"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/reward_marker.tscn" id="2_reward_marker"]
 [ext_resource type="Script" path="res://assets/scripts/reward_demonstration_camera.gd" id="3_demo_camera_script"]
+[ext_resource type="PackedScene" path="res://assets/scenes/common/lightning_accessory.tscn" id="4_lightning"]
 
 [node name="LapRaceChallengerSetup" type="Node3D"]
 
 [node name="RaceChallenger" parent="." instance=ExtResource("1_race_npc")]
 transform = Transform3D(-0.9921147, 0, -0.12533323, 0, 1, 0, 0.12533323, 0, -0.9921147, 7.9, 0, 13.8)
+special_form_node_path = NodePath("Model/Rig/Skeleton3D/hat_2/ThirdRaceLightning")
+
+[node name="hat_2" parent="RaceChallenger/Model/Rig/Skeleton3D" index="0"]
+visible = true
+
+[node name="ThirdRaceLightning" parent="RaceChallenger/Model/Rig/Skeleton3D/hat_2" instance=ExtResource("4_lightning")]
+transform = Transform3D(1.15, 0, 0, 0, 1.15, 0, 0, 0, 1.15, 0.0, 1.05, 0.0)
+visible = false
 
 [node name="LapFinishRewardMarker" parent="." instance=ExtResource("2_reward_marker")]
 transform = Transform3D(0.97437006, 0, -0.22495106, 0, 1, 0, 0.22495106, 0, 0.97437006, 10.8, 0.12, -16.4)

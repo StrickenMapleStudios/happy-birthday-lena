@@ -693,6 +693,7 @@ func _on_dialogue_ended(resource: DialogueResource) -> void:
 	var finished_dialogue_actor := _dialogue_target_actor
 	if is_instance_valid(finished_dialogue_actor) and finished_dialogue_actor.has_method("consume_pending_race_start"):
 		if bool(finished_dialogue_actor.call("consume_pending_race_start")):
+			_resolve_pending_lap_race_outcome(finished_dialogue_actor)
 			await _transition_from_dialogue_to_race(finished_dialogue_actor)
 			return
 

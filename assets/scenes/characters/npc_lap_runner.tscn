@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="PackedScene" path="res://assets/scenes/characters/npc_character.tscn" id="1_base"]
+[ext_resource type="PackedScene" path="res://assets/scenes/common/running_cap_accessory.tscn" id="2_running_cap"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_idle"]
 animation = &"Idle"
@@ -35,6 +36,9 @@ speed_scale = 1.0
 [node name="AnimationTree" parent="Model/AnimationPlayer" index="0"]
 tree_root = SubResource("AnimationNodeStateMachine_lap_runner")
 
+[node name="hat_2" parent="Model/Rig/Skeleton3D" index="0"]
+visible = true
+
 [node name="InteractionTarget" parent="." index="3"]
 collision_layer = 0
 collision_mask = 0
@@ -46,3 +50,5 @@ collision_layer = 0
 collision_mask = 0
 monitoring = false
 monitorable = false
+
+[node name="RunningCapAccessory" parent="Model/Rig/Skeleton3D/hat_2" index="0" instance=ExtResource("2_running_cap")]

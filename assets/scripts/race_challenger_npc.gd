@@ -2,22 +2,26 @@ extends "res://assets/scripts/npc_character.gd"
 
 class_name RaceChallengerNpc
 
+const LAP_RACE_CONFIG_UTILS := preload("res://assets/scripts/lap_race_config_utils.gd")
 const LAP_SCENE_PATH := "res://assets/scenes/game/lap_track_showcase.tscn"
-const START_TITLE := &"start"
-const POST_RACE_REWARD_PENDING_TITLE := &"post_race_win_pending_reward"
-const POST_RACE_LOSE_TITLE := &"post_race_lose"
-const POST_RACE_CHAIN_COMPLETE_TITLE := &"post_race_win_reward_claimed"
-const POST_RACE_INTERMEDIATE_WIN_TITLE := &"post_race_win"
 const DEFAULT_POST_RACE_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
+const DEFAULT_RACE_CONFIG_PATH := LAP_RACE_CONFIG_UTILS.DEFAULT_RACE_CONFIG_PATH
+const SPECIAL_FORM_RACE_ID := &"third_race"
 
 @export var interaction_target_path: NodePath = ^"InteractionTarget"
 @export var race_dialogue_state_path: NodePath = ^"RaceDialogueState"
 @export_file("*.tscn") var post_race_scene_path := DEFAULT_POST_RACE_SCENE_PATH
-@export var race_ids: Array[StringName] = [&"first_race", &"second_race"]
+@export_file("*.json") var race_config_path := DEFAULT_RACE_CONFIG_PATH
+@export var special_form_node_path: NodePath = ^"ThirdRaceLightning"
+
+var _race_ids: Array[StringName] = []
+var _race_definitions: Dictionary = {}
+var _dialogue_resource_cache: Dictionary = {}
 
 
 func _ready() -> void:
 	super._ready()
+	_load_race_configuration()
 	call_deferred("_sync_idle_dialogue_title")
 
 
@@ -30,11 +34,12 @@ func prepare_post_race_dialogue(result: StringName) -> InteractionTarget:
 	if interaction_target == null:
 		return null
 
+	_apply_dialogue_resource_for_race(interaction_target, _get_current_race_definition())
 	match result:
 		&"win":
 			interaction_target.dialogue_start_title = _get_post_race_win_title()
 		_:
-			interaction_target.dialogue_start_title = POST_RACE_LOSE_TITLE
+			interaction_target.dialogue_start_title = _get_post_race_lose_title()
 
 	return interaction_target
 
@@ -48,14 +53,12 @@ func consume_pending_race_start() -> bool:
 
 
 func handle_dialogue_finished(_resource: DialogueResource) -> void:
-	var interaction_target := get_interaction_target()
-	if interaction_target != null:
-		interaction_target.dialogue_start_title = _get_idle_dialogue_title()
+	_sync_idle_dialogue_title()
 
 
 func can_offer_race() -> bool:
 	if GameSessionState == null:
-		return not race_ids.is_empty()
+		return not _get_configured_race_ids().is_empty()
 
 	return not _get_current_race_id().is_empty()
 
@@ -74,6 +77,7 @@ func mark_current_race_completed() -> void:
 		return
 
 	GameSessionState.mark_race_completed(current_race_id)
+	_sync_idle_dialogue_title()
 
 
 func mark_current_race_reward_completed() -> void:
@@ -83,6 +87,7 @@ func mark_current_race_reward_completed() -> void:
 
 	GameSessionState.mark_race_completed(current_race_id)
 	GameSessionState.mark_race_reward_completed(current_race_id)
+	_sync_idle_dialogue_title()
 
 
 func start_race_transition() -> void:
@@ -106,19 +111,40 @@ func _start_lap_race() -> void:
 
 
 func _get_idle_dialogue_title() -> StringName:
-	return POST_RACE_CHAIN_COMPLETE_TITLE if not can_offer_race() else START_TITLE
+	if not can_offer_race():
+		return _get_chain_complete_title()
+
+	var current_race_definition := _get_current_race_definition()
+	var start_title := StringName(
+		current_race_definition.get("start_title", LAP_RACE_CONFIG_UTILS.DEFAULT_START_TITLE)
+	)
+	return start_title if not start_title.is_empty() else LAP_RACE_CONFIG_UTILS.DEFAULT_START_TITLE
 
 
 func _get_post_race_win_title() -> StringName:
-	var current_race_id := _get_current_race_id()
-	if current_race_id.is_empty():
-		return POST_RACE_CHAIN_COMPLETE_TITLE
-	if not _has_uncompleted_race_after(current_race_id):
-		return POST_RACE_REWARD_PENDING_TITLE
-	return POST_RACE_INTERMEDIATE_WIN_TITLE
+	var current_race_definition := _get_current_race_definition()
+	if current_race_definition.is_empty():
+		return _get_chain_complete_title()
+
+	var win_title := StringName(
+		current_race_definition.get("win_title", LAP_RACE_CONFIG_UTILS.DEFAULT_WIN_TITLE)
+	)
+	return win_title if not win_title.is_empty() else LAP_RACE_CONFIG_UTILS.DEFAULT_WIN_TITLE
+
+
+func _get_post_race_lose_title() -> StringName:
+	var current_race_definition := _get_current_race_definition()
+	if current_race_definition.is_empty():
+		return LAP_RACE_CONFIG_UTILS.DEFAULT_LOSE_TITLE
+
+	var lose_title := StringName(
+		current_race_definition.get("lose_title", LAP_RACE_CONFIG_UTILS.DEFAULT_LOSE_TITLE)
+	)
+	return lose_title if not lose_title.is_empty() else LAP_RACE_CONFIG_UTILS.DEFAULT_LOSE_TITLE
 
 
 func _get_current_race_id() -> StringName:
+	var race_ids := _get_configured_race_ids()
 	if race_ids.is_empty():
 		return &""
 	if GameSessionState == null:
@@ -134,6 +160,7 @@ func _get_current_race_id() -> StringName:
 
 
 func _has_uncompleted_race_after(current_race_id: StringName) -> bool:
+	var race_ids := _get_configured_race_ids()
 	if race_ids.is_empty():
 		return false
 	if GameSessionState == null:
@@ -156,5 +183,94 @@ func _has_uncompleted_race_after(current_race_id: StringName) -> bool:
 
 func _sync_idle_dialogue_title() -> void:
 	var interaction_target := get_interaction_target()
-	if interaction_target != null:
-		interaction_target.dialogue_start_title = _get_idle_dialogue_title()
+	if interaction_target == null:
+		return
+
+	var current_race_definition := _get_current_race_definition()
+	if current_race_definition.is_empty():
+		_apply_dialogue_resource_for_race(interaction_target, _get_last_race_definition())
+	else:
+		_apply_dialogue_resource_for_race(interaction_target, current_race_definition)
+	interaction_target.dialogue_start_title = _get_idle_dialogue_title()
+	_sync_special_form_visual()
+
+
+func get_current_race_id() -> StringName:
+	return _get_current_race_id()
+
+
+func _load_race_configuration() -> void:
+	_race_ids.clear()
+	_race_definitions.clear()
+	for race_definition in LAP_RACE_CONFIG_UTILS.load_race_definitions(race_config_path):
+		var race_id := StringName(race_definition.get("race_id", &""))
+		if race_id.is_empty():
+			continue
+		_race_ids.append(race_id)
+		_race_definitions[String(race_id)] = race_definition
+
+
+func _get_configured_race_ids() -> Array[StringName]:
+	if not _race_ids.is_empty():
+		return _race_ids
+	return [&"first_race", &"second_race", &"third_race"]
+
+
+func _get_current_race_definition() -> Dictionary:
+	var current_race_id := _get_current_race_id()
+	if current_race_id.is_empty():
+		return {}
+	return _race_definitions.get(String(current_race_id), {})
+
+
+func _get_last_race_definition() -> Dictionary:
+	var race_ids := _get_configured_race_ids()
+	if race_ids.is_empty():
+		return {}
+	return _race_definitions.get(String(race_ids[race_ids.size() - 1]), {})
+
+
+func _get_chain_complete_title() -> StringName:
+	var last_race_definition := _get_last_race_definition()
+	var completed_title := StringName(
+		last_race_definition.get(
+			"completed_title",
+			LAP_RACE_CONFIG_UTILS.DEFAULT_COMPLETED_TITLE
+		)
+	)
+	return completed_title if not completed_title.is_empty() else LAP_RACE_CONFIG_UTILS.DEFAULT_COMPLETED_TITLE
+
+
+func _apply_dialogue_resource_for_race(interaction_target: InteractionTarget, race_definition: Dictionary) -> void:
+	if interaction_target == null:
+		return
+
+	var dialogue_resource_path := String(
+		race_definition.get("dialogue_resource_path", LAP_RACE_CONFIG_UTILS.DEFAULT_DIALOGUE_RESOURCE_PATH)
+	).strip_edges()
+	if dialogue_resource_path.is_empty():
+		dialogue_resource_path = LAP_RACE_CONFIG_UTILS.DEFAULT_DIALOGUE_RESOURCE_PATH
+
+	var dialogue_resource := _load_dialogue_resource(dialogue_resource_path)
+	if dialogue_resource != null:
+		interaction_target.dialogue_resource = dialogue_resource
+
+
+func _load_dialogue_resource(resource_path: String) -> DialogueResource:
+	if resource_path.is_empty():
+		return null
+	if _dialogue_resource_cache.has(resource_path):
+		return _dialogue_resource_cache[resource_path] as DialogueResource
+
+	var resource := load(resource_path) as DialogueResource
+	if resource != null:
+		_dialogue_resource_cache[resource_path] = resource
+	return resource
+
+
+func _sync_special_form_visual() -> void:
+	var special_form_node := get_node_or_null(special_form_node_path) as Node3D
+	if special_form_node == null:
+		return
+
+	special_form_node.visible = can_offer_race() and _get_current_race_id() == SPECIAL_FORM_RACE_ID

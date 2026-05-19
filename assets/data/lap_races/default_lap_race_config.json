@@ -3,12 +3,33 @@
     {
       "race_id": "first_race",
       "laps_to_win": 1,
-      "npc_speed_multiplier": 0.72
+      "npc_speed_multiplier": 0.72,
+      "dialogue_resource_path": "res://assets/dialogue/race_challenger.dialogue",
+      "start_title": "start_first_race",
+      "win_title": "post_race_win_first_race",
+      "lose_title": "post_race_lose_first_race",
+      "completed_title": "post_race_win_reward_claimed"
     },
     {
       "race_id": "second_race",
       "laps_to_win": 2,
-      "npc_speed_multiplier": 0.792
+      "npc_speed_multiplier": 0.792,
+      "dialogue_resource_path": "res://assets/dialogue/race_challenger.dialogue",
+      "start_title": "start_second_race",
+      "win_title": "post_race_win_second_race",
+      "lose_title": "post_race_lose_second_race",
+      "completed_title": "post_race_win_reward_claimed"
+    },
+    {
+      "race_id": "third_race",
+      "laps_to_win": 1,
+      "npc_speed_multiplier": 9.75,
+      "force_player_win": true,
+      "dialogue_resource_path": "res://assets/dialogue/race_challenger.dialogue",
+      "start_title": "start_third_race",
+      "win_title": "post_race_win_third_race",
+      "lose_title": "post_race_lose_third_race",
+      "completed_title": "post_race_win_reward_claimed"
     }
   ]
 }

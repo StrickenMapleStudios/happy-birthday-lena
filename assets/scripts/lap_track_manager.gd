@@ -2,9 +2,10 @@ extends Node
 
 class_name LapTrackManager
 
+const LAP_RACE_CONFIG_UTILS := preload("res://assets/scripts/lap_race_config_utils.gd")
 const DEFAULT_RETURN_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
 const DEFAULT_RACE_ID := &"first_race"
-const DEFAULT_RACE_CONFIG_PATH := "res://assets/data/lap_races/default_lap_race_config.json"
+const DEFAULT_RACE_CONFIG_PATH := LAP_RACE_CONFIG_UTILS.DEFAULT_RACE_CONFIG_PATH
 const LAP_REWARD_SOURCE_ID := &"lap_finish_reward"
 const LAP_REWARD_MARKER_ID := &"lap_finish_reward_marker"
 const BRASS_KEY_ITEM := preload("res://assets/data/items/brass_key_item.tres")
@@ -365,7 +366,7 @@ func _on_npc_lap_completed(total_completed_laps: int) -> void:
 
 	_npc_completed_laps = total_completed_laps
 	if _npc_completed_laps >= total_laps:
-		_finish_race(false)
+		_finish_race(_should_force_player_win())
 
 
 func _run_finish_sequence() -> void:
@@ -428,38 +429,11 @@ func _configure_active_race() -> void:
 
 func _load_race_definitions() -> void:
 	_race_definitions.clear()
-	if race_config_path.is_empty():
-		return
-
-	var file := FileAccess.open(race_config_path, FileAccess.READ)
-	if file == null:
-		push_warning("LapTrackManager could not open race config: %s" % race_config_path)
-		return
-
-	var parsed: Variant = JSON.parse_string(file.get_as_text())
-	if typeof(parsed) != TYPE_DICTIONARY:
-		push_warning("LapTrackManager race config is not a dictionary: %s" % race_config_path)
-		return
-
-	var parsed_dict := parsed as Dictionary
-	var races: Variant = parsed_dict.get("races", [])
-	if typeof(races) != TYPE_ARRAY:
-		push_warning("LapTrackManager race config has no valid 'races' array: %s" % race_config_path)
-		return
-
-	for race_variant: Variant in races:
-		if typeof(race_variant) != TYPE_DICTIONARY:
-			continue
-
-		var race_data := race_variant as Dictionary
-		var race_id := String(race_data.get("race_id", "")).strip_edges()
+	for race_definition in LAP_RACE_CONFIG_UTILS.load_race_definitions(race_config_path):
+		var race_id := StringName(race_definition.get("race_id", &""))
 		if race_id.is_empty():
 			continue
-
-		_race_definitions[race_id] = {
-			"laps_to_win": maxi(int(race_data.get("laps_to_win", 1)), 1),
-			"npc_speed_multiplier": float(race_data.get("npc_speed_multiplier", 1.35)),
-		}
+		_race_definitions[String(race_id)] = race_definition
 
 
 func _get_reward_source_id() -> StringName:
@@ -467,6 +441,11 @@ func _get_reward_source_id() -> StringName:
 		return LAP_REWARD_SOURCE_ID
 
 	return StringName("%s_%s" % [String(LAP_REWARD_SOURCE_ID), String(_active_race_id)])
+
+
+func _should_force_player_win() -> bool:
+	var race_definition: Dictionary = _race_definitions.get(String(_active_race_id), {})
+	return bool(race_definition.get("force_player_win", false))
 
 
 func _set_finish_time_scale(value: float) -> void:
