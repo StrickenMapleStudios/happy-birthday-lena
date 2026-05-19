@@ -1,6 +1,6 @@
 extends Node3D
 
-const FOLLOW_PROGRESS_LERP_SPEED := 4.0
+const FOLLOW_ANGLE_LERP_SPEED := 4.0
 const FOLLOW_POSITION_LERP_SPEED := 3.0
 const ROTATION_LERP_SPEED := 6.0
 const LOOK_LERP_SPEED := 4.0
@@ -12,15 +12,14 @@ const RUN_AWAY_TILT_MULTIPLIER := 0.65
 const TILT_BOOST_START_SPEED := 1.5
 const TILT_BOOST_MAX_SPEED := 6.0
 const RUN_TOWARD_FOV_BOOST := 6.0
-const PATH_LOOK_AHEAD_DISTANCE := 1.8
-const MIN_BAKED_LENGTH := 0.001
+const ANGLE_LOOK_AHEAD := 0.08
 const MIN_DIRECTION_LENGTH_SQUARED := 0.0001
 const MIN_LOOK_FORWARD_DISTANCE := 3.0
+const MIN_TARGET_MOVE_DISTANCE := 0.02
 
 @export var target_path: NodePath = ^"../PlayerCharacter"
 @export var lap_track_path: NodePath = ^"../LapTrack"
 @export_enum("Inner", "Outer") var lane_side := 1
-@export_range(0.0, 24.0, 0.1) var trail_distance := 8.2
 
 var _target: Node3D
 var _lap_track: LapTrack
@@ -32,12 +31,15 @@ var _look_height_offset := 0.0
 var _fov_offset := 0.0
 var _smoothed_focus_point := Vector3.ZERO
 var _target_progress := 0.0
-var _camera_progress := 0.0
-var _camera_target_progress := 0.0
 var _movement_direction_sign := 1.0
 var _track_direction_sign := 1.0
 var _is_initialized := false
 var _follow_active := false
+var _camera_radius := 0.0
+var _camera_height := 0.0
+var _camera_angle_offset := 0.0
+var _camera_angle := 0.0
+var _last_progress_sample_position := Vector3.ZERO
 
 
 func _ready() -> void:
@@ -65,7 +67,7 @@ func _process(delta: float) -> void:
 	if not _follow_active:
 		return
 
-	_update_progress(delta)
+	_update_target_progress()
 	_update_camera_transform(delta)
 
 
@@ -76,9 +78,6 @@ func activate_game_camera() -> void:
 
 func set_follow_active(value: bool) -> void:
 	_follow_active = value
-	if _follow_active:
-		_camera_progress = _get_closest_progress_for_world_position(global_position)
-		_camera_target_progress = _get_trailing_progress(_target_progress)
 
 
 func _initialize_from_track_state() -> void:
@@ -88,41 +87,61 @@ func _initialize_from_track_state() -> void:
 	_target_progress = _get_closest_progress_for_target()
 	_track_direction_sign = _infer_track_direction_sign(_target_progress)
 	_movement_direction_sign = _track_direction_sign
-	_camera_progress = _get_closest_progress_for_world_position(global_position)
-	_camera_target_progress = _get_trailing_progress(_target_progress)
+
+	var target_angle := _get_angle_for_progress(_target_progress)
+	var local_camera_position := _lap_track.to_local(global_position)
+	_camera_radius = Vector2(local_camera_position.x, local_camera_position.z).length()
+	_camera_height = local_camera_position.y
+	_camera_angle = atan2(local_camera_position.x, local_camera_position.z)
+	_camera_angle_offset = _get_wrapped_angle_delta(target_angle, _camera_angle)
+
 	_last_target_position = _target.global_position
+	_last_progress_sample_position = _target.global_position
 	_smoothed_focus_point = _target.global_position + Vector3(0.0, FOCUS_HEIGHT, 0.0)
 	_is_initialized = true
 
 
-func _update_progress(delta: float) -> void:
-	var baked_length := _get_baked_length()
-	var closest_progress := _get_closest_progress_for_target()
-	var target_progress_delta := _get_wrapped_delta(_target_progress, closest_progress, baked_length)
-	if absf(target_progress_delta) > 0.001:
-		_movement_direction_sign = sign(target_progress_delta)
-	_target_progress = wrapf(_target_progress + target_progress_delta, 0.0, baked_length)
+func _update_target_progress() -> void:
+	var current_target_position := _target.global_position
+	var planar_motion := current_target_position - _last_progress_sample_position
+	planar_motion.y = 0.0
+	if planar_motion.length() < MIN_TARGET_MOVE_DISTANCE:
+		return
 
-	_camera_target_progress = _get_trailing_progress(_target_progress)
-	var progress_delta := _get_wrapped_delta(_camera_progress, _camera_target_progress, baked_length)
-	var follow_weight := minf(delta * FOLLOW_PROGRESS_LERP_SPEED, 1.0)
-	_camera_progress = wrapf(_camera_progress + (progress_delta * follow_weight), 0.0, baked_length)
+	var previous_progress := _target_progress
+	_target_progress = _get_closest_progress_for_target()
+	var progress_delta := _get_wrapped_progress_delta(previous_progress, _target_progress)
+	if absf(progress_delta) > 0.001:
+		_movement_direction_sign = sign(progress_delta)
+	_last_progress_sample_position = current_target_position
 
 
 func _update_camera_transform(delta: float) -> void:
-	var current_world := _get_world_point(_camera_progress)
-	var facing_world := _get_world_point(
-		_camera_progress + (PATH_LOOK_AHEAD_DISTANCE * _track_direction_sign)
+	var target_angle := _get_angle_for_progress(_target_progress)
+	var desired_camera_angle := wrapf(target_angle + _camera_angle_offset, -PI, PI)
+	var angle_delta := _get_wrapped_angle_delta(_camera_angle, desired_camera_angle)
+	_camera_angle = wrapf(
+		_camera_angle + (angle_delta * minf(delta * FOLLOW_ANGLE_LERP_SPEED, 1.0)),
+		-PI,
+		PI
 	)
-	var tangent := facing_world - current_world
-	tangent.y = 0.0
+
+	var desired_world_position := _lap_track.to_global(
+		Vector3(
+			sin(_camera_angle) * _camera_radius,
+			_camera_height,
+			cos(_camera_angle) * _camera_radius
+		)
+	)
+	global_position = global_position.lerp(
+		desired_world_position,
+		minf(delta * FOLLOW_POSITION_LERP_SPEED, 1.0)
+	)
+
+	var tangent := _get_camera_tangent_world(_camera_angle)
 	if tangent.length_squared() > MIN_DIRECTION_LENGTH_SQUARED:
 		var target_basis := Basis.looking_at(tangent.normalized(), Vector3.UP)
 		global_basis = global_basis.slerp(target_basis, minf(delta * ROTATION_LERP_SPEED, 1.0))
-	global_position = global_position.lerp(
-		current_world,
-		minf(delta * FOLLOW_POSITION_LERP_SPEED, 1.0)
-	)
 
 	var target_position := _target.global_position
 	var move_delta := target_position - _last_target_position
@@ -162,62 +181,73 @@ func _update_camera_transform(delta: float) -> void:
 	_game_camera.look_at(_get_clamped_focus_point(), Vector3.UP)
 
 
-func _snap_to_progress(progress: float) -> void:
-	var current_world := _get_world_point(progress)
-	var facing_world := _get_world_point(
-		progress + (PATH_LOOK_AHEAD_DISTANCE * _track_direction_sign)
-	)
-	var tangent := facing_world - current_world
-	tangent.y = 0.0
-	global_position = current_world
-	if tangent.length_squared() > MIN_DIRECTION_LENGTH_SQUARED:
-		global_basis = Basis.looking_at(tangent.normalized(), Vector3.UP)
-	_game_camera.look_at(_get_clamped_focus_point(), Vector3.UP)
-
-
 func _get_closest_progress_for_target() -> float:
 	var lane_local_position := _lane_path.to_local(_target.global_position)
 	return _curve.get_closest_offset(lane_local_position)
 
 
-func _get_closest_progress_for_world_position(world_position: Vector3) -> float:
-	var lane_local_position := _lane_path.to_local(world_position)
-	return _curve.get_closest_offset(lane_local_position)
+func _get_angle_for_progress(progress: float) -> float:
+	var point_world := _get_world_point(progress)
+	var point_local := _lap_track.to_local(point_world)
+	return atan2(point_local.x, point_local.z)
 
 
 func _get_world_point(offset: float) -> Vector3:
-	return _lane_path.to_global(_curve.sample_baked(wrapf(offset, 0.0, _get_baked_length()), true))
+	return _lane_path.to_global(_curve.sample_baked(offset, true))
 
 
-func _get_baked_length() -> float:
-	return maxf(_curve.get_baked_length(), MIN_BAKED_LENGTH)
+func _get_wrapped_progress_delta(from_offset: float, to_offset: float) -> float:
+	var baked_length := maxf(_curve.get_baked_length(), 0.001)
+	return wrapf((to_offset - from_offset) + (baked_length * 0.5), 0.0, baked_length) - (baked_length * 0.5)
 
 
-func _get_trailing_progress(target_progress: float) -> float:
-	return wrapf(target_progress + (_movement_direction_sign * trail_distance), 0.0, _get_baked_length())
+func _get_wrapped_angle_delta(from_angle: float, to_angle: float) -> float:
+	return wrapf((to_angle - from_angle) + PI, 0.0, TAU) - PI
 
 
 func _infer_track_direction_sign(progress: float) -> float:
-	var current_world := _get_world_point(progress)
-	var forward_world := _get_world_point(progress + PATH_LOOK_AHEAD_DISTANCE)
-	var tangent := forward_world - current_world
+	var current_angle := _get_angle_for_progress(progress)
+	var next_angle := _get_angle_for_progress(progress + 1.0)
+	var angle_delta := _get_wrapped_angle_delta(current_angle, next_angle)
+	if absf(angle_delta) <= 0.0001:
+		return 1.0
+	return sign(angle_delta)
+
+
+func _get_camera_tangent_world(angle: float) -> Vector3:
+	var current_local := Vector3(
+		sin(angle) * _camera_radius,
+		_camera_height,
+		cos(angle) * _camera_radius
+	)
+	var next_local := Vector3(
+		sin(angle + (ANGLE_LOOK_AHEAD * _track_direction_sign)) * _camera_radius,
+		_camera_height,
+		cos(angle + (ANGLE_LOOK_AHEAD * _track_direction_sign)) * _camera_radius
+	)
+	var current_world := _lap_track.to_global(current_local)
+	var next_world := _lap_track.to_global(next_local)
+	var tangent := next_world - current_world
 	tangent.y = 0.0
-	if tangent.length_squared() <= MIN_DIRECTION_LENGTH_SQUARED:
-		return 1.0
-
-	var target_forward := -_target.global_basis.z
-	target_forward.y = 0.0
-	if target_forward.length_squared() <= MIN_DIRECTION_LENGTH_SQUARED:
-		return 1.0
-
-	return 1.0 if target_forward.normalized().dot(tangent.normalized()) >= 0.0 else -1.0
+	return tangent
 
 
 func _get_clamped_focus_point() -> Vector3:
 	var camera_position := _game_camera.global_position
-	var camera_forward := -_game_camera.global_basis.z
-	var camera_right := _game_camera.global_basis.x
-	var camera_up := _game_camera.global_basis.y
+	var camera_forward := -global_basis.z
+	camera_forward.y = 0.0
+	if camera_forward.length_squared() <= MIN_DIRECTION_LENGTH_SQUARED:
+		camera_forward = -_game_camera.global_basis.z
+		camera_forward.y = 0.0
+	if camera_forward.length_squared() <= MIN_DIRECTION_LENGTH_SQUARED:
+		camera_forward = Vector3.FORWARD
+	camera_forward = camera_forward.normalized()
+
+	var camera_right := camera_forward.cross(Vector3.UP)
+	if camera_right.length_squared() <= MIN_DIRECTION_LENGTH_SQUARED:
+		camera_right = Vector3.RIGHT
+	camera_right = camera_right.normalized()
+	var camera_up := Vector3.UP
 
 	var offset := _smoothed_focus_point - camera_position
 	var forward_distance := maxf(offset.dot(camera_forward), MIN_LOOK_FORWARD_DISTANCE)
@@ -230,7 +260,3 @@ func _get_clamped_focus_point() -> Vector3:
 		+ (camera_right * right_distance)
 		+ (camera_up * up_distance)
 	)
-
-
-func _get_wrapped_delta(from_offset: float, to_offset: float, length: float) -> float:
-	return wrapf((to_offset - from_offset) + (length * 0.5), 0.0, length) - (length * 0.5)

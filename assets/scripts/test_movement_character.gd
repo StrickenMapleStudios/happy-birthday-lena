@@ -269,7 +269,7 @@ func _get_default_movement_direction(input: Vector2) -> Vector3:
 	if camera_right.length_squared() <= 0.000001:
 		return Vector3(-input.x, 0.0, -input.y).normalized()
 	camera_right = camera_right.normalized()
-	return (camera_right * -input.x + camera_forward * -input.y).normalized()
+	return (camera_right * input.x + camera_forward * -input.y).normalized()
 
 
 func set_camera_relative_movement_enabled(value: bool) -> void:
