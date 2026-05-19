@@ -3,6 +3,8 @@ extends Node
 class_name LapTrackManager
 
 const DEFAULT_RETURN_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
+const DEFAULT_RACE_ID := &"first_race"
+const DEFAULT_RACE_CONFIG_PATH := "res://assets/data/lap_races/default_lap_race_config.json"
 const LAP_REWARD_SOURCE_ID := &"lap_finish_reward"
 const LAP_REWARD_MARKER_ID := &"lap_finish_reward_marker"
 const BRASS_KEY_ITEM := preload("res://assets/data/items/brass_key_item.tres")
@@ -16,6 +18,7 @@ const RACE_RESULT_LOSE := &"lose"
 @export var camera_rig_path: NodePath = ^"../CameraRig"
 @export var countdown_ui_path: NodePath = ^"../LapCountdownUi"
 @export var lap_counter_ui_path: NodePath = ^"../LapCounterUi"
+@export_file("*.json") var race_config_path := DEFAULT_RACE_CONFIG_PATH
 @export_enum("Inner", "Outer") var player_lane := 0
 @export_enum("Inner", "Outer") var npc_lane := 1
 @export_range(1, 12, 1) var total_laps := 1
@@ -48,6 +51,8 @@ var _player_last_progress := 0.0
 var _player_start_progress := 0.0
 var _player_checkpoint_progresses: Array[float] = []
 var _player_progress_initialized := false
+var _active_race_id := DEFAULT_RACE_ID
+var _race_definitions: Dictionary = {}
 
 
 func _ready() -> void:
@@ -59,6 +64,7 @@ func _ready() -> void:
 	_camera_rig = get_node_or_null(camera_rig_path) as Node3D
 	_countdown_ui = get_node_or_null(countdown_ui_path) as LapCountdownUi
 	_lap_counter_ui = get_node_or_null(lap_counter_ui_path) as LapCounterUi
+	_configure_active_race()
 
 	if _lap_track == null:
 		return
@@ -259,8 +265,6 @@ func complete_lap_state(player_won: bool = true) -> void:
 	_race_active = false
 	_race_finished = true
 	_player_won = player_won
-	if player_won:
-		_queue_finish_reward()
 	call_deferred("_run_finish_sequence")
 
 
@@ -369,8 +373,6 @@ func _run_finish_sequence() -> void:
 		return
 
 	_finish_sequence_running = true
-	if _player_won:
-		_queue_finish_reward()
 	if LapRaceFlow != null:
 		LapRaceFlow.finish_race(RACE_RESULT_WIN if _player_won else RACE_RESULT_LOSE)
 	_kill_time_scale_tween()
@@ -397,12 +399,74 @@ func _queue_finish_reward() -> void:
 
 	RewardService.call(
 		"grant_reward",
-		LAP_REWARD_SOURCE_ID,
+		_get_reward_source_id(),
 		LAP_REWARD_MARKER_ID,
 		BRASS_KEY_ITEM,
 		1,
 		String(LapRaceFlow.call("get_return_scene_path", DEFAULT_RETURN_SCENE_PATH)) if LapRaceFlow != null else DEFAULT_RETURN_SCENE_PATH
 	)
+
+
+func _configure_active_race() -> void:
+	_load_race_definitions()
+	if LapRaceFlow != null and LapRaceFlow.has_method("get_active_race_id"):
+		_active_race_id = StringName(LapRaceFlow.call("get_active_race_id", DEFAULT_RACE_ID))
+	else:
+		_active_race_id = DEFAULT_RACE_ID
+
+	var race_definition: Dictionary = _race_definitions.get(String(_active_race_id), {})
+	if race_definition.is_empty():
+		return
+
+	total_laps = maxi(int(race_definition.get("laps_to_win", total_laps)), 1)
+	if _npc_lane_runner != null:
+		_npc_lane_runner.set(
+			"root_motion_speed_multiplier",
+			float(race_definition.get("npc_speed_multiplier", _npc_lane_runner.get("root_motion_speed_multiplier")))
+		)
+
+
+func _load_race_definitions() -> void:
+	_race_definitions.clear()
+	if race_config_path.is_empty():
+		return
+
+	var file := FileAccess.open(race_config_path, FileAccess.READ)
+	if file == null:
+		push_warning("LapTrackManager could not open race config: %s" % race_config_path)
+		return
+
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	if typeof(parsed) != TYPE_DICTIONARY:
+		push_warning("LapTrackManager race config is not a dictionary: %s" % race_config_path)
+		return
+
+	var parsed_dict := parsed as Dictionary
+	var races: Variant = parsed_dict.get("races", [])
+	if typeof(races) != TYPE_ARRAY:
+		push_warning("LapTrackManager race config has no valid 'races' array: %s" % race_config_path)
+		return
+
+	for race_variant: Variant in races:
+		if typeof(race_variant) != TYPE_DICTIONARY:
+			continue
+
+		var race_data := race_variant as Dictionary
+		var race_id := String(race_data.get("race_id", "")).strip_edges()
+		if race_id.is_empty():
+			continue
+
+		_race_definitions[race_id] = {
+			"laps_to_win": maxi(int(race_data.get("laps_to_win", 1)), 1),
+			"npc_speed_multiplier": float(race_data.get("npc_speed_multiplier", 1.35)),
+		}
+
+
+func _get_reward_source_id() -> StringName:
+	if _active_race_id.is_empty():
+		return LAP_REWARD_SOURCE_ID
+
+	return StringName("%s_%s" % [String(LAP_REWARD_SOURCE_ID), String(_active_race_id)])
 
 
 func _set_finish_time_scale(value: float) -> void:

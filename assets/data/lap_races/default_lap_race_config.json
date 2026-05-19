@@ -1,0 +1,9 @@
+{
+  "races": [
+    {
+      "race_id": "first_race",
+      "laps_to_win": 2,
+      "npc_speed_multiplier": 0.72
+    }
+  ]
+}

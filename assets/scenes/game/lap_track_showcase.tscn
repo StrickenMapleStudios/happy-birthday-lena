@@ -178,6 +178,7 @@ root_motion_speed_multiplier = 0.72
 
 [node name="LapTrackManager" type="Node" parent="." unique_id=1030630952]
 script = ExtResource("9_manager")
+race_config_path = "res://assets/data/lap_races/default_lap_race_config.json"
 auto_place_player_on_lane = true
 auto_place_npc_on_lane = true
 

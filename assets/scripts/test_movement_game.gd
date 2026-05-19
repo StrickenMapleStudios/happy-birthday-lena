@@ -32,6 +32,8 @@ const INVENTORY_TIME_SCALE_OPEN := 0.0
 const DEFAULT_GAME_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
 const LABYRINTH_REWARD_SOURCE_ID := &"labyrinth_exit_reward"
 const LABYRINTH_REWARD_MARKER_ID := &"labyrinth_exit_reward_marker"
+const LAP_REWARD_SOURCE_ID := &"lap_finish_reward"
+const LAP_REWARD_MARKER_ID := &"lap_finish_reward_marker"
 const BRASS_KEY_ITEM := preload("res://assets/data/items/brass_key_item.tres")
 
 const CURSOR_MODE_INGAME := Input.MOUSE_MODE_CAPTURED
@@ -83,6 +85,7 @@ var _ignored_labyrinth_entry_area: WeakRef
 var _found_item_popup: FoundItemPopup
 var _pending_lap_return_context: Dictionary = {}
 var _reward_demonstration_start_pending := false
+var _pending_reward_grant_context: Dictionary = {}
 
 
 func _ready() -> void:
@@ -374,7 +377,7 @@ func _on_interaction_target_changed(target: InteractionTarget) -> void:
 		interaction_prompt_controller.set_target(target)
 
 
-func _exit_dialogue_mode() -> void:
+func _exit_dialogue_mode(skip_fade_in: bool = false) -> void:
 	if _interaction_locked or not _dialogue_active:
 		return
 
@@ -410,7 +413,8 @@ func _exit_dialogue_mode() -> void:
 	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY, AUDIO_PRESET_FADE_DURATION)
 	_sync_input_context()
 	await get_tree().process_frame
-	await SceneTransition.fade_in()
+	if not skip_fade_in:
+		await SceneTransition.fade_in()
 	_interaction_locked = false
 	_sync_input_context()
 
@@ -691,10 +695,15 @@ func _on_dialogue_ended(resource: DialogueResource) -> void:
 			await _transition_from_dialogue_to_race(finished_dialogue_actor)
 			return
 
-	await _exit_dialogue_mode()
+	var should_chain_reward_demonstration := _has_pending_lap_reward_for_actor(finished_dialogue_actor)
+	await _exit_dialogue_mode(should_chain_reward_demonstration)
 
 	if is_instance_valid(finished_dialogue_actor) and finished_dialogue_actor.has_method("handle_dialogue_finished"):
 		finished_dialogue_actor.call("handle_dialogue_finished", resource)
+	if is_instance_valid(finished_dialogue_actor):
+		_try_grant_pending_lap_reward(finished_dialogue_actor)
+	if should_chain_reward_demonstration:
+		_try_start_reward_demonstration()
 
 
 func _on_balloon_speaker_changed(character_name: String, _dialogue_line: DialogueLine) -> void:
@@ -1247,6 +1256,13 @@ func _resume_pending_lap_race_return_if_ready() -> void:
 		return
 
 	var result: StringName = context.get("result", &"lose")
+	_pending_reward_grant_context = {}
+	if npc.has_method("should_grant_reward_for_result") and bool(npc.call("should_grant_reward_for_result", result)):
+		_pending_reward_grant_context = {
+			"npc_path": npc_path,
+			"target_scene_path": String(context.get("scene_path", DEFAULT_GAME_SCENE_PATH)),
+			"reward_source_id": _get_lap_reward_source_id_for_race(StringName(context.get("race_id", &""))),
+		}
 	var interaction_target := npc.call("prepare_post_race_dialogue", result) as InteractionTarget
 	if interaction_target == null:
 		_release_locked_return_transition()
@@ -1416,10 +1432,48 @@ func _transition_from_dialogue_to_race(actor: Node3D) -> void:
 
 
 func _release_locked_return_transition() -> void:
+	_pending_reward_grant_context = {}
 	_interaction_locked = false
 	player.set_controls_enabled(true)
 	interaction_source.set_interaction_enabled(true)
 	_sync_input_context()
+
+
+func _has_pending_lap_reward_for_actor(actor: Node3D) -> bool:
+	if actor == null or _pending_reward_grant_context.is_empty():
+		return false
+
+	return String(actor.get_path()) == String(_pending_reward_grant_context.get("npc_path", NodePath()))
+
+
+func _try_grant_pending_lap_reward(actor: Node3D) -> void:
+	if _pending_reward_grant_context.is_empty():
+		return
+	if String(actor.get_path()) != String(_pending_reward_grant_context.get("npc_path", NodePath())):
+		return
+
+	var reward_context := _pending_reward_grant_context
+	_pending_reward_grant_context = {}
+	if actor.has_method("mark_race_reward_completed"):
+		actor.call("mark_race_reward_completed")
+	if RewardService == null:
+		return
+
+	RewardService.call(
+		"grant_reward",
+		reward_context.get("reward_source_id", LAP_REWARD_SOURCE_ID),
+		LAP_REWARD_MARKER_ID,
+		BRASS_KEY_ITEM,
+		1,
+		String(reward_context.get("target_scene_path", DEFAULT_GAME_SCENE_PATH))
+	)
+
+
+func _get_lap_reward_source_id_for_race(race_id: StringName) -> StringName:
+	if race_id.is_empty():
+		return LAP_REWARD_SOURCE_ID
+
+	return StringName("%s_%s" % [String(LAP_REWARD_SOURCE_ID), String(race_id)])
 
 
 func _restore_inventory_from_session_state() -> void:

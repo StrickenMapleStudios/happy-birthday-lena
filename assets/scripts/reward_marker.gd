@@ -35,6 +35,7 @@ func spawn_reward(item_data: InventoryItemData, quantity: int = 1, play_reveal: 
 
 	pickup.item_data = item_data
 	pickup.quantity = max(quantity, 1)
+	pickup.ignore_session_collection_state = true
 	add_child(pickup)
 	pickup.owner = owner
 	pickup.position = Vector3.ZERO

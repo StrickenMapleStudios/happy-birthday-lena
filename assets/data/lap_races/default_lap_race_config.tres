@@ -1,0 +1,14 @@
+[gd_resource type="LapRaceConfig" script_class="LapRaceConfig" format=3 uid="uid://b3e5qdwpnk7ey"]
+
+[ext_resource type="Script" uid="uid://c2i82he6mjhxs" path="res://assets/scripts/lap_race_config.gd" id="1_config_script"]
+[ext_resource type="Script" uid="uid://b8q5nfhjbculp" path="res://assets/scripts/lap_race_definition.gd" id="2_definition_script"]
+
+[sub_resource type="Resource" id="Resource_first_race"]
+script = ExtResource("2_definition_script")
+race_id = &"first_race"
+laps_to_win = 2
+npc_speed_multiplier = 0.72
+
+[resource]
+script = ExtResource("1_config_script")
+races = Array[ExtResource("2_definition_script")]([SubResource("Resource_first_race")])

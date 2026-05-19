@@ -6,6 +6,7 @@ class_name PickupItem
 @export_range(1, 99, 1) var quantity := 1
 @export var bob_height := 0.18
 @export var bob_speed := 1.9
+@export var ignore_session_collection_state := false
 
 @onready var visual_root: Node3D = $VisualRoot
 @onready var body_mesh: MeshInstance3D = $VisualRoot/BodyMesh
@@ -240,6 +241,8 @@ func _cache_session_identity() -> void:
 
 
 func _should_hide_from_session_state() -> bool:
+	if ignore_session_collection_state:
+		return false
 	if GameSessionState == null:
 		return false
 	return GameSessionState.is_pickup_collected(_session_scene_path, _session_node_path)
