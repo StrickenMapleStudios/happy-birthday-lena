@@ -134,7 +134,10 @@ func _build_lane_curve(side: LaneSide) -> void:
 	for point_index in range(max(curve_point_count, 3)):
 		var t: float = float(point_index) / float(curve_point_count)
 		var angle: float = start_angle + (FULL_CIRCLE * t)
-		curve.add_point(_point_on_circle(radius, angle, marker.position.y + lane_height_offset))
+		var lap_local_point := _point_on_circle(radius, angle, marker.position.y + lane_height_offset)
+		var world_point := to_global(lap_local_point)
+		var lane_local_point := lane_path.to_local(world_point)
+		curve.add_point(lane_local_point)
 
 	lane_path.curve = curve
 
