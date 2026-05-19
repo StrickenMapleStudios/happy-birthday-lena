@@ -3,7 +3,7 @@ extends Node
 class_name RaceChallengerDialogueState
 
 const DIALOGUE_STATE_GROUP := &"dialogue_state_components"
-const POST_RACE_DEFAULT_TITLE := &"post_race_win_pending_reward"
+const POST_RACE_DEFAULT_TITLE := &"post_race_win"
 const POST_RACE_REWARD_CLAIMED_TITLE := &"post_race_win_reward_claimed"
 
 var _pending_race_start := false

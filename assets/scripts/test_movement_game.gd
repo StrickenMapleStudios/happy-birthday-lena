@@ -86,6 +86,7 @@ var _found_item_popup: FoundItemPopup
 var _pending_lap_return_context: Dictionary = {}
 var _reward_demonstration_start_pending := false
 var _pending_reward_grant_context: Dictionary = {}
+var _pending_race_resolution_context: Dictionary = {}
 
 
 func _ready() -> void:
@@ -701,9 +702,16 @@ func _on_dialogue_ended(resource: DialogueResource) -> void:
 	if is_instance_valid(finished_dialogue_actor) and finished_dialogue_actor.has_method("handle_dialogue_finished"):
 		finished_dialogue_actor.call("handle_dialogue_finished", resource)
 	if is_instance_valid(finished_dialogue_actor):
-		_try_grant_pending_lap_reward(finished_dialogue_actor)
+		_resolve_pending_lap_race_outcome(finished_dialogue_actor)
+	var reward_granted := false
+	if is_instance_valid(finished_dialogue_actor):
+		reward_granted = _try_grant_pending_lap_reward(finished_dialogue_actor)
 	if should_chain_reward_demonstration:
-		_try_start_reward_demonstration()
+		_try_start_reward_demonstration(true)
+		if not _reward_demonstration_start_pending and not _demonstration_active and not _has_queued_reward_demonstration():
+			if not reward_granted:
+				push_warning("Lap reward flow did not start after dialogue; restoring fade-in.")
+			await SceneTransition.fade_in()
 
 
 func _on_balloon_speaker_changed(character_name: String, _dialogue_line: DialogueLine) -> void:
@@ -1034,7 +1042,7 @@ func _on_reward_spawned(_source_id: StringName, marker: RewardMarker, _pickup: P
 	_try_start_reward_demonstration()
 
 
-func _try_start_reward_demonstration() -> void:
+func _try_start_reward_demonstration(start_from_faded_state: bool = false) -> void:
 	if _reward_demonstration_start_pending or _demonstration_active or _interaction_locked:
 		return
 	if _dialogue_active or _cutscene_active or _pause_active or _inventory_open or _found_item_popup_open:
@@ -1046,7 +1054,11 @@ func _try_start_reward_demonstration() -> void:
 		return
 
 	_reward_demonstration_start_pending = true
-	call_deferred("_start_reward_demonstration", demonstration_camera)
+	call_deferred(
+		"_start_reward_demonstration",
+		demonstration_camera,
+		start_from_faded_state or _is_scene_transition_active()
+	)
 
 
 func _consume_next_reward_demonstration_camera() -> RewardDemonstrationCamera:
@@ -1059,7 +1071,10 @@ func _consume_next_reward_demonstration_camera() -> RewardDemonstrationCamera:
 	return null
 
 
-func _start_reward_demonstration(demonstration_camera: RewardDemonstrationCamera) -> void:
+func _start_reward_demonstration(
+	demonstration_camera: RewardDemonstrationCamera,
+	start_from_faded_state: bool = false
+) -> void:
 	_reward_demonstration_start_pending = false
 	if demonstration_camera == null or not is_instance_valid(demonstration_camera):
 		_resume_pending_lap_race_return_if_ready()
@@ -1071,7 +1086,8 @@ func _start_reward_demonstration(demonstration_camera: RewardDemonstrationCamera
 	_set_input_context(InputContext.TRANSITION)
 	player.set_controls_enabled(false)
 	interaction_source.set_interaction_enabled(false)
-	await SceneTransition.fade_out()
+	if not start_from_faded_state:
+		await SceneTransition.fade_out()
 	_set_dialogue_pivots_active(false)
 	if gameplay_ui_layer != null:
 		gameplay_ui_layer.set_cinematic_bars_visible(true)
@@ -1256,8 +1272,14 @@ func _resume_pending_lap_race_return_if_ready() -> void:
 		return
 
 	var result: StringName = context.get("result", &"lose")
+	_pending_race_resolution_context = {
+		"npc_path": npc_path,
+		"result": result,
+		"should_grant_reward": false,
+	}
 	_pending_reward_grant_context = {}
 	if npc.has_method("should_grant_reward_for_result") and bool(npc.call("should_grant_reward_for_result", result)):
+		_pending_race_resolution_context["should_grant_reward"] = true
 		_pending_reward_grant_context = {
 			"npc_path": npc_path,
 			"target_scene_path": String(context.get("scene_path", DEFAULT_GAME_SCENE_PATH)),
@@ -1432,6 +1454,7 @@ func _transition_from_dialogue_to_race(actor: Node3D) -> void:
 
 
 func _release_locked_return_transition() -> void:
+	_pending_race_resolution_context = {}
 	_pending_reward_grant_context = {}
 	_interaction_locked = false
 	player.set_controls_enabled(true)
@@ -1439,34 +1462,60 @@ func _release_locked_return_transition() -> void:
 	_sync_input_context()
 
 
+func _resolve_pending_lap_race_outcome(actor: Node3D) -> void:
+	if actor == null or _pending_race_resolution_context.is_empty():
+		return
+
+	var current_scene := get_tree().current_scene
+	if current_scene == null:
+		return
+	if String(current_scene.get_path_to(actor)) != String(_pending_race_resolution_context.get("npc_path", NodePath())):
+		return
+
+	var result: StringName = _pending_race_resolution_context.get("result", &"lose")
+	var should_grant_reward := bool(_pending_race_resolution_context.get("should_grant_reward", false))
+	_pending_race_resolution_context = {}
+	if result == &"win" and not should_grant_reward and actor.has_method("mark_current_race_completed"):
+		actor.call("mark_current_race_completed")
+
+
 func _has_pending_lap_reward_for_actor(actor: Node3D) -> bool:
 	if actor == null or _pending_reward_grant_context.is_empty():
 		return false
 
-	return String(actor.get_path()) == String(_pending_reward_grant_context.get("npc_path", NodePath()))
+	var current_scene := get_tree().current_scene
+	if current_scene == null:
+		return false
+
+	return String(current_scene.get_path_to(actor)) == String(_pending_reward_grant_context.get("npc_path", NodePath()))
 
 
-func _try_grant_pending_lap_reward(actor: Node3D) -> void:
+func _try_grant_pending_lap_reward(actor: Node3D) -> bool:
 	if _pending_reward_grant_context.is_empty():
-		return
-	if String(actor.get_path()) != String(_pending_reward_grant_context.get("npc_path", NodePath())):
-		return
+		return false
+
+	var current_scene := get_tree().current_scene
+	if current_scene == null:
+		return false
+	if String(current_scene.get_path_to(actor)) != String(_pending_reward_grant_context.get("npc_path", NodePath())):
+		return false
 
 	var reward_context := _pending_reward_grant_context
 	_pending_reward_grant_context = {}
-	if actor.has_method("mark_race_reward_completed"):
-		actor.call("mark_race_reward_completed")
 	if RewardService == null:
-		return
+		return false
 
-	RewardService.call(
+	var granted := bool(RewardService.call(
 		"grant_reward",
 		reward_context.get("reward_source_id", LAP_REWARD_SOURCE_ID),
 		LAP_REWARD_MARKER_ID,
 		BRASS_KEY_ITEM,
 		1,
 		String(reward_context.get("target_scene_path", DEFAULT_GAME_SCENE_PATH))
-	)
+	))
+	if granted and actor.has_method("mark_current_race_reward_completed"):
+		actor.call("mark_current_race_reward_completed")
+	return granted
 
 
 func _get_lap_reward_source_id_for_race(race_id: StringName) -> StringName:

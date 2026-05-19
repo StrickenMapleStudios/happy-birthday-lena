@@ -2,8 +2,13 @@
   "races": [
     {
       "race_id": "first_race",
-      "laps_to_win": 2,
+      "laps_to_win": 1,
       "npc_speed_multiplier": 0.72
+    },
+    {
+      "race_id": "second_race",
+      "laps_to_win": 2,
+      "npc_speed_multiplier": 0.792
     }
   ]
 }

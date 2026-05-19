@@ -2,12 +2,14 @@ extends Node
 
 var _inventory_state: Dictionary = {}
 var _collected_pickups_by_scene: Dictionary = {}
+var _completed_races: Dictionary = {}
 var _completed_race_rewards: Dictionary = {}
 
 
 func reset_session() -> void:
 	_inventory_state = {}
 	_collected_pickups_by_scene = {}
+	_completed_races = {}
 	_completed_race_rewards = {}
 
 
@@ -48,3 +50,17 @@ func is_race_reward_completed(race_id: StringName) -> bool:
 		return false
 
 	return bool(_completed_race_rewards.get(race_id, false))
+
+
+func mark_race_completed(race_id: StringName) -> void:
+	if race_id.is_empty():
+		return
+
+	_completed_races[race_id] = true
+
+
+func is_race_completed(race_id: StringName) -> bool:
+	if race_id.is_empty():
+		return false
+
+	return bool(_completed_races.get(race_id, false))
