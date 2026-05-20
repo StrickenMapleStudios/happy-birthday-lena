@@ -11,6 +11,9 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_ym06s"]
 size = Vector3(23.349854, 3.1658936, 5.401367)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_torch_trigger"]
+size = Vector3(10, 4, 4)
+
 [node name="MysteryRoomCutscene" type="Node3D" unique_id=46491078]
 script = ExtResource("2_cutscene")
 
@@ -110,5 +113,35 @@ script = ExtResource("3_auto_trigger")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="AutoCutsceneTrigger" unique_id=1042330339]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0829468, -117.391205)
 shape = SubResource("BoxShape3D_ym06s")
+
+[node name="TorchSequenceTriggers" type="Node3D" parent="." unique_id=1285036326]
+
+[node name="Pair02Trigger" type="Area3D" parent="TorchSequenceTriggers" unique_id=1808924653]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -1.2108822)
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TorchSequenceTriggers/Pair02Trigger" unique_id=273002883]
+shape = SubResource("BoxShape3D_torch_trigger")
+
+[node name="Pair03Trigger" type="Area3D" parent="TorchSequenceTriggers" unique_id=1091091258]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -22.991255)
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TorchSequenceTriggers/Pair03Trigger" unique_id=800916053]
+shape = SubResource("BoxShape3D_torch_trigger")
+
+[node name="Pair04Trigger" type="Area3D" parent="TorchSequenceTriggers" unique_id=1329039513]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -45.715572)
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TorchSequenceTriggers/Pair04Trigger" unique_id=452146390]
+shape = SubResource("BoxShape3D_torch_trigger")
+
+[node name="Pair05Trigger" type="Area3D" parent="TorchSequenceTriggers" unique_id=877330422]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -65.3431)
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TorchSequenceTriggers/Pair05Trigger" unique_id=1236070159]
+shape = SubResource("BoxShape3D_torch_trigger")
 
 [editable path="MysteryRoom"]
