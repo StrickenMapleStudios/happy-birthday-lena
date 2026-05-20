@@ -3,6 +3,33 @@ extends Node3D
 const LEFT_GIANT_SPEAKER_NAME := "Гигант 1"
 const RIGHT_GIANT_SPEAKER_NAME := "Гигант 2"
 const GIANTS_SPEAKER_NAME := "Гиганты"
+const FIRST_RIDDLE_INTRO_TEXT := "Первая загадка."
+const FIRST_RIDDLE_PROMPT_TEXT := "Что всегда впереди, но до чего нельзя дойти?"
+const SECOND_RIDDLE_INTRO_TEXT := "Вторая загадка."
+const SECOND_RIDDLE_PROMPT_TEXT := "Что принадлежит тебе, но чаще используется другими?"
+const THIRD_RIDDLE_INTRO_TEXT := "И последняя загадка."
+const THIRD_RIDDLE_PROMPT_TEXT := "Что становится тем ценнее, чем меньше его остаётся?"
+const FIRST_RIDDLE_RESPONSE_PREFIXES := [
+	"Верно. Горизонт",
+	"Хорошая мысль.",
+	"Любопытно.",
+	"Красивый ответ.",
+]
+
+const SECOND_RIDDLE_RESPONSE_PREFIXES := [
+	"В голосе много личного",
+	"Тонко сказано.",
+	"Верно. Имя",
+	"Практично, но нет.",
+]
+
+const THIRD_RIDDLE_RESPONSE_PREFIXES := [
+	"Сильный ответ.",
+	"Все верно.",
+	"Почти.",
+]
+
+const THIRD_RIDDLE_LIFE_RESPONSE_PREFIX := "Все верно."
 
 @export var left_giant_path: NodePath = ^"GiantCharacterLeft"
 @export var right_giant_path: NodePath = ^"GiantCharacterRight"
@@ -21,6 +48,7 @@ const GIANTS_SPEAKER_NAME := "Гиганты"
 @export var dialogue_speaker_name := "Гиганты"
 @export_range(0.5, 20.0, 0.1) var interaction_margin := 1.5
 @export_range(0.5, 20.0, 0.1) var player_anchor_margin := 3.5
+
 var _interaction_radius := 0.0
 
 
@@ -28,6 +56,7 @@ func _ready() -> void:
 	_configure_interaction_target()
 	_configure_auto_trigger()
 	_fit_interaction_geometry_to_giants()
+
 
 func get_dialogue_camera_mount() -> Node3D:
 	return get_node_or_null(dialogue_speaker_pivot_path) as Node3D
@@ -80,6 +109,33 @@ func resolve_dialogue_speaker(character_name: String) -> Node3D:
 	if normalized_name == RIGHT_GIANT_SPEAKER_NAME.to_lower():
 		return get_right_giant()
 	if normalized_name == GIANTS_SPEAKER_NAME.to_lower():
+		return self
+
+	return null
+
+
+func resolve_dialogue_speaker_for_line(character_name: String, dialogue_line: DialogueLine) -> Node3D:
+	if dialogue_line == null:
+		return resolve_dialogue_speaker(character_name)
+
+	var text := dialogue_line.text.strip_edges()
+	if text == FIRST_RIDDLE_INTRO_TEXT:
+		return self
+	if text == FIRST_RIDDLE_PROMPT_TEXT:
+		return get_left_giant()
+	if _text_has_any_prefix(text, FIRST_RIDDLE_RESPONSE_PREFIXES):
+		return self
+	if text == SECOND_RIDDLE_INTRO_TEXT:
+		return get_player_dialogue_actor()
+	if text == SECOND_RIDDLE_PROMPT_TEXT:
+		return get_right_giant()
+	if _text_has_any_prefix(text, SECOND_RIDDLE_RESPONSE_PREFIXES):
+		return get_left_giant()
+	if text == THIRD_RIDDLE_INTRO_TEXT:
+		return get_player_dialogue_actor()
+	if text == THIRD_RIDDLE_PROMPT_TEXT:
+		return get_player_dialogue_actor()
+	if _text_has_any_prefix(text, THIRD_RIDDLE_RESPONSE_PREFIXES):
 		return self
 
 	return null
@@ -255,6 +311,7 @@ func _build_aabb_corners(bounds: AABB) -> Array[Vector3]:
 		position + size,
 	]
 
+
 func _configure_area(
 	area_path: NodePath,
 	radius: float,
@@ -324,6 +381,27 @@ func get_right_giant() -> Node3D:
 	return get_node_or_null(right_giant_path) as Node3D
 
 
+func get_player_dialogue_actor() -> Node3D:
+	var tree := get_tree()
+	if tree == null:
+		return null
+
+	return tree.get_first_node_in_group(&"player_character") as Node3D
+
+
+func get_dialogue_camera_actor_for_line(dialogue_line: DialogueLine) -> Node3D:
+	if dialogue_line == null:
+		return null
+
+	var text := dialogue_line.text.strip_edges()
+	if text == SECOND_RIDDLE_INTRO_TEXT:
+		return get_player_dialogue_actor()
+	if text.begins_with(THIRD_RIDDLE_LIFE_RESPONSE_PREFIX):
+		return get_player_dialogue_actor()
+
+	return null
+
+
 func _set_giant_dialogue_target(giant: Node3D, target: Node3D) -> void:
 	if giant == null or not giant.has_method("set_dialogue_camera_target"):
 		return
@@ -340,3 +418,12 @@ func _get_giants() -> Array[Node3D]:
 	if right_giant != null:
 		result.append(right_giant)
 	return result
+
+
+func _text_has_any_prefix(text: String, prefixes: Array) -> bool:
+	for prefix_variant in prefixes:
+		var prefix := String(prefix_variant)
+		if text.begins_with(prefix):
+			return true
+
+	return false

@@ -627,15 +627,19 @@ func _start_dialogue_balloon(dialogue_resource: DialogueResource, start_title: S
 	_set_active_dialogue_input_enabled(_input_context != InputContext.TRANSITION)
 
 
-func _set_dialogue_speaker(speaker: Node3D) -> void:
+func _set_dialogue_speaker(speaker: Node3D, dialogue_line: DialogueLine = null) -> void:
 	if speaker == null:
 		return
 
 	_current_dialogue_speaker = speaker
+	var camera_actor := _get_dialogue_camera_actor(speaker, dialogue_line)
 	_apply_dialogue_animation_roles(speaker)
-	player.set_character_visible(speaker == player)
+	player.set_character_visible(speaker == player or camera_actor == player)
 	if is_instance_valid(_dialogue_target_actor) and _dialogue_target_actor.has_method("set_character_visible"):
-		var should_show_target_actor := speaker == _dialogue_target_actor
+		var should_show_target_actor := (
+			speaker == _dialogue_target_actor
+			or camera_actor == _dialogue_target_actor
+		)
 		if (
 			not should_show_target_actor
 			and _dialogue_target_actor.has_method("contains_dialogue_speaker")
@@ -645,14 +649,14 @@ func _set_dialogue_speaker(speaker: Node3D) -> void:
 			)
 		_dialogue_target_actor.call("set_character_visible", should_show_target_actor)
 
-	var scene_camera := _get_dialogue_scene_camera(speaker)
+	var scene_camera := _get_dialogue_scene_camera(camera_actor, dialogue_line)
 	if scene_camera != null:
 		_set_dialogue_pivots_active(false)
 		scene_camera.current = true
 		return
 
 	_sync_dialogue_pivots()
-	_activate_speaker_camera(speaker)
+	_activate_speaker_camera(camera_actor)
 
 
 func _set_dialogue_pivots_active(value: bool) -> void:
@@ -723,10 +727,26 @@ func _on_dialogue_ended(resource: DialogueResource) -> void:
 			await SceneTransition.fade_in()
 
 
-func _on_balloon_speaker_changed(character_name: String, _dialogue_line: DialogueLine) -> void:
-	var speaker := _resolve_speaker_for_character_name(character_name)
+func _on_balloon_speaker_changed(character_name: String, dialogue_line: DialogueLine) -> void:
+	var speaker := _resolve_speaker_for_dialogue_line(character_name, dialogue_line)
 	if speaker != null:
-		_set_dialogue_speaker(speaker)
+		_set_dialogue_speaker(speaker, dialogue_line)
+
+
+func _resolve_speaker_for_dialogue_line(character_name: String, dialogue_line: DialogueLine) -> Node3D:
+	if (
+		is_instance_valid(_dialogue_target_actor)
+		and _dialogue_target_actor.has_method("resolve_dialogue_speaker_for_line")
+	):
+		var line_specific_speaker := _dialogue_target_actor.call(
+			"resolve_dialogue_speaker_for_line",
+			character_name,
+			dialogue_line
+		) as Node3D
+		if line_specific_speaker != null:
+			return line_specific_speaker
+
+	return _resolve_speaker_for_character_name(character_name)
 
 
 func _on_balloon_response_selection_state_changed(is_active: bool) -> void:
@@ -802,9 +822,21 @@ func _matches_dialogue_speaker_name(actor: Node3D, normalized_name: String) -> b
 	return actor.name.strip_edges().to_lower() == normalized_name
 
 
-func _get_dialogue_scene_camera(actor: Node3D) -> Camera3D:
+func _get_dialogue_scene_camera(actor: Node3D, dialogue_line: DialogueLine = null) -> Camera3D:
 	if actor == null:
 		return null
+
+	if (
+		is_instance_valid(_dialogue_target_actor)
+		and _dialogue_target_actor.has_method("get_dialogue_scene_camera_for_line")
+	):
+		var line_specific_camera := _dialogue_target_actor.call(
+			"get_dialogue_scene_camera_for_line",
+			actor,
+			dialogue_line
+		) as Camera3D
+		if line_specific_camera != null:
+			return line_specific_camera
 
 	if (
 		is_instance_valid(_dialogue_target_actor)
@@ -818,6 +850,21 @@ func _get_dialogue_scene_camera(actor: Node3D) -> Camera3D:
 		return null
 
 	return actor.call("get_dialogue_scene_camera") as Camera3D
+
+
+func _get_dialogue_camera_actor(speaker: Node3D, dialogue_line: DialogueLine) -> Node3D:
+	if (
+		is_instance_valid(_dialogue_target_actor)
+		and _dialogue_target_actor.has_method("get_dialogue_camera_actor_for_line")
+	):
+		var line_specific_camera_actor := _dialogue_target_actor.call(
+			"get_dialogue_camera_actor_for_line",
+			dialogue_line
+		) as Node3D
+		if line_specific_camera_actor != null:
+			return line_specific_camera_actor
+
+	return speaker
 
 
 func _get_dialogue_pivot_transform(mount: Node3D) -> Transform3D:
