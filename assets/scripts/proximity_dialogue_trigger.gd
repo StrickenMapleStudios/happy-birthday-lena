@@ -32,3 +32,11 @@ func _on_body_entered(body: Node) -> void:
 		monitoring = false
 
 	current_scene.call_deferred(request_activate_method, target, ignore_interaction_availability)
+
+
+func set_activation_enabled(value: bool) -> void:
+	if value:
+		monitoring = not _consumed
+		return
+
+	monitoring = false

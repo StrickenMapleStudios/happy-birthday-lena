@@ -10,6 +10,7 @@ const GIANTS_SPEAKER_NAME := "Гиганты"
 @export var interaction_target_path: NodePath = ^"InteractionTarget"
 @export var auto_trigger_path: NodePath = ^"AutoDialogueTrigger"
 @export var wall_with_door_path: NodePath = ^"WallWithDoor"
+@export var dialogue_state_path: NodePath = ^"GiantsIntroDialogueState"
 @export var dialogue_speaker_pivot_path: NodePath = ^"DialogueSpeakerPivot"
 @export var left_dialogue_speaker_pivot_path: NodePath = ^"LeftDialogueSpeakerPivot"
 @export var right_dialogue_speaker_pivot_path: NodePath = ^"RightDialogueSpeakerPivot"
@@ -25,6 +26,7 @@ var _interaction_radius := 0.0
 
 func _ready() -> void:
 	_configure_interaction_target()
+	_configure_auto_trigger()
 	_fit_interaction_geometry_to_giants()
 
 func get_dialogue_camera_mount() -> Node3D:
@@ -114,9 +116,17 @@ func exit_dialogue_animation_mode() -> void:
 
 
 func handle_dialogue_finished(_resource: DialogueResource) -> void:
+	var dialogue_state := get_node_or_null(dialogue_state_path) as GiantsIntroDialogueState
+	if dialogue_state == null or not dialogue_state.should_open_gates():
+		return
+
 	var wall_with_door := get_node_or_null(wall_with_door_path)
 	if wall_with_door != null and wall_with_door.has_method("open_doors"):
 		wall_with_door.call("open_doors")
+
+	var auto_trigger := get_node_or_null(auto_trigger_path)
+	if auto_trigger != null and auto_trigger.has_method("set_activation_enabled"):
+		auto_trigger.call("set_activation_enabled", false)
 
 
 func look_right_giant_at_left_giant() -> void:
@@ -178,6 +188,16 @@ func _fit_interaction_geometry_to_giants() -> void:
 		speaker_pivot.global_transform = dialogue_camera.global_transform
 
 	_position_player_anchor()
+
+
+func _configure_auto_trigger() -> void:
+	var auto_trigger := get_node_or_null(auto_trigger_path)
+	if auto_trigger == null:
+		return
+
+	auto_trigger.set("consume_after_activation", false)
+	if auto_trigger.has_method("set_activation_enabled"):
+		auto_trigger.call("set_activation_enabled", true)
 
 
 func _compute_combined_mesh_bounds() -> AABB:
