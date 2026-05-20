@@ -80,9 +80,9 @@ func get_dialogue_speaker_name() -> String:
 	return dialogue_speaker_name.strip_edges()
 
 
-func set_dialogue_camera_target(camera: Camera3D) -> void:
+func set_dialogue_camera_target(target: Node3D) -> void:
 	if look_tracking != null:
-		look_tracking.set_external_target(camera)
+		look_tracking.set_external_target(target)
 	if head_pole_modifier != null:
 		head_pole_modifier.reset_head_rotation_immediately()
 

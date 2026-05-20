@@ -635,7 +635,15 @@ func _set_dialogue_speaker(speaker: Node3D) -> void:
 	_apply_dialogue_animation_roles(speaker)
 	player.set_character_visible(speaker == player)
 	if is_instance_valid(_dialogue_target_actor) and _dialogue_target_actor.has_method("set_character_visible"):
-		_dialogue_target_actor.call("set_character_visible", speaker == _dialogue_target_actor)
+		var should_show_target_actor := speaker == _dialogue_target_actor
+		if (
+			not should_show_target_actor
+			and _dialogue_target_actor.has_method("contains_dialogue_speaker")
+		):
+			should_show_target_actor = bool(
+				_dialogue_target_actor.call("contains_dialogue_speaker", speaker)
+			)
+		_dialogue_target_actor.call("set_character_visible", should_show_target_actor)
 
 	var scene_camera := _get_dialogue_scene_camera(speaker)
 	if scene_camera != null:
@@ -768,6 +776,14 @@ func _resolve_speaker_for_character_name(character_name: String) -> Node3D:
 	if _matches_dialogue_speaker_name(player, normalized_name):
 		return player
 
+	if (
+		is_instance_valid(_dialogue_target_actor)
+		and _dialogue_target_actor.has_method("resolve_dialogue_speaker")
+	):
+		var resolved_speaker := _dialogue_target_actor.call("resolve_dialogue_speaker", character_name) as Node3D
+		if resolved_speaker != null:
+			return resolved_speaker
+
 	if _matches_dialogue_speaker_name(_dialogue_target_actor, normalized_name):
 		return _dialogue_target_actor
 
@@ -787,7 +803,18 @@ func _matches_dialogue_speaker_name(actor: Node3D, normalized_name: String) -> b
 
 
 func _get_dialogue_scene_camera(actor: Node3D) -> Camera3D:
-	if actor == null or not actor.has_method("get_dialogue_scene_camera"):
+	if actor == null:
+		return null
+
+	if (
+		is_instance_valid(_dialogue_target_actor)
+		and _dialogue_target_actor.has_method("get_dialogue_scene_camera_for_actor")
+	):
+		var mapped_camera := _dialogue_target_actor.call("get_dialogue_scene_camera_for_actor", actor) as Camera3D
+		if mapped_camera != null:
+			return mapped_camera
+
+	if not actor.has_method("get_dialogue_scene_camera"):
 		return null
 
 	return actor.call("get_dialogue_scene_camera") as Camera3D

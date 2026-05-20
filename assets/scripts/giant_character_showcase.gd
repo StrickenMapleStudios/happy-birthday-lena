@@ -1,5 +1,9 @@
 extends Node3D
 
+const LEFT_GIANT_SPEAKER_NAME := "Гигант 1"
+const RIGHT_GIANT_SPEAKER_NAME := "Гигант 2"
+const GIANTS_SPEAKER_NAME := "Гиганты"
+
 @export var left_giant_path: NodePath = ^"GiantCharacterLeft"
 @export var right_giant_path: NodePath = ^"GiantCharacterRight"
 @export var dialogue_camera_path: NodePath = ^"Camera3D"
@@ -22,7 +26,6 @@ var _interaction_radius := 0.0
 func _ready() -> void:
 	_configure_interaction_target()
 	_fit_interaction_geometry_to_giants()
-	_sync_individual_dialogue_pivots()
 
 func get_dialogue_camera_mount() -> Node3D:
 	return get_node_or_null(dialogue_speaker_pivot_path) as Node3D
@@ -48,13 +51,45 @@ func get_dialogue_scene_camera() -> Camera3D:
 	return get_node_or_null(dialogue_camera_path) as Camera3D
 
 
+func get_dialogue_scene_camera_for_actor(actor: Node3D) -> Camera3D:
+	if actor == null:
+		return null
+
+	if actor == self:
+		return get_dialogue_scene_camera()
+
+	if actor == get_left_giant():
+		return get_node_or_null(left_dialogue_speaker_pivot_path) as Camera3D
+
+	if actor == get_right_giant():
+		return get_node_or_null(right_dialogue_speaker_pivot_path) as Camera3D
+
+	return null
+
+
 func get_dialogue_focus_position() -> Vector3:
 	return to_global(_compute_giants_midpoint_local())
 
 
+func resolve_dialogue_speaker(character_name: String) -> Node3D:
+	var normalized_name := character_name.strip_edges().to_lower()
+	if normalized_name == LEFT_GIANT_SPEAKER_NAME.to_lower():
+		return get_left_giant()
+	if normalized_name == RIGHT_GIANT_SPEAKER_NAME.to_lower():
+		return get_right_giant()
+	if normalized_name == GIANTS_SPEAKER_NAME.to_lower():
+		return self
+
+	return null
+
+
+func contains_dialogue_speaker(speaker: Node3D) -> bool:
+	return speaker == self or speaker == get_left_giant() or speaker == get_right_giant()
+
+
 func set_character_visible(value: bool) -> void:
-	var left_giant := get_node_or_null(left_giant_path) as Node3D
-	var right_giant := get_node_or_null(right_giant_path) as Node3D
+	var left_giant := get_left_giant()
+	var right_giant := get_right_giant()
 	if left_giant != null:
 		left_giant.visible = value
 	if right_giant != null:
@@ -82,6 +117,20 @@ func handle_dialogue_finished(_resource: DialogueResource) -> void:
 	var wall_with_door := get_node_or_null(wall_with_door_path)
 	if wall_with_door != null and wall_with_door.has_method("open_doors"):
 		wall_with_door.call("open_doors")
+
+
+func look_right_giant_at_left_giant() -> void:
+	_set_giant_dialogue_target(get_right_giant(), get_left_giant())
+
+
+func look_left_giant_at_right_giant() -> void:
+	_set_giant_dialogue_target(get_left_giant(), get_right_giant())
+
+
+func look_giants_at_dialogue_camera() -> void:
+	var dialogue_camera := get_dialogue_scene_camera()
+	_set_giant_dialogue_target(get_left_giant(), dialogue_camera)
+	_set_giant_dialogue_target(get_right_giant(), dialogue_camera)
 
 
 func face_towards_position(_target_position: Vector3) -> void:
@@ -128,7 +177,6 @@ func _fit_interaction_geometry_to_giants() -> void:
 	if speaker_pivot != null and dialogue_camera != null:
 		speaker_pivot.global_transform = dialogue_camera.global_transform
 
-	_sync_individual_dialogue_pivots()
 	_position_player_anchor()
 
 
@@ -239,8 +287,8 @@ func _get_anchor_approach_direction() -> Vector3:
 
 
 func _compute_giants_midpoint_local() -> Vector3:
-	var left_giant := get_node_or_null(left_giant_path) as Node3D
-	var right_giant := get_node_or_null(right_giant_path) as Node3D
+	var left_giant := get_left_giant()
+	var right_giant := get_right_giant()
 	if left_giant != null and right_giant != null:
 		var midpoint := (left_giant.global_position + right_giant.global_position) * 0.5
 		return to_local(midpoint)
@@ -248,40 +296,25 @@ func _compute_giants_midpoint_local() -> Vector3:
 	return Vector3.ZERO
 
 
-func _sync_individual_dialogue_pivots() -> void:
-	_sync_individual_dialogue_pivot(
-		left_giant_path,
-		left_dialogue_speaker_pivot_path
-	)
-	_sync_individual_dialogue_pivot(
-		right_giant_path,
-		right_dialogue_speaker_pivot_path
-	)
+func get_left_giant() -> Node3D:
+	return get_node_or_null(left_giant_path) as Node3D
 
 
-func _sync_individual_dialogue_pivot(
-	giant_path: NodePath,
-	pivot_path: NodePath
-) -> void:
-	var giant := get_node_or_null(giant_path) as Node3D
-	var pivot := get_node_or_null(pivot_path) as Node3D
-	if giant == null or pivot == null:
+func get_right_giant() -> Node3D:
+	return get_node_or_null(right_giant_path) as Node3D
+
+
+func _set_giant_dialogue_target(giant: Node3D, target: Node3D) -> void:
+	if giant == null or not giant.has_method("set_dialogue_camera_target"):
 		return
 
-	if not giant.has_method("get_dialogue_camera_mount"):
-		return
-
-	var giant_mount := giant.call("get_dialogue_camera_mount") as Node3D
-	if giant_mount == null:
-		return
-
-	pivot.global_transform = giant_mount.global_transform
+	giant.call("set_dialogue_camera_target", target)
 
 
 func _get_giants() -> Array[Node3D]:
 	var result: Array[Node3D] = []
-	var left_giant := get_node_or_null(left_giant_path) as Node3D
-	var right_giant := get_node_or_null(right_giant_path) as Node3D
+	var left_giant := get_left_giant()
+	var right_giant := get_right_giant()
 	if left_giant != null:
 		result.append(left_giant)
 	if right_giant != null:
