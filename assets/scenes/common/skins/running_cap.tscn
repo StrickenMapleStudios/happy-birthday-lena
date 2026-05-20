@@ -3,10 +3,10 @@
 [ext_resource type="Script" path="res://assets/scripts/suit_accessory_display.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://dh64aumibavrw" path="res://assets/art/models/characters/skins/skins.glb" id="2_skins"]
 
-[node name="RunningCapAccessory" type="Node3D"]
+[node name="RunningCap" type="Node3D"]
 transform = Transform3D(0.99968886, 0.02494508, -0.00032679713, -0.020696668, 0.8219749, -0.5691469, -0.01392881, 0.5689771, 0.8222344, -0.054496896, -2.18, -1.18)
 script = ExtResource("1_script")
 suits_root_path = NodePath("Skins")
-visible_top_level_nodes = [StringName("running_cap")]
+visible_top_level_nodes = [&"running_cap"]
 
 [node name="Skins" parent="." instance=ExtResource("2_skins")]

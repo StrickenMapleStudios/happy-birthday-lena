@@ -35,6 +35,28 @@ func _apply_visibility() -> void:
 	if suits_root == null:
 		return
 
-	for child in suits_root.get_children():
-		if child is Node3D:
-			(child as Node3D).visible = visible_top_level_nodes.has(StringName(child.name))
+	var visible_nodes := {}
+	for node_name in visible_top_level_nodes:
+		_mark_visible_nodes(suits_root, String(node_name), visible_nodes)
+
+	_apply_visibility_recursive(suits_root, visible_nodes)
+
+
+func _mark_visible_nodes(root: Node, target_name: String, visible_nodes: Dictionary) -> void:
+	var target := root.find_child(target_name, true, false)
+	if target == null:
+		return
+
+	var current: Node = target
+	while current != null and current != root:
+		visible_nodes[current] = true
+		current = current.get_parent()
+
+
+func _apply_visibility_recursive(root: Node, visible_nodes: Dictionary) -> void:
+	for child in root.get_children():
+		var child_3d := child as Node3D
+		if child_3d != null:
+			child_3d.visible = visible_nodes.has(child)
+
+		_apply_visibility_recursive(child, visible_nodes)

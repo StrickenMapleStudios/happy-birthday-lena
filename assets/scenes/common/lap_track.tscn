@@ -68,31 +68,31 @@ surface_material_override/0 = SubResource("StandardMaterial3D_tov3k")
 
 [node name="CheckpointTriggers" type="Node3D" parent="TrackPivot/LapModel/GeneratedTriggers" unique_id=1178165157]
 
-[node name="Checkpoint01" type="Area3D" parent="TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers" unique_id=2123573459]
+[node name="@Area3D@23492" type="Area3D" parent="TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers" unique_id=1405808946]
 transform = Transform3D(0.032266576, 0, 0.9994793, 0, 1, 0, -0.9994793, 0, 0.032266576, -0.6441731, 1.5, 19.953686)
 collision_layer = 0
 monitorable = false
 metadata/checkpoint_index = 0
 
-[node name="@CollisionShape3D@20133" type="CollisionShape3D" parent="TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers/Checkpoint01" unique_id=1955149955]
+[node name="@CollisionShape3D@23491" type="CollisionShape3D" parent="TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers/@Area3D@23492" unique_id=365855892]
 shape = SubResource("BoxShape3D_tov3k")
 
-[node name="Checkpoint02" type="Area3D" parent="TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers" unique_id=212632407]
+[node name="@Area3D@23494" type="Area3D" parent="TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers" unique_id=2068611444]
 transform = Transform3D(-0.9994793, 0, 0.03226665, 0, 1, 0, -0.03226665, 0, -0.9994793, 19.953686, 1.5, 0.6441731)
 collision_layer = 0
 monitorable = false
 metadata/checkpoint_index = 1
 
-[node name="@CollisionShape3D@20134" type="CollisionShape3D" parent="TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers/Checkpoint02" unique_id=2093632247]
+[node name="@CollisionShape3D@23493" type="CollisionShape3D" parent="TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers/@Area3D@23494" unique_id=1186948680]
 shape = SubResource("BoxShape3D_2su14")
 
-[node name="Checkpoint03" type="Area3D" parent="TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers" unique_id=130817183]
+[node name="@Area3D@23496" type="Area3D" parent="TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers" unique_id=525244491]
 transform = Transform3D(-0.032266725, 0, -0.9994793, 0, 1, 0, 0.9994793, 0, -0.032266725, 0.6441731, 1.5, -19.953686)
 collision_layer = 0
 monitorable = false
 metadata/checkpoint_index = 2
 
-[node name="@CollisionShape3D@20135" type="CollisionShape3D" parent="TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers/Checkpoint03" unique_id=26788084]
+[node name="@CollisionShape3D@23495" type="CollisionShape3D" parent="TrackPivot/LapModel/GeneratedTriggers/CheckpointTriggers/@Area3D@23496" unique_id=280510715]
 shape = SubResource("BoxShape3D_323nj")
 
 [node name="CurveMarkerInner" type="Marker3D" parent="TrackPivot" unique_id=523271142]

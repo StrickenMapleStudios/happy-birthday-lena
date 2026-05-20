@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://cc2jbk4pqovrg" path="res://assets/scripts/character_identity_component.gd" id="5_identity_component"]
 [ext_resource type="Resource" path="res://assets/data/characters/player_identity.tres" id="6_identity_data"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/character_collision_shape.tscn" id="7_collision_shape"]
+[ext_resource type="PackedScene" path="res://assets/scenes/common/skins/hat.tscn" id="8_hat"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dialogue_idle"]
 animation = &"Idle"
@@ -85,6 +86,14 @@ anim_player = NodePath("..")
 active = false
 tree_root = SubResource("AnimationNodeStateMachine_dialogue")
 anim_player = NodePath("..")
+
+[node name="hat_2" parent="Model/Rig/Skeleton3D" index="0"]
+visible = false
+
+[node name="hat" parent="Model/Rig/Skeleton3D/hat_2" index="0"]
+visible = false
+
+[node name="Hat" parent="Model/Rig/Skeleton3D/hat_2" index="1" instance=ExtResource("8_hat")]
 
 [node name="DialogueSpeakerPivot" type="Marker3D" parent="." unique_id=941024673]
 

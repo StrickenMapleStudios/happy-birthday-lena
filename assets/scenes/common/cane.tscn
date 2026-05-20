@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://5sdb45hrmku8"]
+
+[ext_resource type="Script" uid="uid://dwtyk1o50lge2" path="res://assets/scripts/suit_accessory_display.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://dh64aumibavrw" path="res://assets/art/models/characters/skins/skins.glb" id="2_skins"]
+
+[node name="Cane" type="Node3D" unique_id=1297606429]
+script = ExtResource("1_script")
+suits_root_path = NodePath("Skins")
+visible_top_level_nodes = Array[StringName]([&"Cane"])
+
+[node name="Skins" parent="." unique_id=1625660188 instance=ExtResource("2_skins")]

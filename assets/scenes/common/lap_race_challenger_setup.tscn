@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" path="res://assets/scenes/characters/race_challenger_npc.tscn" id="1_race_npc"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/reward_marker.tscn" id="2_reward_marker"]
 [ext_resource type="Script" path="res://assets/scripts/reward_demonstration_camera.gd" id="3_demo_camera_script"]
-[ext_resource type="PackedScene" path="res://assets/scenes/common/lightning_accessory.tscn" id="4_lightning"]
+[ext_resource type="PackedScene" path="res://assets/scenes/common/skins/lightning.tscn" id="4_lightning"]
 
 [node name="LapRaceChallengerSetup" type="Node3D"]
 

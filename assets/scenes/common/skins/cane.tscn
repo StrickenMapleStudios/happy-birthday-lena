@@ -3,9 +3,9 @@
 [ext_resource type="Script" path="res://assets/scripts/suit_accessory_display.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://dh64aumibavrw" path="res://assets/art/models/characters/skins/skins.glb" id="2_skins"]
 
-[node name="BeardAccessory" type="Node3D"]
+[node name="Cane" type="Node3D"]
 script = ExtResource("1_script")
 suits_root_path = NodePath("Skins")
-visible_top_level_nodes = [StringName("beard")]
+visible_top_level_nodes = [&"Cane"]
 
 [node name="Skins" parent="." instance=ExtResource("2_skins")]
