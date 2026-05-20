@@ -1,46 +1,9 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene format=3 uid="uid://d1m73hpd6dl1t"]
 
 [ext_resource type="PackedScene" path="res://assets/scenes/characters/npc_character.tscn" id="1_base"]
-[ext_resource type="PackedScene" path="res://assets/scenes/common/skins/running_cap.tscn" id="2_running_cap"]
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_idle"]
-animation = &"Idle"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_running"]
-animation = &"Running"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_start"]
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idle_to_running"]
-xfade_time = 0.2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_running_to_idle"]
-xfade_time = 0.2
-
-[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_lap_runner"]
-states/Idle/node = SubResource("AnimationNodeAnimation_idle")
-states/Idle/position = Vector2(394, 139)
-states/Running/node = SubResource("AnimationNodeAnimation_running")
-states/Running/position = Vector2(631, 139)
-states/Start/position = Vector2(166, 139)
-transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_start"), "Idle", "Running", SubResource("AnimationNodeStateMachineTransition_idle_to_running"), "Running", "Idle", SubResource("AnimationNodeStateMachineTransition_running_to_idle")]
-graph_offset = Vector2(-26, 4)
-
-[node name="NpcLapRunner" instance=ExtResource("1_base")]
+[node name="NpcLapRunner" unique_id=1396308662 instance=ExtResource("1_base")]
 locomotion_speed_multiplier = 0.65
-
-[node name="AnimationPlayer" parent="Model" index="1"]
-speed_scale = 1.0
-
-[node name="AnimationTree" parent="Model/AnimationPlayer" index="0"]
-tree_root = SubResource("AnimationNodeStateMachine_lap_runner")
-
-[node name="hat_2" parent="Model/Rig/Skeleton3D" index="0"]
-visible = true
-
-[node name="hat" parent="Model/Rig/Skeleton3D/hat_2" index="0"]
-visible = false
 
 [node name="InteractionTarget" parent="." index="3"]
 collision_layer = 0
@@ -52,6 +15,3 @@ monitorable = false
 collision_layer = 0
 collision_mask = 0
 monitoring = false
-monitorable = false
-
-[node name="RunningCap" parent="Model/Rig/Skeleton3D/hat_2" index="0" instance=ExtResource("2_running_cap")]

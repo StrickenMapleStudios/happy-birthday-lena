@@ -47,10 +47,18 @@ func _mark_visible_nodes(root: Node, target_name: String, visible_nodes: Diction
 	if target == null:
 		return
 
+	_mark_visible_subtree(target, visible_nodes)
+
 	var current: Node = target
 	while current != null and current != root:
 		visible_nodes[current] = true
 		current = current.get_parent()
+
+
+func _mark_visible_subtree(root: Node, visible_nodes: Dictionary) -> void:
+	visible_nodes[root] = true
+	for child in root.get_children():
+		_mark_visible_subtree(child, visible_nodes)
 
 
 func _apply_visibility_recursive(root: Node, visible_nodes: Dictionary) -> void:
