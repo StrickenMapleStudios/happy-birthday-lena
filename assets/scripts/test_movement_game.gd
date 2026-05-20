@@ -818,6 +818,11 @@ func _matches_dialogue_speaker_name(actor: Node3D, normalized_name: String) -> b
 	if actor == null:
 		return false
 
+	if actor.has_method("get_npc_dialogue_name"):
+		var actor_name := String(actor.call("get_npc_dialogue_name")).strip_edges().to_lower()
+		if actor_name == normalized_name:
+			return true
+
 	if actor.has_method("get_dialogue_speaker_name"):
 		var actor_name := String(actor.call("get_dialogue_speaker_name")).strip_edges().to_lower()
 		if actor_name == normalized_name:

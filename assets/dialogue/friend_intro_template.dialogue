@@ -1,17 +1,17 @@
 ~ start
-{{speaker_name}}: Привет, я {{speaker_name}}, а ты кто?
+{{npc_name}}: Привет, я {{npc_name}}, а ты кто?
 - Я {{echo_name}}, а ты кто?
 	do record_who_are_you_loop()
 	{{player_name}}: Я {{echo_name}}, а ты кто?
 	if who_are_you_loop_count >= who_are_you_break_threshold
 		=> who_are_you_loop_break
-	{{speaker_name}}: Я {{speaker_name}}, а ты кто?
+	{{npc_name}}: Я {{npc_name}}, а ты кто?
 	=> echo_loop
 - Я {{reply_name}}, давай дружить.
 	{{player_name}}: Я {{reply_name}}, давай дружить.
 	=> new_friend
 - Неважно, я пойду дальше.
-	{{speaker_name}}: Ладно, пока.
+	{{npc_name}}: Ладно, пока.
 	=> END
 
 ~ echo_loop
@@ -20,25 +20,25 @@
 	{{player_name}}: Я {{echo_name}}, а ты кто?
 	if who_are_you_loop_count >= who_are_you_break_threshold
 		=> who_are_you_loop_break
-	{{speaker_name}}: Я {{speaker_name}}, а ты кто?
+	{{npc_name}}: Я {{npc_name}}, а ты кто?
 	=> echo_loop
 - Я {{reply_name}}, давай дружить.
 	{{player_name}}: Я {{reply_name}}, давай дружить.
 	=> new_friend
 - Неважно, я пойду дальше.
-	{{speaker_name}}: Тогда в другой раз.
+	{{npc_name}}: Тогда в другой раз.
 	=> END
 
 ~ new_friend
 do become_friend()
-{{speaker_name}}: Ура! Давай.
+{{npc_name}}: Ура! Давай.
 => END
 
 ~ who_are_you_loop_break
-{{speaker_name}}: ...
+{{npc_name}}: ...
 {{player_name}}: ...
-{{speaker_name}}: ...
+{{npc_name}}: ...
 {{player_name}}: Отдохнула?
-{{speaker_name}}: Да, продолжаем.
+{{npc_name}}: Да, продолжаем.
 do reset_who_are_you_loop()
 => echo_loop

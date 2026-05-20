@@ -1,6 +1,8 @@
 extends CharacterBody3D
 
 const CharacterAnimationLibrary = preload("res://assets/scripts/character_animation_library.gd")
+const DEFAULT_DIALOGUE_RESOURCE = preload("res://assets/dialogue/friend_intro_template.dialogue")
+const HIYORI_DIALOGUE_RESOURCE = preload("res://assets/dialogue/friend_intro_hiyori.dialogue")
 
 const WALKING_TURN_SPEED := 6.0
 const RUNNING_TURN_SPEED := 9.0
@@ -13,6 +15,7 @@ const CHARACTER_IDENTITY_PATH := ^"CharacterIdentity"
 const HEAD_POLE_MODIFIER_PATH := ^"Model/Rig/Skeleton3D/HeadPoleModifier"
 const FRIEND_FOLLOW_STATE_PATH := ^"FriendFollowState"
 const LOOK_TRACKING_PATH := ^"LookTracking"
+const INTERACTION_TARGET_PATH := ^"InteractionTarget"
 const PREPARED_SPEED_SCALE_META := &"prepared_speed_scale"
 const STATE_IDLE := &"Idle"
 const STATE_WALKING := &"Walking"
@@ -21,6 +24,7 @@ const MAX_COLLISION_SLIDES := 4
 
 @export var visual_root_path: NodePath = ^"Model/Rig"
 @export var player_dialogue_anchor_path: NodePath = ^"PlayerDialogueAnchor"
+@export var npc_dialogue_name := ""
 @export_range(0.1, 3.0, 0.05) var locomotion_speed_multiplier := 1.0
 
 @onready var animation_player: AnimationPlayer = $Model/AnimationPlayer
@@ -42,6 +46,7 @@ var _external_motion_enabled := false
 
 func _ready() -> void:
 	CharacterAnimationLibrary.apply_to(animation_player)
+	_apply_dialogue_resource_override()
 	if animation_tree != null:
 		animation_tree.active = true
 	if dialogue_animation_tree != null:
@@ -127,7 +132,11 @@ func get_dialogue_camera_mount() -> Node3D:
 	return $DialogueSpeakerPivot
 
 
-func get_dialogue_speaker_name() -> String:
+func get_npc_dialogue_name() -> String:
+	var configured_name := npc_dialogue_name.strip_edges()
+	if not configured_name.is_empty():
+		return configured_name
+
 	var character_identity := get_node_or_null(CHARACTER_IDENTITY_PATH)
 	if character_identity != null and character_identity.has_method("get_dialogue_speaker_name"):
 		var dialogue_name := String(character_identity.call("get_dialogue_speaker_name")).strip_edges()
@@ -135,6 +144,23 @@ func get_dialogue_speaker_name() -> String:
 			return dialogue_name
 
 	return name
+
+
+func get_dialogue_speaker_name() -> String:
+	return get_npc_dialogue_name()
+
+
+func _apply_dialogue_resource_override() -> void:
+	var interaction_target := get_node_or_null(INTERACTION_TARGET_PATH) as InteractionTarget
+	if interaction_target == null:
+		return
+
+	if get_npc_dialogue_name() == "Хиёри":
+		interaction_target.dialogue_resource = HIYORI_DIALOGUE_RESOURCE
+		return
+
+	if interaction_target.dialogue_resource == null:
+		interaction_target.dialogue_resource = DEFAULT_DIALOGUE_RESOURCE
 
 
 func set_follow_navigation(direction: Vector3, turn_speed: float = WALKING_TURN_SPEED, is_running: bool = false) -> void:

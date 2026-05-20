@@ -62,10 +62,17 @@ func get_dialogue_game_states() -> Array:
 	var actor := get_parent()
 
 	if actor != null:
-		if actor.has_method("get_dialogue_speaker_name"):
-			variables["speaker_name"] = actor.call("get_dialogue_speaker_name")
-		elif not variables.has("speaker_name"):
-			variables["speaker_name"] = actor.name
+		var resolved_npc_name := ""
+		if actor.has_method("get_npc_dialogue_name"):
+			resolved_npc_name = String(actor.call("get_npc_dialogue_name")).strip_edges()
+		elif actor.has_method("get_dialogue_speaker_name"):
+			resolved_npc_name = String(actor.call("get_dialogue_speaker_name")).strip_edges()
+		elif not variables.has("npc_name"):
+			resolved_npc_name = actor.name
+
+		if not resolved_npc_name.is_empty():
+			variables["npc_name"] = resolved_npc_name
+			variables["speaker_name"] = resolved_npc_name
 
 	if not variables.is_empty():
 		states.append(variables)
