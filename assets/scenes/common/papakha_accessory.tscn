@@ -3,13 +3,9 @@
 [ext_resource type="Script" path="res://assets/scripts/suit_accessory_display.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://dh64aumibavrw" path="res://assets/art/models/characters/skins/skins.glb" id="2_skins"]
 
-[node name="LightningAccessory" type="Node3D"]
+[node name="PapakhaAccessory" type="Node3D"]
 script = ExtResource("1_script")
 suits_root_path = NodePath("Skins")
-visible_top_level_nodes = [StringName("Lightning")]
-bob_height = 0.16
-bob_speed = 2.1
-rotation_speed = 1.9
+visible_top_level_nodes = [StringName("papakha")]
 
 [node name="Skins" parent="." instance=ExtResource("2_skins")]
-transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, 0, 0, 0)
