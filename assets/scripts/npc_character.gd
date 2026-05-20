@@ -233,7 +233,7 @@ func _rotate_towards(direction: Vector3, delta: float) -> void:
 
 
 func _prepare_locomotion_animation(animation_name: StringName, speed_scale: float) -> void:
-	var library: AnimationLibrary = animation_player.get_animation_library("")
+	var library := _find_animation_library_containing(animation_name)
 	if library == null:
 		return
 
@@ -267,6 +267,18 @@ func _prepare_locomotion_animation(animation_name: StringName, speed_scale: floa
 		var root_track_index := _find_root_position_track(animation)
 		if root_track_index >= 0:
 			_root_motion_track_path = animation.track_get_path(root_track_index)
+
+
+func _find_animation_library_containing(animation_name: StringName) -> AnimationLibrary:
+	if animation_player == null:
+		return null
+
+	for library_name in animation_player.get_animation_library_list():
+		var library := animation_player.get_animation_library(library_name)
+		if library != null and library.has_animation(animation_name):
+			return library
+
+	return null
 
 
 func _find_root_position_track(animation: Animation) -> int:

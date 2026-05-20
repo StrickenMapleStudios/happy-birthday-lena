@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" path="res://assets/scenes/characters/npc_character.tscn" id="1_base"]
 
 [node name="NpcLapRunner" unique_id=1396308662 instance=ExtResource("1_base")]
-locomotion_speed_multiplier = 0.65
+locomotion_speed_multiplier = 1.0
 
 [node name="InteractionTarget" parent="." index="3"]
 collision_layer = 0
