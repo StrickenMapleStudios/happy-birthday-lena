@@ -1,5 +1,5 @@
 ~ start
-{{speaker_name}}: Стой, путница. Чтобы пройти дальше, ты должна отгадать 3 наши загадки.
+{{speaker_name}}: Стой, путница.
 => menu
 
 ~ menu
@@ -8,6 +8,7 @@ if not has_asked_who_they_are
 => menu_without_question
 
 ~ menu_with_question
+{{speaker_name}}: Чтобы пройти дальше, ты должна отгадать 3 наши загадки.
 - Кто вы такие?
 	do mark_who_they_are_asked()
 	{{player_name}}: Кто вы такие?
@@ -21,6 +22,7 @@ if not has_asked_who_they_are
 	=> later
 
 ~ menu_without_question
+{{speaker_name}}: Чтобы пройти дальше, ты должна отгадать 3 наши загадки.
 - Я готова.
 	=> ready
 - Позже.
