@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://b6c2egv5c1y1h"
+path="res://.godot/imported/elder_stars.dialogue-6da956ffa99437b9551ce5573c075ffe.tres"
+
+[deps]
+
+source_file="res://assets/dialogue/elder_stars.dialogue"
+dest_files=["res://.godot/imported/elder_stars.dialogue-6da956ffa99437b9551ce5573c075ffe.tres"]
+
+[params]
+
+defaults=true

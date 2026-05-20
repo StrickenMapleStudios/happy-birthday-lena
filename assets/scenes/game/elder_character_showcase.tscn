@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://b8k3elder_showcase"]
+
+[ext_resource type="PackedScene" uid="uid://dyv3ct0iq5v6v" path="res://assets/scenes/characters/elder_character.tscn" id="1_elder"]
+[ext_resource type="PackedScene" path="res://assets/scenes/common/reward_marker.tscn" id="2_reward_marker"]
+[ext_resource type="Script" uid="uid://d1tdb5cfv171" path="res://assets/scripts/reward_demonstration_camera.gd" id="3_demo_camera_script"]
+
+[node name="ElderCharacterShowcase" type="Node3D"]
+
+[node name="ElderCharacter" parent="." instance=ExtResource("1_elder")]
+
+[node name="ElderConstellationRewardMarker" parent="." instance=ExtResource("2_reward_marker")]
+transform = Transform3D(0.97437006, 0, -0.22495106, 0, 1, 0, 0.22495106, 0, 0.97437006, 4.2, 0.12, 1.15)
+marker_id = &"elder_constellation_reward_marker"
+
+[node name="ElderConstellationRewardDemonstrationCamera" type="Camera3D" parent="."]
+transform = Transform3D(0.9608082, 0.05320436, -0.2720605, 0, 0.98140955, 0.19192521, 0.27721405, -0.18440329, 0.94294626, 3.6, 1.77, 5.4)
+fov = 35.0
+script = ExtResource("3_demo_camera_script")
+marker_id = &"elder_constellation_reward_marker"

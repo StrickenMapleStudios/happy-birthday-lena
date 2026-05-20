@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dmb72unyvr0t3" path="res://assets/scenes/characters/player_character.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://assets/scenes/characters/npc_character.tscn" id="3_npc"]
 [ext_resource type="Script" uid="uid://b84roxoxwu700" path="res://assets/scripts/test_movement_camera.gd" id="4_camera"]
-[ext_resource type="PackedScene" uid="uid://dyv3ct0iq5v6v" path="res://assets/scenes/characters/elder_character.tscn" id="4_elder"]
+[ext_resource type="PackedScene" path="res://assets/scenes/game/elder_character_showcase.tscn" id="4_elder_showcase"]
 [ext_resource type="Script" uid="uid://ptlmyvnfxne6" path="res://assets/scripts/test_movement_game.gd" id="5_game"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/pause_menu.tscn" id="6_pause_menu"]
 [ext_resource type="Script" uid="uid://cb0ogsdv1ev5t" path="res://assets/scripts/interaction_prompt_controller.gd" id="7_prompt_controller"]
@@ -39,6 +39,9 @@ script = ExtResource("5_game")
 [node name="Level" parent="." unique_id=1638308877 instance=ExtResource("1_level")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
+[node name="LabyrinthArea" parent="Level" index="1" unique_id=298625149]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -115.60146, 0, -12.117727)
+
 [node name="NorthBox" parent="Level/OrientationProps" parent_id_path=PackedInt32Array(1638308877, 1223392466) index="0" unique_id=1323818157]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.3611817, 0.9, -12)
 
@@ -63,7 +66,7 @@ transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.629
 [node name="npc3" parent="." unique_id=865179489 instance=ExtResource("3_npc")]
 transform = Transform3D(-0.3913737, 0, 0.9202318, 0, 1, 0, -0.9202318, 0, -0.3913737, -17.922375, -4.7683716e-07, 52.87242)
 
-[node name="elder" parent="." unique_id=884162095 instance=ExtResource("4_elder")]
+[node name="ElderCharacterShowcase" parent="." unique_id=884162095 instance=ExtResource("4_elder_showcase")]
 transform = Transform3D(-0.68299335, 0, -0.73042464, 0, 1, 0, 0.73042464, 0, -0.68299335, 18.150974, 9.536743e-07, 45.16806)
 
 [node name="LapRaceChallengerSetup" parent="." unique_id=1552964193 instance=ExtResource("11_lap_race_setup")]

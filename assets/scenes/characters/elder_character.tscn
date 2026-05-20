@@ -1,8 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://dyv3ct0iq5v6v"]
+[gd_scene load_steps=11 format=3 uid="uid://dyv3ct0iq5v6v"]
 
 [ext_resource type="PackedScene" path="res://assets/scenes/characters/npc_character.tscn" id="1_base"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/skins/cane.tscn" id="3_cane"]
 [ext_resource type="Script" uid="uid://bkpkna8krlhb4" path="res://assets/scripts/elder_character.gd" id="4_script"]
+[ext_resource type="Resource" path="res://assets/dialogue/elder_stars.dialogue" id="5_dialogue"]
+[ext_resource type="Script" path="res://assets/scripts/elder_stars_dialogue_state.gd" id="6_dialogue_state"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_elder"]
 animation = &"leaningoncane"
@@ -42,3 +44,10 @@ tree_root = SubResource("AnimationNodeStateMachine_dialogue_elder")
 
 [node name="Cane" parent="." index="5" unique_id=1666144867 instance=ExtResource("3_cane")]
 transform = Transform3D(0.9999984, 0, 0, 0, 1, 0, 0, 0, 0.9999984, 0, 0, 0)
+
+[node name="ElderStarsDialogueState" type="Node" parent="."]
+script = ExtResource("6_dialogue_state")
+
+[node name="InteractionTarget" parent="." index="3"]
+dialogue_resource = ExtResource("5_dialogue")
+dialogue_start_title = "start"

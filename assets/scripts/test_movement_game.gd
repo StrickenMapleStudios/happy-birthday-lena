@@ -293,6 +293,7 @@ func _start_dialogue_with_target(
 	_dialogue_active = true
 	_dialogue_response_selection_active = false
 	AudioService.apply_mix_preset(AUDIO_PRESET_DIALOGUE, AUDIO_PRESET_FADE_DURATION)
+	_prepare_dialogue_target_actor()
 	_set_dialogue_speaker(_dialogue_target_actor)
 	_sync_input_context()
 	_start_dialogue_balloon(dialogue_resource, target.get_dialogue_start_title())
@@ -719,6 +720,8 @@ func _on_dialogue_ended(resource: DialogueResource) -> void:
 	var reward_granted := false
 	if is_instance_valid(finished_dialogue_actor):
 		reward_granted = _try_grant_pending_lap_reward(finished_dialogue_actor)
+		if finished_dialogue_actor.has_method("try_grant_pending_reward"):
+			reward_granted = reward_granted or bool(finished_dialogue_actor.call("try_grant_pending_reward"))
 	if should_chain_reward_demonstration:
 		_try_start_reward_demonstration(true)
 		if not _reward_demonstration_start_pending and not _demonstration_active and not _has_queued_reward_demonstration():
@@ -1444,6 +1447,7 @@ func _start_dialogue_with_target_from_transition(
 	_dialogue_active = true
 	_dialogue_response_selection_active = false
 	AudioService.apply_mix_preset(AUDIO_PRESET_DIALOGUE, AUDIO_PRESET_FADE_DURATION)
+	_prepare_dialogue_target_actor()
 	_set_dialogue_speaker(_dialogue_target_actor)
 	_sync_input_context()
 	_start_dialogue_balloon(dialogue_resource, target.get_dialogue_start_title())
@@ -1490,11 +1494,19 @@ func _start_dialogue_with_target_while_faded(
 	_dialogue_active = true
 	_dialogue_response_selection_active = false
 	AudioService.apply_mix_preset(AUDIO_PRESET_DIALOGUE, AUDIO_PRESET_FADE_DURATION)
+	_prepare_dialogue_target_actor()
 	_set_dialogue_speaker(_dialogue_target_actor)
 	_sync_input_context()
 	_start_dialogue_balloon(dialogue_resource, target.get_dialogue_start_title())
 	_interaction_locked = false
 	_sync_input_context()
+
+
+func _prepare_dialogue_target_actor() -> void:
+	if not is_instance_valid(_dialogue_target_actor):
+		return
+	if _dialogue_target_actor.has_method("refresh_dialogue_state"):
+		_dialogue_target_actor.call("refresh_dialogue_state")
 
 
 func _transition_from_dialogue_to_race(actor: Node3D) -> void:

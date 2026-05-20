@@ -7,6 +7,16 @@ const ELDER_ANIMATION_CANDIDATES := [
 	&"Leaningoncane",
 	&"Leaning_On_Cane",
 ]
+const ELDER_DIALOGUE_RESOURCE := preload("res://assets/dialogue/elder_stars.dialogue")
+const ELDER_REWARD_SOURCE_ID := &"elder_constellation_reward"
+const ELDER_REWARD_MARKER_ID := &"elder_constellation_reward_marker"
+const BRASS_KEY_ITEM := preload("res://assets/data/items/brass_key_item.tres")
+const DEFAULT_TARGET_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
+
+@export var interaction_target_path: NodePath = ^"InteractionTarget"
+@export var elder_dialogue_state_path: NodePath = ^"ElderStarsDialogueState"
+
+var _pending_constellation_reward := false
 
 
 func _ready() -> void:
@@ -18,7 +28,53 @@ func _ready() -> void:
 
 	_playback = animation_tree.get("parameters/playback") as AnimationNodeStateMachinePlayback
 	_configure_elder_trees()
-	_travel_to(ELDER_STATE_NAME)
+	_sync_dialogue_setup()
+
+
+func get_dialogue_speaker_name() -> String:
+	return "Старец"
+
+
+func refresh_dialogue_state() -> void:
+	var dialogue_state := get_node_or_null(elder_dialogue_state_path) as ElderStarsDialogueState
+	if dialogue_state != null:
+		dialogue_state.refresh_follower_count()
+	_sync_dialogue_setup()
+
+
+func get_interaction_target() -> InteractionTarget:
+	return get_node_or_null(interaction_target_path) as InteractionTarget
+
+
+func queue_constellation_reward() -> void:
+	_pending_constellation_reward = true
+
+
+func try_grant_pending_reward() -> bool:
+	if not _pending_constellation_reward:
+		return false
+
+	_pending_constellation_reward = false
+	var dialogue_state := get_node_or_null(elder_dialogue_state_path) as ElderStarsDialogueState
+	if dialogue_state == null or not dialogue_state.can_grant_constellation_reward():
+		return false
+	if RewardService == null:
+		return false
+
+	return bool(
+		RewardService.call(
+			"grant_reward",
+			ELDER_REWARD_SOURCE_ID,
+			ELDER_REWARD_MARKER_ID,
+			BRASS_KEY_ITEM,
+			1,
+			DEFAULT_TARGET_SCENE_PATH
+		)
+	)
+
+
+func handle_dialogue_finished(_resource: DialogueResource) -> void:
+	_sync_dialogue_setup()
 
 
 func _update_follow_animation_state() -> void:
@@ -38,6 +94,16 @@ func _configure_elder_trees() -> void:
 
 	_set_tree_animation(animation_tree, elder_animation)
 	_set_tree_animation(dialogue_animation_tree, elder_animation)
+
+
+func _sync_dialogue_setup() -> void:
+	var interaction_target := get_interaction_target()
+	var dialogue_state := get_node_or_null(elder_dialogue_state_path) as ElderStarsDialogueState
+	if interaction_target == null or dialogue_state == null:
+		return
+
+	interaction_target.dialogue_resource = ELDER_DIALOGUE_RESOURCE
+	interaction_target.dialogue_start_title = String(dialogue_state.get_dialogue_start_title())
 
 
 func _set_tree_animation(tree: AnimationTree, animation_name: StringName) -> void:
