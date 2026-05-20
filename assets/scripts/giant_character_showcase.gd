@@ -7,6 +7,8 @@ extends Node3D
 @export var auto_trigger_path: NodePath = ^"AutoDialogueTrigger"
 @export var wall_with_door_path: NodePath = ^"WallWithDoor"
 @export var dialogue_speaker_pivot_path: NodePath = ^"DialogueSpeakerPivot"
+@export var left_dialogue_speaker_pivot_path: NodePath = ^"LeftDialogueSpeakerPivot"
+@export var right_dialogue_speaker_pivot_path: NodePath = ^"RightDialogueSpeakerPivot"
 @export var player_dialogue_anchor_path: NodePath = ^"PlayerDialogueAnchor"
 @export var interaction_prompt_anchor_path: NodePath = ^"InteractionPromptAnchor"
 @export var dialogue_resource: DialogueResource
@@ -20,9 +22,18 @@ var _interaction_radius := 0.0
 func _ready() -> void:
 	_configure_interaction_target()
 	_fit_interaction_geometry_to_giants()
+	_sync_individual_dialogue_pivots()
 
 func get_dialogue_camera_mount() -> Node3D:
 	return get_node_or_null(dialogue_speaker_pivot_path) as Node3D
+
+
+func get_left_dialogue_camera_mount() -> Node3D:
+	return get_node_or_null(left_dialogue_speaker_pivot_path) as Node3D
+
+
+func get_right_dialogue_camera_mount() -> Node3D:
+	return get_node_or_null(right_dialogue_speaker_pivot_path) as Node3D
 
 
 func get_player_dialogue_anchor() -> Node3D:
@@ -117,6 +128,7 @@ func _fit_interaction_geometry_to_giants() -> void:
 	if speaker_pivot != null and dialogue_camera != null:
 		speaker_pivot.global_transform = dialogue_camera.global_transform
 
+	_sync_individual_dialogue_pivots()
 	_position_player_anchor()
 
 
@@ -234,6 +246,37 @@ func _compute_giants_midpoint_local() -> Vector3:
 		return to_local(midpoint)
 
 	return Vector3.ZERO
+
+
+func _sync_individual_dialogue_pivots() -> void:
+	_sync_individual_dialogue_pivot(
+		left_giant_path,
+		left_dialogue_speaker_pivot_path
+	)
+	_sync_individual_dialogue_pivot(
+		right_giant_path,
+		right_dialogue_speaker_pivot_path
+	)
+
+
+func _sync_individual_dialogue_pivot(
+	giant_path: NodePath,
+	pivot_path: NodePath
+) -> void:
+	var giant := get_node_or_null(giant_path) as Node3D
+	var pivot := get_node_or_null(pivot_path) as Node3D
+	if giant == null or pivot == null:
+		return
+
+	if not giant.has_method("get_dialogue_camera_mount"):
+		return
+
+	var giant_mount := giant.call("get_dialogue_camera_mount") as Node3D
+	if giant_mount == null:
+		return
+
+	pivot.global_transform = giant_mount.global_transform
+
 
 func _get_giants() -> Array[Node3D]:
 	var result: Array[Node3D] = []
