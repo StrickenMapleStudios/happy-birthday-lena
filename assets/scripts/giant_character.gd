@@ -1,5 +1,7 @@
 extends Node3D
 
+const CharacterAnimationLibrary = preload("res://assets/scripts/character_animation_library.gd")
+
 @export var visual_root_path: NodePath = ^"Model"
 @export var interaction_target_path: NodePath = ^"InteractionRig/InteractionTarget"
 @export var dialogue_camera_mount_path: NodePath = ^"InteractionRig/DialogueSpeakerPivot"
@@ -15,6 +17,7 @@ extends Node3D
 
 
 func _ready() -> void:
+	CharacterAnimationLibrary.apply_to($Model/AnimationPlayer)
 	if dialogue_animation_tree != null:
 		dialogue_animation_tree.active = true
 		_set_dialogue_animation_condition(false)

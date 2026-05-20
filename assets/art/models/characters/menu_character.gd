@@ -1,5 +1,7 @@
 extends CharacterBody3D
 
+const CharacterAnimationLibrary = preload("res://assets/scripts/character_animation_library.gd")
+
 signal goodbye_finished
 
 const ANIMATION_GOODBYE := "Goodbye"
@@ -33,6 +35,7 @@ var standing: bool:
 
 
 func _ready() -> void:
+	CharacterAnimationLibrary.apply_to(animation_player)
 	animation_tree.active = true
 	_playback = animation_tree.get("parameters/playback") as AnimationNodeStateMachinePlayback
 	_retime_animation(ANIMATION_IDLE_TO_SITTING, IDLE_TO_SITTING_SPEED_SCALE)

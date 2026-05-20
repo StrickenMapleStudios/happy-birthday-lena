@@ -1,5 +1,7 @@
 extends CharacterBody3D
 
+const CharacterAnimationLibrary = preload("res://assets/scripts/character_animation_library.gd")
+
 const WALKING_TURN_SPEED := 6.0
 const RUNNING_TURN_SPEED := 9.0
 const ANIMATION_WALKING := "Walking"
@@ -55,6 +57,7 @@ func _ready() -> void:
 	if animation_player == null or animation_tree == null:
 		push_warning("Player character is missing AnimationPlayer/AnimationTree. Locomotion animation setup was skipped.")
 		return
+	CharacterAnimationLibrary.apply_to(animation_player)
 	animation_tree.active = true
 	if dialogue_animation_tree != null:
 		dialogue_animation_tree.active = false

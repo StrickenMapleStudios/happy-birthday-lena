@@ -1,5 +1,7 @@
 extends CharacterBody3D
 
+const CharacterAnimationLibrary = preload("res://assets/scripts/character_animation_library.gd")
+
 const WALKING_TURN_SPEED := 6.0
 const RUNNING_TURN_SPEED := 9.0
 const ANIMATION_IDLE := "Idle"
@@ -39,6 +41,7 @@ var _external_motion_enabled := false
 
 
 func _ready() -> void:
+	CharacterAnimationLibrary.apply_to(animation_player)
 	if animation_tree != null:
 		animation_tree.active = true
 	if dialogue_animation_tree != null:
