@@ -5,12 +5,15 @@
 [ext_resource type="PackedScene" uid="uid://bkvweeoliwpaq" path="res://assets/art/models/game/cake.glb" id="3_6toka"]
 [ext_resource type="Script" uid="uid://y7p6yy8847d5" path="res://assets/scripts/proximity_dialogue_trigger.gd" id="3_auto_trigger"]
 [ext_resource type="PackedScene" uid="uid://bbj2hguv3jer5" path="res://assets/scenes/common/torch_light.tscn" id="4_torch_light"]
+[ext_resource type="Script" uid="uid://wmpareqch47r" path="res://assets/scripts/interaction_target.gd" id="5_interaction_target"]
+[ext_resource type="Resource" path="res://assets/dialogue/cake_conversation.dialogue" id="6_cake_dialogue"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ym06s"]
 size = Vector3(23.349854, 3.1658936, 5.401367)
 
 [node name="MysteryRoomCutscene" type="Node3D" unique_id=46491078]
 script = ExtResource("2_cutscene")
+dialogue_speaker_name = "Cake"
 
 [node name="MysteryRoom" parent="." unique_id=1521331465 instance=ExtResource("1_mystery_room")]
 
@@ -80,12 +83,25 @@ far = 2000.0
 [node name="PlayerCutsceneAnchor" type="Marker3D" parent="." unique_id=564982832]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, -117.391205)
 
+[node name="InteractionTarget" type="Area3D" parent="." unique_id=2047100081]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -117.391205)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("5_interaction_target")
+dialogue_camera_mount_path = NodePath("../CutsceneCamera")
+player_dialogue_anchor_path = NodePath("../PlayerCutsceneAnchor")
+dialogue_resource = ExtResource("6_cake_dialogue")
+return_player_to_origin_after_dialogue = false
+preserve_player_height_during_dialogue = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionTarget" unique_id=1251005798]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0829468, 0)
+shape = SubResource("BoxShape3D_ym06s")
+
 [node name="AutoCutsceneTrigger" type="Area3D" parent="." unique_id=1879523689]
 monitorable = false
 script = ExtResource("3_auto_trigger")
-target_path = NodePath("..")
-can_activate_method = &"can_start_cutscene_with_target"
-request_activate_method = &"request_cutscene_with_target"
+target_path = NodePath("../InteractionTarget")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="AutoCutsceneTrigger" unique_id=1042330339]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0829468, -117.391205)

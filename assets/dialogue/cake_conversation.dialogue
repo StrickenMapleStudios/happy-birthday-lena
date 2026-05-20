@@ -1,0 +1,35 @@
+~ start
+Cake: Hey. Careful with the candles, I am trying to look majestic.
+Lena: ...Did the cake just talk?
+Cake: Of course. This is a birthday project. Standards are higher here.
+- Are you really the final cake?
+	Lena: Are you really the final cake?
+	Cake: Final? I prefer "legendary". But yes, I am the cake at the end of the room.
+	Cake: I waited in dramatic lighting for this exact conversation.
+	=> wish
+- You sound very confident for a dessert.
+	Lena: You sound very confident for a dessert.
+	Cake: Confidence is just sugar with posture.
+	Cake: Also, I have three layers and a mission.
+	=> wish
+- I only came here to stare respectfully.
+	Lena: I only came here to stare respectfully.
+	Cake: Respect accepted. You may also admire the frosting from a safer distance.
+	=> END
+
+~ wish
+Cake: Since you made it this far, you are allowed one ceremonial birthday thought.
+- Then I wish Lena a very happy birthday.
+	Lena: Then I wish Lena a very happy birthday.
+	Cake: Excellent choice. Warm, correct, no notes.
+	Cake: Let the room remember this moment.
+	=> END
+- Then I wish for a huge slice of cake.
+	Lena: Then I wish for a huge slice of cake.
+	Cake: Brave. Slightly threatening, but brave.
+	Cake: I respect the honesty.
+	=> END
+- Then I wish this place stays a little magical.
+	Lena: Then I wish this place stays a little magical.
+	Cake: That one is already working, but it helps to say it out loud.
+	=> END
