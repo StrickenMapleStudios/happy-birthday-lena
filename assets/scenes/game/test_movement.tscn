@@ -11,7 +11,7 @@
 [ext_resource type="Script" uid="uid://csmvxjritgblu" path="res://assets/scripts/gameplay_ui_layer.gd" id="8_gameplay_ui"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/inventory_ui.tscn" id="9_inventory_ui"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/cinematic_bars.tscn" id="10_cinematic_bars"]
-[ext_resource type="PackedScene" path="res://assets/scenes/common/lap_race_challenger_setup.tscn" id="11_lap_race_setup"]
+[ext_resource type="PackedScene" uid="uid://cp76hwmmebeg3" path="res://assets/scenes/common/lap_race_challenger_setup.tscn" id="11_lap_race_setup"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_marker_column"]
 top_radius = 0.8
@@ -61,12 +61,13 @@ transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.629
 transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.6293204, 17.73838, -9.536743e-07, 22.134308)
 
 [node name="npc3" parent="." unique_id=865179489 instance=ExtResource("3_npc")]
-transform = Transform3D(-0.65744096, 0, 0.753506, 0, 1, 0, -0.753506, 0, -0.65744096, -4.4477897, -1.4305115e-06, 36.136303)
+transform = Transform3D(-0.3913737, 0, 0.9202318, 0, 1, 0, -0.9202318, 0, -0.3913737, -17.922375, -4.7683716e-07, 52.87242)
 
 [node name="elder" parent="." unique_id=884162095 instance=ExtResource("4_elder")]
-transform = Transform3D(-0.68299335, 0, -0.73042464, 0, 1, 0, 0.73042464, 0, -0.68299335, 14.423284, 0, 31.964838)
+transform = Transform3D(-0.68299335, 0, -0.73042464, 0, 1, 0, 0.73042464, 0, -0.68299335, 18.150974, 9.536743e-07, 45.16806)
 
 [node name="LapRaceChallengerSetup" parent="." unique_id=1552964193 instance=ExtResource("11_lap_race_setup")]
+transform = Transform3D(-0.2086628, 0, 0.97798765, 0, 1, 0, -0.97798765, 0, -0.2086628, -24.01482, 1.4305115e-06, 33.62189)
 
 [node name="CameraRig" type="Node3D" parent="." unique_id=1843382860]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)

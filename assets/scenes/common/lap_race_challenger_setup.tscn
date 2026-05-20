@@ -1,32 +1,24 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://cp76hwmmebeg3"]
 
 [ext_resource type="PackedScene" path="res://assets/scenes/characters/race_challenger_npc.tscn" id="1_race_npc"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/reward_marker.tscn" id="2_reward_marker"]
-[ext_resource type="Script" path="res://assets/scripts/reward_demonstration_camera.gd" id="3_demo_camera_script"]
-[ext_resource type="PackedScene" path="res://assets/scenes/common/skins/lightning.tscn" id="4_lightning"]
+[ext_resource type="Script" uid="uid://d1tdb5cfv171" path="res://assets/scripts/reward_demonstration_camera.gd" id="3_demo_camera_script"]
 
-[node name="LapRaceChallengerSetup" type="Node3D"]
+[node name="LapRaceChallengerSetup" type="Node3D" unique_id=62719591]
 
-[node name="RaceChallenger" parent="." instance=ExtResource("1_race_npc")]
-transform = Transform3D(-0.9921147, 0, -0.12533323, 0, 1, 0, 0.12533323, 0, -0.9921147, 7.9, 0, 13.8)
+[node name="RaceChallenger" parent="." unique_id=885401511 instance=ExtResource("1_race_npc")]
+interaction_target_path = NodePath("InteractionTarget")
+race_dialogue_state_path = NodePath("RaceDialogueState")
+post_race_scene_path = "res://assets/scenes/game/test_movement.tscn"
+race_config_path = "res://assets/data/lap_races/default_lap_race_config.json"
 special_form_node_path = NodePath("Model/Rig/Skeleton3D/hat_2/ThirdRaceLightning")
 
-[node name="hat_2" parent="RaceChallenger/Model/Rig/Skeleton3D" index="0"]
-visible = true
-
-[node name="hat" parent="RaceChallenger/Model/Rig/Skeleton3D/hat_2" index="0"]
-visible = false
-
-[node name="ThirdRaceLightning" parent="RaceChallenger/Model/Rig/Skeleton3D/hat_2" instance=ExtResource("4_lightning")]
-visible = false
-
-[node name="LapFinishRewardMarker" parent="." instance=ExtResource("2_reward_marker")]
-transform = Transform3D(0.97437006, 0, -0.22495106, 0, 1, 0, 0.22495106, 0, 0.97437006, 10.8, 0.12, -16.4)
+[node name="LapFinishRewardMarker" parent="." unique_id=1770713039 instance=ExtResource("2_reward_marker")]
+transform = Transform3D(0.97437006, 0, -0.22495106, 0, 1, 0, 0.22495106, 0, 0.97437006, 13.173154, 0.12, 1.1786976)
 marker_id = &"lap_finish_reward_marker"
 
-[node name="LapFinishRewardDemonstrationCamera" type="Camera3D" parent="."]
-transform = Transform3D(0.97437006, 0.07693896, -0.21114601, 0, 0.939693, 0.34202, 0.22495106, -0.33325702, 0.9156148, 10.8, 1.77, -13.0)
+[node name="LapFinishRewardDemonstrationCamera" type="Camera3D" parent="." unique_id=803235418]
+transform = Transform3D(0.9608082, 0.05320436, -0.2720605, 0, 0.98140955, 0.19192521, 0.27721405, -0.18440329, 0.94294626, 11.79502, 1.7700009, 6.2338653)
+fov = 35.0
 script = ExtResource("3_demo_camera_script")
 marker_id = &"lap_finish_reward_marker"
-current = false
-fov = 35.0
