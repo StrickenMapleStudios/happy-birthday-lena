@@ -95,6 +95,7 @@ func become_friend() -> void:
 	var interaction_target := get_node_or_null(INTERACTION_TARGET_PATH)
 	if interaction_target != null and interaction_target.has_method("set_interaction_enabled"):
 		interaction_target.call("set_interaction_enabled", false)
+	SessionStatePersistence.notify_actor_changed(actor)
 
 
 func pause_following() -> void:

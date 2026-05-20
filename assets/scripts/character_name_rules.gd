@@ -32,3 +32,36 @@ static func is_dialogue_name_valid(name: String) -> bool:
 		return true
 
 	return regex.search(name) != null
+
+
+static func get_dialogue_name_variants() -> Array[String]:
+	var variants: Array[String] = []
+	_build_dialogue_name_variants(variants, "", 4)
+	return variants
+
+
+static func get_dialogue_name_variant(index: int) -> String:
+	var variants := get_dialogue_name_variants()
+	if variants.is_empty():
+		return "Лена"
+	if index < 0:
+		return variants[0]
+	return variants[index % variants.size()]
+
+
+static func _build_dialogue_name_variants(
+	variants: Array[String],
+	prefixes: String,
+	remaining_depth: int
+) -> void:
+	var candidate := "%sЛена" % prefixes
+	if is_dialogue_name_valid(candidate) and candidate not in variants:
+		variants.append(candidate)
+
+	if remaining_depth <= 0:
+		return
+
+	for prefix in ["Не", "Анти"]:
+		if not prefixes.is_empty() and prefixes.ends_with(prefix):
+			continue
+		_build_dialogue_name_variants(variants, prefixes + prefix, remaining_depth - 1)

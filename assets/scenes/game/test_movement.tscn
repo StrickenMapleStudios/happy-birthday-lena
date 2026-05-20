@@ -66,6 +66,15 @@ transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.629
 [node name="npc3" parent="." unique_id=865179489 instance=ExtResource("3_npc")]
 transform = Transform3D(-0.3913737, 0, 0.9202318, 0, 1, 0, -0.9202318, 0, -0.3913737, -17.922375, -4.7683716e-07, 52.87242)
 
+[node name="npc_antilena" parent="." unique_id=700022280 instance=ExtResource("3_npc")]
+transform = Transform3D(0.8480481, 0, 0.52991927, 0, 1, 0, -0.52991927, 0, 0.8480481, -8.5, 0, 28)
+
+[node name="npc_ne_antilena" parent="." unique_id=208417554 instance=ExtResource("3_npc")]
+transform = Transform3D(-0.52991927, 0, 0.8480481, 0, 1, 0, -0.8480481, 0, -0.52991927, 28, 0, 62)
+
+[node name="npc_antine_lena" parent="." unique_id=1570238141 instance=ExtResource("3_npc")]
+transform = Transform3D(0.40673664, 0, -0.9135455, 0, 1, 0, 0.9135455, 0, 0.40673664, -22, 0, 68)
+
 [node name="ElderCharacterShowcase" parent="." unique_id=884162095 instance=ExtResource("4_elder_showcase")]
 transform = Transform3D(-0.68299335, 0, -0.73042464, 0, 1, 0, 0.73042464, 0, -0.68299335, 18.150974, 9.536743e-07, 45.16806)
 

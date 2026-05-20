@@ -152,6 +152,7 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	SessionStatePersistence.flush_scene_npc_states(self)
 	_kill_inventory_time_scale_tween()
 	_set_inventory_time_scale(INVENTORY_TIME_SCALE_CLOSED)
 

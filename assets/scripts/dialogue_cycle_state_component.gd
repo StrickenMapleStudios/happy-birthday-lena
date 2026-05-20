@@ -14,7 +14,9 @@ func _ready() -> void:
 
 func record_who_are_you_loop() -> void:
 	who_are_you_loop_count += 1
+	SessionStatePersistence.notify_actor_changed(get_parent())
 
 
 func reset_who_are_you_loop() -> void:
 	who_are_you_loop_count = 0
+	SessionStatePersistence.notify_actor_changed(get_parent())

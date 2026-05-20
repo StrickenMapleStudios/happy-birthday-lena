@@ -2,6 +2,7 @@ extends Node
 
 var _inventory_state: Dictionary = {}
 var _collected_pickups_by_scene: Dictionary = {}
+var _npc_states_by_scene: Dictionary = {}
 var _completed_races: Dictionary = {}
 var _completed_race_rewards: Dictionary = {}
 
@@ -9,6 +10,7 @@ var _completed_race_rewards: Dictionary = {}
 func reset_session() -> void:
 	_inventory_state = {}
 	_collected_pickups_by_scene = {}
+	_npc_states_by_scene = {}
 	_completed_races = {}
 	_completed_race_rewards = {}
 
@@ -36,6 +38,27 @@ func is_pickup_collected(scene_path: String, node_path: NodePath) -> bool:
 
 	var scene_pickups: Dictionary = _collected_pickups_by_scene.get(scene_path, {})
 	return bool(scene_pickups.get(String(node_path), false))
+
+
+func save_npc_state(scene_path: String, node_path: NodePath, npc_state: Dictionary) -> void:
+	if scene_path.is_empty() or node_path.is_empty() or npc_state.is_empty():
+		return
+
+	var scene_npcs: Dictionary = _npc_states_by_scene.get(scene_path, {})
+	scene_npcs[String(node_path)] = npc_state.duplicate(true)
+	_npc_states_by_scene[scene_path] = scene_npcs
+
+
+func get_npc_state(scene_path: String, node_path: NodePath) -> Dictionary:
+	if scene_path.is_empty() or node_path.is_empty():
+		return {}
+
+	var scene_npcs: Dictionary = _npc_states_by_scene.get(scene_path, {})
+	var saved_state: Variant = scene_npcs.get(String(node_path), {})
+	if typeof(saved_state) != TYPE_DICTIONARY:
+		return {}
+
+	return (saved_state as Dictionary).duplicate(true)
 
 
 func mark_race_reward_completed(race_id: StringName) -> void:

@@ -23,7 +23,13 @@ func is_interaction_available() -> bool:
 
 
 func set_interaction_enabled(value: bool) -> void:
+	if interaction_enabled == value:
+		return
+
 	interaction_enabled = value
+	var actor := get_parent()
+	if actor != null:
+		SessionStatePersistence.notify_actor_changed(actor)
 
 
 func get_dialogue_camera_mount() -> Node3D:
