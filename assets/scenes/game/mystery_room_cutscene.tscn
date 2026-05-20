@@ -30,46 +30,46 @@ transform = Transform3D(0.61, 0, 0, 0, 0.61, 0, 0, 0, 0.61, 0, 3.110065, 0)
 [node name="TorchLight01" parent="MysteryRoom/TorchLights" unique_id=15700398 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -14.441)
 
-[node name="TorchLight02" parent="MysteryRoom/TorchLights" unique_id=507694534 instance=ExtResource("4_torch_light")]
+[node name="TorchLight03" parent="MysteryRoom/TorchLights" unique_id=507694534 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -33.137)
 
-[node name="TorchLight03" parent="MysteryRoom/TorchLights" unique_id=491682127 instance=ExtResource("4_torch_light")]
+[node name="TorchLight05" parent="MysteryRoom/TorchLights" unique_id=491682127 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -51.833)
 
-[node name="TorchLight04" parent="MysteryRoom/TorchLights" unique_id=626173741 instance=ExtResource("4_torch_light")]
+[node name="TorchLight07" parent="MysteryRoom/TorchLights" unique_id=626173741 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -70.529)
 
-[node name="TorchLight05" parent="MysteryRoom/TorchLights" unique_id=1300763889 instance=ExtResource("4_torch_light")]
+[node name="TorchLight09" parent="MysteryRoom/TorchLights" unique_id=1300763889 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -89.225)
 
-[node name="TorchLight06" parent="MysteryRoom/TorchLights" unique_id=885808338 instance=ExtResource("4_torch_light")]
+[node name="TorchLight11" parent="MysteryRoom/TorchLights" unique_id=885808338 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -107.921)
 
-[node name="TorchLight07" parent="MysteryRoom/TorchLights" unique_id=1706173901 instance=ExtResource("4_torch_light")]
+[node name="TorchLight13" parent="MysteryRoom/TorchLights" unique_id=1706173901 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -126.617)
 
-[node name="TorchLight08" parent="MysteryRoom/TorchLights" unique_id=1782715865 instance=ExtResource("4_torch_light")]
+[node name="TorchLight15" parent="MysteryRoom/TorchLights" unique_id=1782715865 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.401, 12.116365, -145.313)
 
-[node name="TorchLight09" parent="MysteryRoom/TorchLights" unique_id=1081487915 instance=ExtResource("4_torch_light")]
+[node name="TorchLight02" parent="MysteryRoom/TorchLights" unique_id=1081487915 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -14.441)
 
-[node name="TorchLight10" parent="MysteryRoom/TorchLights" unique_id=963784904 instance=ExtResource("4_torch_light")]
+[node name="TorchLight04" parent="MysteryRoom/TorchLights" unique_id=963784904 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -33.137)
 
-[node name="TorchLight11" parent="MysteryRoom/TorchLights" unique_id=1704397810 instance=ExtResource("4_torch_light")]
+[node name="TorchLight06" parent="MysteryRoom/TorchLights" unique_id=1704397810 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -51.833)
 
-[node name="TorchLight12" parent="MysteryRoom/TorchLights" unique_id=965588852 instance=ExtResource("4_torch_light")]
+[node name="TorchLight08" parent="MysteryRoom/TorchLights" unique_id=965588852 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -70.529)
 
-[node name="TorchLight13" parent="MysteryRoom/TorchLights" unique_id=1588687212 instance=ExtResource("4_torch_light")]
+[node name="TorchLight10" parent="MysteryRoom/TorchLights" unique_id=1588687212 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -89.225)
 
-[node name="TorchLight14" parent="MysteryRoom/TorchLights" unique_id=221670535 instance=ExtResource("4_torch_light")]
+[node name="TorchLight12" parent="MysteryRoom/TorchLights" unique_id=221670535 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -107.921)
 
-[node name="TorchLight15" parent="MysteryRoom/TorchLights" unique_id=1801465820 instance=ExtResource("4_torch_light")]
+[node name="TorchLight14" parent="MysteryRoom/TorchLights" unique_id=1801465820 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -126.617)
 
 [node name="TorchLight16" parent="MysteryRoom/TorchLights" unique_id=856451466 instance=ExtResource("4_torch_light")]

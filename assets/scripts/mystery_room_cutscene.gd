@@ -5,7 +5,6 @@ const PLAYER_GROUP := &"player_character"
 @export var torch_lights_root_path: NodePath = ^"MysteryRoom/TorchLights"
 @export var trigger_root_name := ^"TorchSequenceTriggers"
 @export_range(1, 8, 1) var torches_per_group := 2
-@export_range(0.01, 4.0, 0.01) var pair_z_tolerance := 0.25
 @export_range(1.0, 64.0, 0.1) var trigger_width := 38.0
 @export_range(1.0, 16.0, 0.1) var trigger_height := 6.0
 @export_range(-4.0, 8.0, 0.1) var trigger_center_y := 2.5
@@ -35,24 +34,15 @@ func _collect_torch_groups() -> void:
 		if child is OmniLight3D:
 			torches.append(child as OmniLight3D)
 
-	torches.sort_custom(_sort_torches_for_pairing)
+	torches.sort_custom(_sort_nodes_by_name)
 
 	var current_group: Array = []
-	var current_group_z := 0.0
 	for torch in torches:
-		if current_group.is_empty():
-			current_group = [torch]
-			current_group_z = torch.position.z
+		current_group.append(torch)
+		if current_group.size() < torches_per_group:
 			continue
-
-		var is_same_pair := absf(torch.position.z - current_group_z) <= pair_z_tolerance
-		if is_same_pair and current_group.size() < torches_per_group:
-			current_group.append(torch)
-			continue
-
 		_torch_groups.append(current_group)
-		current_group = [torch]
-		current_group_z = torch.position.z
+		current_group = []
 
 	if not current_group.is_empty():
 		_torch_groups.append(current_group)
@@ -177,7 +167,5 @@ func _is_player_body(body: Node) -> bool:
 	return body != null and body.is_in_group(PLAYER_GROUP)
 
 
-func _sort_torches_for_pairing(a: OmniLight3D, b: OmniLight3D) -> bool:
-	if not is_equal_approx(a.position.z, b.position.z):
-		return a.position.z > b.position.z
-	return a.position.x < b.position.x
+func _sort_nodes_by_name(a: Node, b: Node) -> bool:
+	return String(a.name).naturalnocasecmp_to(String(b.name)) < 0
