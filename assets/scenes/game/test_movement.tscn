@@ -12,6 +12,12 @@
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/inventory_ui.tscn" id="9_inventory_ui"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/cinematic_bars.tscn" id="10_cinematic_bars"]
 [ext_resource type="PackedScene" uid="uid://cp76hwmmebeg3" path="res://assets/scenes/common/lap_race_challenger_setup.tscn" id="11_lap_race_setup"]
+[ext_resource type="Resource" path="res://assets/data/characters/npc_not_lena_identity.tres" id="12_nelinea_identity"]
+[ext_resource type="Resource" path="res://assets/data/characters/npc_antilena_identity.tres" id="13_antilena_identity"]
+[ext_resource type="Resource" path="res://assets/data/characters/npc_ne_antilena_identity.tres" id="14_ne_antilena_identity"]
+[ext_resource type="Resource" path="res://assets/data/characters/npc_antine_lena_identity.tres" id="15_antine_lena_identity"]
+[ext_resource type="Resource" path="res://assets/data/characters/npc_ne_antine_lena_identity.tres" id="16_ne_antine_lena_identity"]
+[ext_resource type="Resource" path="res://assets/data/characters/npc_antine_antilena_identity.tres" id="17_antine_antilena_identity"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_marker_column"]
 top_radius = 0.8
@@ -60,20 +66,38 @@ surface_material_override/0 = SubResource("StandardMaterial3D_marker_yellow")
 [node name="npc" parent="." unique_id=680308868 instance=ExtResource("3_npc")]
 transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.6293204, 20.40683, 0, 75.499916)
 
+[node name="CharacterIdentity" parent="npc"]
+identity_data = ExtResource("12_nelinea_identity")
+
 [node name="npc2" parent="." unique_id=949489206 instance=ExtResource("3_npc")]
 transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.6293204, 17.73838, -9.536743e-07, 22.134308)
+
+[node name="CharacterIdentity" parent="npc2"]
+identity_data = ExtResource("13_antilena_identity")
 
 [node name="npc3" parent="." unique_id=865179489 instance=ExtResource("3_npc")]
 transform = Transform3D(-0.3913737, 0, 0.9202318, 0, 1, 0, -0.9202318, 0, -0.3913737, -17.922375, -4.7683716e-07, 52.87242)
 
+[node name="CharacterIdentity" parent="npc3"]
+identity_data = ExtResource("14_ne_antilena_identity")
+
 [node name="npc_antilena" parent="." unique_id=700022280 instance=ExtResource("3_npc")]
 transform = Transform3D(0.8480481, 0, 0.52991927, 0, 1, 0, -0.52991927, 0, 0.8480481, -8.5, 0, 28)
+
+[node name="CharacterIdentity" parent="npc_antilena"]
+identity_data = ExtResource("15_antine_lena_identity")
 
 [node name="npc_ne_antilena" parent="." unique_id=208417554 instance=ExtResource("3_npc")]
 transform = Transform3D(-0.52991927, 0, 0.8480481, 0, 1, 0, -0.8480481, 0, -0.52991927, 28, 0, 62)
 
+[node name="CharacterIdentity" parent="npc_ne_antilena"]
+identity_data = ExtResource("16_ne_antine_lena_identity")
+
 [node name="npc_antine_lena" parent="." unique_id=1570238141 instance=ExtResource("3_npc")]
 transform = Transform3D(0.40673664, 0, -0.9135455, 0, 1, 0, 0.9135455, 0, 0.40673664, -22, 0, 68)
+
+[node name="CharacterIdentity" parent="npc_antine_lena"]
+identity_data = ExtResource("17_antine_antilena_identity")
 
 [node name="ElderCharacterShowcase" parent="." unique_id=884162095 instance=ExtResource("4_elder_showcase")]
 transform = Transform3D(-0.68299335, 0, -0.73042464, 0, 1, 0, 0.73042464, 0, -0.68299335, 18.150974, 9.536743e-07, 45.16806)
