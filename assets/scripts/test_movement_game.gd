@@ -830,6 +830,12 @@ func _should_actor_use_right_pivot(actor: Node3D) -> bool:
 	if actor == null or actor == player:
 		return false
 
+	if (
+		is_instance_valid(_dialogue_target_actor)
+		and _dialogue_target_actor.has_method("should_use_right_dialogue_pivot")
+	):
+		return bool(_dialogue_target_actor.call("should_use_right_dialogue_pivot", actor))
+
 	var actor_forward := _get_planar_forward(actor)
 	var camera_right := _get_planar_camera_right()
 	if actor_forward.is_zero_approx() or camera_right.is_zero_approx():

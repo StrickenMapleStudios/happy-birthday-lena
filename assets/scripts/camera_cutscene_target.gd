@@ -61,5 +61,9 @@ func get_dialogue_speaker_name() -> String:
 	return dialogue_speaker_name.strip_edges()
 
 
+func should_use_right_dialogue_pivot(actor: Node3D) -> bool:
+	return actor == self
+
+
 func face_towards_position(_target_position: Vector3) -> void:
 	pass

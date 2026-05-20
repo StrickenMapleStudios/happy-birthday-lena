@@ -1,35 +1,35 @@
 ~ start
-Cake: Hey. Careful with the candles, I am trying to look majestic.
-Lena: ...Did the cake just talk?
-Cake: Of course. This is a birthday project. Standards are higher here.
-- Are you really the final cake?
-	Lena: Are you really the final cake?
-	Cake: Final? I prefer "legendary". But yes, I am the cake at the end of the room.
-	Cake: I waited in dramatic lighting for this exact conversation.
+Cake: Эй. Осторожнее со свечами, я тут стараюсь выглядеть величественно.
+{{player_name}}: ...Торт сейчас со мной разговаривает?
+Cake: Разумеется. Это же birthday-проект. Здесь и не такое возможно.
+- Ты и есть тот самый главный торт?
+	{{player_name}}: Ты и есть тот самый главный торт?
+	Cake: Главный? Я бы сказал легендарный. Но да, именно меня ты и нашла в конце комнаты.
+	Cake: Я ждал этого разговора в самом драматичном освещении.
 	=> wish
-- You sound very confident for a dessert.
-	Lena: You sound very confident for a dessert.
-	Cake: Confidence is just sugar with posture.
-	Cake: Also, I have three layers and a mission.
+- Для десерта ты слишком уж самоуверенный.
+	{{player_name}}: Для десерта ты слишком уж самоуверенный.
+	Cake: Самоуверенность это просто сахар, который держит осанку.
+	Cake: И вообще, у меня три слоя и важная миссия.
 	=> wish
-- I only came here to stare respectfully.
-	Lena: I only came here to stare respectfully.
-	Cake: Respect accepted. You may also admire the frosting from a safer distance.
+- Я вообще-то пришла просто уважительно полюбоваться.
+	{{player_name}}: Я вообще-то пришла просто уважительно полюбоваться.
+	Cake: Уважение принято. Можешь ещё восхититься кремом, но с безопасной дистанции.
 	=> END
 
 ~ wish
-Cake: Since you made it this far, you are allowed one ceremonial birthday thought.
-- Then I wish Lena a very happy birthday.
-	Lena: Then I wish Lena a very happy birthday.
-	Cake: Excellent choice. Warm, correct, no notes.
-	Cake: Let the room remember this moment.
+Cake: Раз уж ты дошла сюда, тебе положена одна торжественная праздничная мысль.
+- Тогда я желаю Лене очень счастливого дня рождения.
+	{{player_name}}: Тогда я желаю Лене очень счастливого дня рождения.
+	Cake: Прекрасный выбор. Тепло, точно, без единого замечания.
+	Cake: Пусть эта комната запомнит этот момент.
 	=> END
-- Then I wish for a huge slice of cake.
-	Lena: Then I wish for a huge slice of cake.
-	Cake: Brave. Slightly threatening, but brave.
-	Cake: I respect the honesty.
+- Тогда я желаю себе огромный кусок торта.
+	{{player_name}}: Тогда я желаю себе огромный кусок торта.
+	Cake: Смело. Немного угрожающе, но смело.
+	Cake: Уважаю за честность.
 	=> END
-- Then I wish this place stays a little magical.
-	Lena: Then I wish this place stays a little magical.
-	Cake: That one is already working, but it helps to say it out loud.
+- Тогда я желаю, чтобы это место осталось немного волшебным.
+	{{player_name}}: Тогда я желаю, чтобы это место осталось немного волшебным.
+	Cake: Это пожелание уже сбывается, но вслух оно звучит ещё лучше.
 	=> END
