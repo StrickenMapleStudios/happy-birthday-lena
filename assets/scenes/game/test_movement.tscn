@@ -12,6 +12,11 @@
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/inventory_ui.tscn" id="9_inventory_ui"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/cinematic_bars.tscn" id="10_cinematic_bars"]
 [ext_resource type="PackedScene" uid="uid://cp76hwmmebeg3" path="res://assets/scenes/common/lap_race_challenger_setup.tscn" id="11_lap_race_setup"]
+[ext_resource type="Resource" path="res://assets/data/characters/npc_not_lena_identity.tres" id="12_nelinea_identity"]
+[ext_resource type="Resource" path="res://assets/data/characters/npc_antilena_identity.tres" id="13_antilena_identity"]
+[ext_resource type="Resource" path="res://assets/data/characters/npc_ne_antilena_identity.tres" id="14_ne_antilena_identity"]
+[ext_resource type="Resource" path="res://assets/data/characters/npc_hiyori_identity.tres" id="15_hiyori_identity"]
+[ext_resource type="Resource" path="res://assets/dialogue/friend_intro_hiyori.dialogue" id="16_hiyori_dialogue"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_marker_column"]
 top_radius = 0.8
@@ -58,19 +63,39 @@ surface_material_override/0 = SubResource("StandardMaterial3D_marker_yellow")
 [node name="character" parent="." unique_id=77292897 instance=ExtResource("2_player")]
 
 [node name="npc" parent="." unique_id=680308868 instance=ExtResource("3_npc")]
-transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.6293204, 20.40683, 0, 75.499916)
+transform = Transform3D(-0.2923717, 0, 0.9563047, 0, 1, 0, -0.9563047, 0, -0.2923717, -21.993208, 0, 111.62996)
 
 [node name="npc2" parent="." unique_id=949489206 instance=ExtResource("3_npc")]
 transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.6293204, 40.084976, -9.536743e-07, 40.87983)
 
+[node name="CharacterIdentity" parent="npc2"]
+identity_data = ExtResource("13_antilena_identity")
+
 [node name="npc3" parent="." unique_id=865179489 instance=ExtResource("3_npc")]
 transform = Transform3D(-0.3913737, 0, 0.9202318, 0, 1, 0, -0.9202318, 0, -0.3913737, -17.922375, -4.7683716e-07, 52.87242)
 
+[node name="CharacterIdentity" parent="npc3"]
+identity_data = ExtResource("12_nelinea_identity")
+
 [node name="npc_antilena" parent="." unique_id=700022280 instance=ExtResource("3_npc")]
-transform = Transform3D(-0.2923717, 0, 0.9563047, 0, 1, 0, -0.9563047, 0, -0.2923717, -21.993208, 0, 111.62996)
+transform = Transform3D(-0.6293204, 0, -0.7771459, 0, 1, 0, 0.7771459, 0, -0.6293204, 20.40683, 0, 75.499916)
+
+[node name="CharacterIdentity" parent="npc_antilena"]
+identity_data = ExtResource("14_ne_antilena_identity")
 
 [node name="npc_ne_antilena" parent="." unique_id=208417554 instance=ExtResource("3_npc")]
-transform = Transform3D(-0.52991927, 0, 0.8480481, 0, 1, 0, -0.8480481, 0, -0.52991927, 28, 0, 62)
+transform = Transform3D(-0.6819983, 0, -0.7313537, 0, 1, 0, 0.7313537, 0, -0.6819983, 25.897863, -1.9073486e-06, 95.61538)
+
+[node name="CharacterIdentity" parent="npc_ne_antilena"]
+identity_data = ExtResource("15_hiyori_identity")
+
+[node name="InteractionTarget" parent="npc_ne_antilena"]
+dialogue_resource = ExtResource("16_hiyori_dialogue")
+dialogue_variables = {
+"player_name": "Хиёри",
+"reply_name": "Хиёри",
+"echo_name": "Хиёри"
+}
 
 [node name="npc_antine_lena" parent="." unique_id=1570238141 instance=ExtResource("3_npc")]
 transform = Transform3D(-0.15643437, 0, 0.98768836, 0, 1, 0, -0.98768836, 0, -0.15643437, -26.578785, 0, 74.99434)

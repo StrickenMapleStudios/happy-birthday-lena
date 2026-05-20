@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://exljce0npr16"
+path="res://.godot/imported/friend_intro_hiyori.dialogue-bcd486f7fdbe448b23595a99625aeffc.tres"
+
+[deps]
+
+source_file="res://assets/dialogue/friend_intro_hiyori.dialogue"
+dest_files=["res://.godot/imported/friend_intro_hiyori.dialogue-bcd486f7fdbe448b23595a99625aeffc.tres"]
+
+[params]
+
+defaults=true
