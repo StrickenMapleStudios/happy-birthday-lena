@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://ce2sy31w824jc"
-path="res://.godot/imported/suits.glb-064aeb9e03bcffa8d82415e4b15535be.scn"
+path="res://.godot/imported/suits.glb-098558031152544137f4e8f66786b4ab.scn"
 
 [deps]
 
-source_file="res://assets/art/models/characters/suits/suits.glb"
-dest_files=["res://.godot/imported/suits.glb-064aeb9e03bcffa8d82415e4b15535be.scn"]
+source_file="res://assets/art/models/characters/skins/suits.glb"
+dest_files=["res://.godot/imported/suits.glb-098558031152544137f4e8f66786b4ab.scn"]
 
 [params]
 
