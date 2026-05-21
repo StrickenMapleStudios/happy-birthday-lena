@@ -196,6 +196,14 @@ func resume_as_follower_after_dialogue() -> void:
 	_resume_friend_following()
 
 
+func pause_following_for_dialogue() -> void:
+	_pause_friend_following()
+
+
+func resume_following_after_dialogue() -> void:
+	_resume_friend_following()
+
+
 func _get_active_animation_tree(excluded_tree: AnimationTree) -> AnimationTree:
 	for child in animation_player.get_children():
 		var tree := child as AnimationTree

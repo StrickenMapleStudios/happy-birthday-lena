@@ -13,10 +13,12 @@
 Старец: Снова ты. Над плечом мелькнули два огонька — тихие, как светлячки.
 Лена: Огоньки? Я никого не зову за собой.
 Старец: Небо не спрашивает разрешения. Оно просто отмечает, кто идёт рядом.
-Лена: Странно это слышать… но приятно.
+Лена: Странно это слышать... но приятно.
 - Понятно.
 	Лена: Буду иметь в виду.
 	Старец: Смотри вверх почаще.
+	if has_presentable_followers
+		=> friends_prompt
 	=> END
 
 ~ gathering
@@ -26,34 +28,118 @@
 Лена: Ещё чуть-чуть — и вы скажете, что это созвездие?
 Старец: Созвездие складывается само. Я лишь пересчитываю.
 - Послушаю ещё.
-	Лена: Расскажите, когда будет «достаточно».
+	Лена: Расскажите, когда будет "достаточно".
 	Старец: Когда шестая звезда встанет на одной линии с твоим сердцем.
+	if has_presentable_followers
+		=> friends_prompt
 	=> END
 - Мне пора.
 	Лена: Вернусь позже.
+	if has_presentable_followers
+		=> friends_prompt
 	=> END
 
 ~ constellation_ready
-Старец: Смотри… шесть огней выстроились. Редкое созвездие для одного путника.
-Лена: Это… про меня?
+Старец: Смотри... шесть огней выстроились. Редкое созвездие для одного путника.
+Лена: Это... про меня?
 Старец: Про твой путь. Такому небу положен ключ — от туманной комнаты, что ждала терпеливо.
 Лена: Вы хотите, чтобы я его взяла?
 Старец: Я хочу, чтобы свет не погас. Решай сама.
 - Принять ключ.
-	Лена: Я приму. Спасибо, старик.
+	Лена: Я приму. Спасибо, старец.
 	do queue_constellation_reward()
 	Старец: Забирай. Пусть каждая звезда помнит дорогу домой.
+	if has_presentable_followers
+		=> friends_prompt
 	=> END
 - Ещё не время.
 	Лена: Я вернусь, когда буду готова.
 	Старец: Созвездие потерпит. Огоньки никуда не денутся.
+	if has_presentable_followers
+		=> friends_prompt
 	=> END
 
 ~ reward_claimed
 Старец: Ключ у тебя — я вижу по тому, как спокойно стало небо.
-Лена: Вы помогли мне понять… кое-что о пути.
+Лена: Вы помогли мне понять... кое-что о пути.
 Старец: Я только считал звёзды. Остальное сделали те, кто шёл рядом.
 - До свидания.
-	Лена: До встречи, старик.
+	Лена: До встречи, старец.
 	Старец: Иди. Ночь ещё молода.
+	if has_presentable_followers
+		=> friends_prompt
 	=> END
+
+~ friends_prompt
+Старец: Не хочешь представить своих друзей?
+Лена: Думаю, они справятся сами.
+=> friends_roll_call
+
+~ friends_roll_call
+if has_not_lena
+	=> friend_not_lena
+if has_anti_lena
+	=> friend_anti_lena
+if has_anti_not_lena
+	=> friend_anti_not_lena
+if has_not_anti_lena
+	=> friend_not_anti_lena
+if has_hiyori
+	=> friend_hiyori
+=> friends_roll_call_done
+
+~ friend_not_lena
+НеЛена: Я НеЛена.
+=> after_friend_not_lena
+
+~ after_friend_not_lena
+if has_anti_lena
+	=> friend_anti_lena
+if has_anti_not_lena
+	=> friend_anti_not_lena
+if has_not_anti_lena
+	=> friend_not_anti_lena
+if has_hiyori
+	=> friend_hiyori
+=> friends_roll_call_done
+
+~ friend_anti_lena
+АнтиЛена: Я АнтиЛена.
+=> after_friend_anti_lena
+
+~ after_friend_anti_lena
+if has_anti_not_lena
+	=> friend_anti_not_lena
+if has_not_anti_lena
+	=> friend_not_anti_lena
+if has_hiyori
+	=> friend_hiyori
+=> friends_roll_call_done
+
+~ friend_anti_not_lena
+АнтиНеЛена: Я АнтиНеЛена.
+=> after_friend_anti_not_lena
+
+~ after_friend_anti_not_lena
+if has_not_anti_lena
+	=> friend_not_anti_lena
+if has_hiyori
+	=> friend_hiyori
+=> friends_roll_call_done
+
+~ friend_not_anti_lena
+НеАнтиЛена: Я НеАнтиЛена.
+=> after_friend_not_anti_lena
+
+~ after_friend_not_anti_lena
+if has_hiyori
+	=> friend_hiyori
+=> friends_roll_call_done
+
+~ friend_hiyori
+Хиёри: Я Хиёри.
+=> friends_roll_call_done
+
+~ friends_roll_call_done
+Старец: Хорошо. Теперь я вижу ваше созвездие целиком.
+=> END

@@ -77,6 +77,7 @@ var _input_context := InputContext.GAMEPLAY
 var _focus_before_pause: WeakRef
 var _inventory_data: InventoryData = InventoryData.new()
 var _hidden_follower_actors: Array[Node3D] = []
+var _visible_dialogue_follower_actors: Array[Node3D] = []
 var _queued_reward_demonstration_cameras: Array[WeakRef] = []
 var _inventory_time_scale_tween: Tween
 var _labyrinth_active := false
@@ -265,6 +266,10 @@ func _start_dialogue_with_target(
 	if not can_start_dialogue_with_target(target, ignore_interaction_availability):
 		return
 
+	var target_actor := target.get_parent() as Node3D
+	if target_actor != null and target_actor.has_method("refresh_dialogue_state"):
+		target_actor.call("refresh_dialogue_state")
+
 	var dialogue_resource := target.get_dialogue_resource()
 	var player_dialogue_anchor: Node3D = target.get_player_dialogue_anchor()
 	var restore_player_transform := true
@@ -281,9 +286,9 @@ func _start_dialogue_with_target(
 	await SceneTransition.fade_out()
 	player.set_controls_enabled(false)
 	interaction_source.set_interaction_enabled(false)
+	_dialogue_target_actor = target_actor
 	_hide_follower_actors_for_dialogue()
 	_move_player_to_anchor(player_dialogue_anchor, preserve_player_height)
-	_dialogue_target_actor = target.get_parent() as Node3D
 	var player_focus_position := target.global_position
 	if _dialogue_target_actor != null and _dialogue_target_actor.has_method("get_dialogue_focus_position"):
 		player_focus_position = _dialogue_target_actor.call("get_dialogue_focus_position")
@@ -657,7 +662,7 @@ func _set_dialogue_speaker(speaker: Node3D, dialogue_line: DialogueLine = null) 
 		scene_camera.current = true
 		return
 
-	_sync_dialogue_pivots()
+	_sync_dialogue_pivots(camera_actor)
 	_activate_speaker_camera(camera_actor)
 
 
@@ -668,25 +673,34 @@ func _set_dialogue_pivots_active(value: bool) -> void:
 	dialogue_pivot_left.process_mode = Node.PROCESS_MODE_INHERIT if value else Node.PROCESS_MODE_DISABLED
 
 
-func _sync_dialogue_pivots() -> void:
+func _sync_dialogue_pivots(focus_actor: Node3D = null) -> void:
 	_set_dialogue_pivots_active(true)
 
-	var player_mount: Node3D = player.get_dialogue_camera_mount()
-	var target_mount: Node3D
-	if is_instance_valid(_dialogue_target_actor) and _dialogue_target_actor.has_method("get_dialogue_camera_mount"):
-		target_mount = _dialogue_target_actor.call("get_dialogue_camera_mount") as Node3D
+	var counterpart_actor: Node3D = player
+	var non_player_actor := focus_actor if focus_actor != null and focus_actor != player else _dialogue_target_actor
+	if non_player_actor != null and non_player_actor != _dialogue_target_actor and _dialogue_target_actor != null:
+		counterpart_actor = _dialogue_target_actor
 
-	var npc_uses_right_pivot := _should_actor_use_right_pivot(_dialogue_target_actor)
-	var right_mount := target_mount if npc_uses_right_pivot else player_mount
-	var left_mount := player_mount if npc_uses_right_pivot else target_mount
+	var right_actor: Node3D
+	var left_actor: Node3D
+	var non_player_uses_right_pivot := _should_actor_use_right_pivot(non_player_actor)
+	if non_player_uses_right_pivot:
+		right_actor = non_player_actor
+		left_actor = counterpart_actor
+	else:
+		right_actor = counterpart_actor
+		left_actor = non_player_actor
 
-	_right_pivot_actor = _dialogue_target_actor if npc_uses_right_pivot else player
+	var right_mount := _get_dialogue_mount_for_actor(right_actor)
+	var left_mount := _get_dialogue_mount_for_actor(left_actor)
+
+	_right_pivot_actor = right_actor
 
 	if right_mount != null:
-		dialogue_pivot_right.global_transform = _get_dialogue_pivot_transform(right_mount)
+		dialogue_pivot_right.global_transform = _get_dialogue_pivot_transform(right_mount, right_actor)
 
 	if left_mount != null:
-		dialogue_pivot_left.global_transform = _get_dialogue_pivot_transform(left_mount)
+		dialogue_pivot_left.global_transform = _get_dialogue_pivot_transform(left_mount, left_actor)
 
 
 func _activate_speaker_camera(speaker: Node3D) -> void:
@@ -711,18 +725,19 @@ func _on_dialogue_ended(resource: DialogueResource) -> void:
 			await _transition_from_dialogue_to_race(finished_dialogue_actor)
 			return
 
+	var reward_granted := false
 	var should_chain_reward_demonstration := _has_pending_lap_reward_for_actor(finished_dialogue_actor)
+	if is_instance_valid(finished_dialogue_actor):
+		reward_granted = _try_grant_pending_lap_reward(finished_dialogue_actor)
+		if finished_dialogue_actor.has_method("try_grant_pending_reward"):
+			reward_granted = reward_granted or bool(finished_dialogue_actor.call("try_grant_pending_reward"))
+	should_chain_reward_demonstration = should_chain_reward_demonstration or _has_queued_reward_demonstration()
 	await _exit_dialogue_mode(should_chain_reward_demonstration)
 
 	if is_instance_valid(finished_dialogue_actor) and finished_dialogue_actor.has_method("handle_dialogue_finished"):
 		finished_dialogue_actor.call("handle_dialogue_finished", resource)
 	if is_instance_valid(finished_dialogue_actor):
 		_resolve_pending_lap_race_outcome(finished_dialogue_actor)
-	var reward_granted := false
-	if is_instance_valid(finished_dialogue_actor):
-		reward_granted = _try_grant_pending_lap_reward(finished_dialogue_actor)
-		if finished_dialogue_actor.has_method("try_grant_pending_reward"):
-			reward_granted = reward_granted or bool(finished_dialogue_actor.call("try_grant_pending_reward"))
 	if should_chain_reward_demonstration:
 		_try_start_reward_demonstration(true)
 		if not _reward_demonstration_start_pending and not _demonstration_active and not _has_queued_reward_demonstration():
@@ -876,10 +891,39 @@ func _get_dialogue_camera_actor(speaker: Node3D, dialogue_line: DialogueLine) ->
 	return speaker
 
 
-func _get_dialogue_pivot_transform(mount: Node3D) -> Transform3D:
+func _get_dialogue_pivot_transform(mount: Node3D, actor: Node3D = null) -> Transform3D:
 	var pivot_transform := mount.global_transform
 	pivot_transform.basis = pivot_transform.basis * Basis.from_euler(Vector3(0.0, DIALOGUE_PIVOT_YAW_OFFSET, 0.0))
+	var offset := Vector3.ZERO
+	if (
+		actor != null
+		and is_instance_valid(_dialogue_target_actor)
+		and _dialogue_target_actor.has_method("get_dialogue_pivot_offset_for_actor")
+	):
+		offset = _dialogue_target_actor.call("get_dialogue_pivot_offset_for_actor", actor)
+	pivot_transform.origin += pivot_transform.basis * offset
 	return pivot_transform
+
+
+func _get_dialogue_mount_for_actor(actor: Node3D) -> Node3D:
+	if actor == null:
+		return null
+
+	if actor == player:
+		return player.get_dialogue_camera_mount()
+
+	if (
+		is_instance_valid(_dialogue_target_actor)
+		and _dialogue_target_actor.has_method("get_dialogue_camera_mount_for_actor")
+	):
+		var mapped_mount := _dialogue_target_actor.call("get_dialogue_camera_mount_for_actor", actor) as Node3D
+		if mapped_mount != null:
+			return mapped_mount
+
+	if actor.has_method("get_dialogue_camera_mount"):
+		return actor.call("get_dialogue_camera_mount") as Node3D
+
+	return null
 
 
 func _should_actor_use_right_pivot(actor: Node3D) -> bool:
@@ -1092,19 +1136,29 @@ func _restore_dialogue_animation_mode(actor: Node3D) -> void:
 
 func _hide_follower_actors_for_dialogue() -> void:
 	_hidden_follower_actors.clear()
+	_visible_dialogue_follower_actors.clear()
 	var tree := get_tree()
 	if tree == null:
 		return
+
+	var keep_followers_visible := (
+		is_instance_valid(_dialogue_target_actor)
+		and _dialogue_target_actor.has_method("should_keep_followers_visible_during_dialogue")
+		and bool(_dialogue_target_actor.call("should_keep_followers_visible_during_dialogue"))
+	)
 
 	for actor in tree.get_nodes_in_group(&"friendly_followers"):
 		var follower := actor as Node3D
 		if follower == null or follower == _dialogue_target_actor:
 			continue
-		if not follower.has_method("pause_as_follower_during_dialogue"):
+		if keep_followers_visible:
+			if follower.has_method("pause_following_for_dialogue"):
+				follower.call("pause_following_for_dialogue")
+				_visible_dialogue_follower_actors.append(follower)
 			continue
-
-		follower.call("pause_as_follower_during_dialogue")
-		_hidden_follower_actors.append(follower)
+		if follower.has_method("pause_as_follower_during_dialogue"):
+			follower.call("pause_as_follower_during_dialogue")
+			_hidden_follower_actors.append(follower)
 
 
 func _restore_follower_actors_after_dialogue() -> void:
@@ -1115,6 +1169,13 @@ func _restore_follower_actors_after_dialogue() -> void:
 			actor.call("resume_as_follower_after_dialogue")
 
 	_hidden_follower_actors.clear()
+	for actor in _visible_dialogue_follower_actors:
+		if actor == null:
+			continue
+		if actor.has_method("resume_following_after_dialogue"):
+			actor.call("resume_following_after_dialogue")
+
+	_visible_dialogue_follower_actors.clear()
 
 
 func _on_reward_spawned(_source_id: StringName, marker: RewardMarker, _pickup: PickupItem) -> void:

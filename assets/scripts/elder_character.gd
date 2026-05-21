@@ -12,6 +12,15 @@ const ELDER_REWARD_SOURCE_ID := &"elder_constellation_reward"
 const ELDER_REWARD_MARKER_ID := &"elder_constellation_reward_marker"
 const BRASS_KEY_ITEM := preload("res://assets/data/items/brass_key_item.tres")
 const DEFAULT_TARGET_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
+const FRIEND_FOLLOWERS_GROUP := &"friendly_followers"
+const FOLLOWER_DIALOGUE_ORDER := [
+	"НеЛена",
+	"АнтиЛена",
+	"АнтиНеЛена",
+	"НеАнтиЛена",
+	"Хиёри",
+]
+const FOLLOWER_PIVOT_OFFSET := 0.35
 
 @export var interaction_target_path: NodePath = ^"InteractionTarget"
 @export var elder_dialogue_state_path: NodePath = ^"ElderStarsDialogueState"
@@ -77,6 +86,75 @@ func handle_dialogue_finished(_resource: DialogueResource) -> void:
 	_sync_dialogue_setup()
 
 
+func resolve_dialogue_speaker(character_name: String) -> Node3D:
+	var normalized_name := character_name.strip_edges().to_lower()
+	if normalized_name.is_empty():
+		return null
+
+	if normalized_name == get_dialogue_speaker_name().strip_edges().to_lower():
+		return self
+
+	for follower in get_ordered_dialogue_followers():
+		if _get_actor_dialogue_name(follower).to_lower() == normalized_name:
+			return follower
+
+	return null
+
+
+func resolve_dialogue_speaker_for_line(character_name: String, _dialogue_line: DialogueLine) -> Node3D:
+	return resolve_dialogue_speaker(character_name)
+
+
+func contains_dialogue_speaker(speaker: Node3D) -> bool:
+	if speaker == self:
+		return true
+
+	for follower in get_ordered_dialogue_followers():
+		if follower == speaker:
+			return true
+
+	return false
+
+
+func should_keep_followers_visible_during_dialogue() -> bool:
+	return not get_ordered_dialogue_followers().is_empty()
+
+
+func get_dialogue_pivot_offset_for_actor(actor: Node3D) -> Vector3:
+	if actor == null or actor == self:
+		return Vector3.ZERO
+
+	var delta := actor.global_position - global_position
+	delta.y = 0.0
+	if delta.is_zero_approx():
+		return Vector3.ZERO
+
+	var side := signf(delta.dot(global_transform.basis.x))
+	if is_zero_approx(side):
+		return Vector3.ZERO
+
+	return Vector3(side * FOLLOWER_PIVOT_OFFSET, 0.0, 0.0)
+
+
+func get_ordered_dialogue_followers() -> Array[Node3D]:
+	var tree := get_tree()
+	if tree == null:
+		return []
+
+	var followers: Array[Node3D] = []
+	for actor in tree.get_nodes_in_group(FRIEND_FOLLOWERS_GROUP):
+		var follower := actor as Node3D
+		if follower == null or not is_instance_valid(follower):
+			continue
+		if _get_follower_order_index(follower) < FOLLOWER_DIALOGUE_ORDER.size():
+			followers.append(follower)
+
+	followers.sort_custom(func(a: Node3D, b: Node3D) -> bool:
+		return _get_follower_order_index(a) < _get_follower_order_index(b)
+	)
+	return followers
+
+
 func _update_follow_animation_state() -> void:
 	if _dialogue_animation_mode_active:
 		return
@@ -134,3 +212,24 @@ func _find_elder_animation_name() -> StringName:
 			return animation_name
 
 	return StringName()
+
+
+func _get_actor_dialogue_name(actor: Node3D) -> String:
+	if actor == null:
+		return ""
+
+	if actor.has_method("get_npc_dialogue_name"):
+		return String(actor.call("get_npc_dialogue_name")).strip_edges()
+	if actor.has_method("get_dialogue_speaker_name"):
+		return String(actor.call("get_dialogue_speaker_name")).strip_edges()
+
+	return actor.name.strip_edges()
+
+
+func _get_follower_order_index(actor: Node3D) -> int:
+	var follower_name := _get_actor_dialogue_name(actor)
+	var index := FOLLOWER_DIALOGUE_ORDER.find(follower_name)
+	if index >= 0:
+		return index
+
+	return FOLLOWER_DIALOGUE_ORDER.size()
