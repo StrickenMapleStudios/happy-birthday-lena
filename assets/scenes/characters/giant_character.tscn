@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://ccjs06m5tpi8k"]
+[gd_scene load_steps=16 format=3 uid="uid://ccjs06m5tpi8k"]
 
 [ext_resource type="PackedScene" uid="uid://cuvqsplyq6dy6" path="res://assets/art/models/characters/character.glb" id="1_character"]
 [ext_resource type="Script" path="res://assets/scripts/giant_character.gd" id="2_script"]
@@ -22,6 +22,9 @@ animation = &"Idle"
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dialogue_guarding"]
 animation = &"Guarding"
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_secretly_dancing"]
+animation = &"SecretlyDancing"
+
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_dialogue_start"]
 advance_mode = 2
 
@@ -33,13 +36,27 @@ advance_condition = &"InDialogue"
 advance_mode = 2
 advance_condition = &"NotInDialogue"
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idle_to_secretly_dancing"]
+advance_mode = 2
+advance_condition = &"PlaySecretlyDancing"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_guarding_to_secretly_dancing"]
+advance_mode = 2
+advance_condition = &"PlaySecretlyDancing"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_secretly_dancing_to_idle"]
+advance_mode = 2
+advance_condition = &"StopSecretlyDancing"
+
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_dialogue"]
 states/Idle/node = SubResource("AnimationNodeAnimation_dialogue_idle")
 states/Idle/position = Vector2(364, 181)
 states/Guarding/node = SubResource("AnimationNodeAnimation_dialogue_guarding")
 states/Guarding/position = Vector2(366, 59)
+states/SecretlyDancing/node = SubResource("AnimationNodeAnimation_secretly_dancing")
+states/SecretlyDancing/position = Vector2(620, 120)
 states/Start/position = Vector2(160, 116)
-transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_dialogue_start"), "Idle", "Guarding", SubResource("AnimationNodeStateMachineTransition_idle_to_guarding"), "Guarding", "Idle", SubResource("AnimationNodeStateMachineTransition_guarding_to_idle")]
+transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_dialogue_start"), "Idle", "Guarding", SubResource("AnimationNodeStateMachineTransition_idle_to_guarding"), "Guarding", "Idle", SubResource("AnimationNodeStateMachineTransition_guarding_to_idle"), "Idle", "SecretlyDancing", SubResource("AnimationNodeStateMachineTransition_idle_to_secretly_dancing"), "Guarding", "SecretlyDancing", SubResource("AnimationNodeStateMachineTransition_guarding_to_secretly_dancing"), "SecretlyDancing", "Idle", SubResource("AnimationNodeStateMachineTransition_secretly_dancing_to_idle")]
 graph_offset = Vector2(-72, -6)
 
 [node name="GiantCharacter" type="Node3D"]

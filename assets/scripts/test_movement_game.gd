@@ -35,6 +35,7 @@ const LABYRINTH_REWARD_MARKER_ID := &"labyrinth_exit_reward_marker"
 const LAP_REWARD_SOURCE_ID := &"lap_finish_reward"
 const LAP_REWARD_MARKER_ID := &"lap_finish_reward_marker"
 const BRASS_KEY_ITEM := preload("res://assets/data/items/brass_key_item.tres")
+const GIANT_CREDITS_SHOWCASE_GROUP := &"giant_credits_showcase"
 
 const CURSOR_MODE_INGAME := Input.MOUSE_MODE_CAPTURED
 const CURSOR_MODE_UI := Input.MOUSE_MODE_VISIBLE
@@ -86,6 +87,8 @@ var _ignored_labyrinth_entry_area: WeakRef
 var _found_item_popup: FoundItemPopup
 var _pending_lap_return_context: Dictionary = {}
 var _reward_demonstration_start_pending := false
+var _credits_active := false
+var _credits_start_pending := false
 var _pending_reward_grant_context: Dictionary = {}
 var _pending_race_resolution_context: Dictionary = {}
 
@@ -257,6 +260,37 @@ func _request_dialogue_with_target_deferred(
 
 func _request_cutscene_with_target_deferred(target: Node, ignore_interaction_availability: bool = true) -> void:
 	await _start_cutscene_with_target(target, ignore_interaction_availability)
+
+
+func can_start_giant_credits_sequence() -> bool:
+	return (
+		not _credits_active
+		and not _credits_start_pending
+		and not _dialogue_active
+		and not _cutscene_active
+		and not _demonstration_active
+		and not _interaction_locked
+	)
+
+
+func start_giant_credits_sequence() -> void:
+	if not can_start_giant_credits_sequence():
+		return
+
+	call_deferred("_start_giant_credits_sequence_deferred")
+
+
+func _start_giant_credits_sequence_deferred() -> void:
+	if not can_start_giant_credits_sequence():
+		return
+
+	var credits_showcase := _find_giant_credits_showcase()
+	if credits_showcase == null:
+		push_warning("Giant credits showcase was not found in the current scene.")
+		return
+
+	_credits_start_pending = true
+	call_deferred("_run_giant_credits_sequence", credits_showcase)
 
 
 func _start_dialogue_with_target(
@@ -1006,6 +1040,10 @@ func _sync_input_context() -> void:
 		_set_input_context(InputContext.DEMONSTRATION)
 		return
 
+	if _credits_active:
+		_set_input_context(InputContext.DEMONSTRATION)
+		return
+
 	if _cutscene_active:
 		_set_input_context(InputContext.CUTSCENE)
 		return
@@ -1196,6 +1234,77 @@ func _on_reward_spawned(_source_id: StringName, marker: RewardMarker, _pickup: P
 
 	_queued_reward_demonstration_cameras.append(weakref(demonstration_camera))
 	_try_start_reward_demonstration()
+
+
+func _run_giant_credits_sequence(credits_showcase: Node) -> void:
+	_credits_start_pending = false
+	if credits_showcase == null or not is_instance_valid(credits_showcase):
+		return
+
+	_credits_active = true
+	_interaction_locked = true
+	_set_input_context(InputContext.TRANSITION)
+	player.set_controls_enabled(false)
+	interaction_source.set_interaction_enabled(false)
+	gameplay_ui_layer.set_world_ui_visible(false)
+
+	var credits_camera: Camera3D = null
+	if credits_showcase.has_method("get_credits_camera"):
+		credits_camera = credits_showcase.call("get_credits_camera") as Camera3D
+
+	await SceneTransition.fade_out()
+	_set_dialogue_pivots_active(false)
+	if credits_camera != null:
+		credits_camera.current = true
+
+	if credits_showcase.has_method("begin_credits"):
+		credits_showcase.call("begin_credits")
+
+	await SceneTransition.fade_in()
+	_interaction_locked = false
+	_sync_input_context()
+
+	var credits_duration := 45.0
+	if credits_showcase.has_method("get_credits_duration"):
+		credits_duration = float(credits_showcase.call("get_credits_duration"))
+
+	if credits_duration > 0.0:
+		await get_tree().create_timer(credits_duration).timeout
+
+	_interaction_locked = true
+	_set_input_context(InputContext.TRANSITION)
+	await SceneTransition.fade_out()
+
+	if credits_showcase.has_method("end_credits"):
+		credits_showcase.call("end_credits")
+
+	if credits_camera != null and is_instance_valid(credits_camera):
+		credits_camera.current = false
+
+	camera_rig.activate_game_camera()
+	_credits_active = false
+	player.set_controls_enabled(true)
+	interaction_source.set_interaction_enabled(true)
+	gameplay_ui_layer.set_world_ui_visible(true)
+	await SceneTransition.fade_in()
+	_interaction_locked = false
+	_sync_input_context()
+
+
+func _find_giant_credits_showcase() -> Node:
+	var tree := get_tree()
+	if tree == null:
+		return null
+
+	var current_scene := tree.current_scene
+	for showcase_node in tree.get_nodes_in_group(GIANT_CREDITS_SHOWCASE_GROUP):
+		if showcase_node == null or not is_instance_valid(showcase_node):
+			continue
+		if current_scene != null and not current_scene.is_ancestor_of(showcase_node):
+			continue
+		return showcase_node
+
+	return null
 
 
 func _try_start_reward_demonstration(start_from_faded_state: bool = false) -> void:

@@ -1,6 +1,7 @@
 extends CharacterBody3D
 
 const CharacterAnimationLibrary = preload("res://assets/scripts/character_animation_library.gd")
+const CharacterGroundSnap = preload("res://assets/scripts/character_ground_snap.gd")
 
 const WALKING_TURN_SPEED := 6.0
 const RUNNING_TURN_SPEED := 9.0
@@ -33,12 +34,6 @@ const CHARACTER_IDENTITY_PATH := ^"CharacterIdentity"
 const MAX_COLLISION_SLIDES := 4
 const CONTROL_MODE_DEFAULT := 0
 const CONTROL_MODE_LABYRINTH := 1
-const GROUND_SNAP_RAY_START_ABOVE_FEET := 0.35
-const GROUND_SNAP_RAY_DISTANCE := 1.25
-const GROUND_SNAP_MIN_NORMAL_Y := 0.55
-const GROUND_SNAP_MAX_STEP_UP := 0.2
-const GROUND_SNAP_MAX_STEP_DOWN := 1.5
-
 @onready var model: Node3D = $Model
 @onready var animation_tree: AnimationTree = $Model/AnimationPlayer/AnimationTree
 @onready var dialogue_animation_tree: AnimationTree = $Model/AnimationPlayer/DialogueAnimationTree
@@ -54,12 +49,12 @@ var _saved_animation_tree: AnimationTree
 var _control_mode := CONTROL_MODE_DEFAULT
 var _labyrinth_view_yaw := 0.0
 var _camera_relative_movement_enabled := false
-var _feet_height_offset := 0.55
+var _feet_height_offset := CharacterGroundSnap.DEFAULT_FEET_HEIGHT_OFFSET
 
 
 func _ready() -> void:
 	_ensure_input_map()
-	_feet_height_offset = _compute_feet_height_offset()
+	_feet_height_offset = CharacterGroundSnap.compute_feet_height_offset(self)
 	add_to_group(&"player_character")
 	if animation_player == null or animation_tree == null:
 		push_warning("Player character is missing AnimationPlayer/AnimationTree. Locomotion animation setup was skipped.")
@@ -246,7 +241,9 @@ func _apply_root_motion() -> void:
 		if collision == null:
 			break
 
-		remaining_motion = _clamp_horizontal_slide(collision.get_remainder().slide(collision.get_normal()))
+		remaining_motion = CharacterGroundSnap.clamp_horizontal_slide(
+			collision.get_remainder().slide(collision.get_normal())
+		)
 
 
 func _apply_labyrinth_movement(input: Vector2, speed_up: bool, delta: float) -> void:
@@ -269,56 +266,13 @@ func _move_with_collision_sliding(motion: Vector3) -> void:
 		if collision == null:
 			break
 
-		remaining_motion = _clamp_horizontal_slide(collision.get_remainder().slide(collision.get_normal()))
-
-
-func _clamp_horizontal_slide(motion: Vector3) -> Vector3:
-	motion.y = minf(motion.y, 0.0)
-	return motion
-
-
-func _compute_feet_height_offset() -> float:
-	var collision_shape := get_node_or_null("CollisionShape3D") as CollisionShape3D
-	if collision_shape == null or collision_shape.shape == null:
-		return _feet_height_offset
-
-	var local_bottom_y := collision_shape.position.y
-	var shape := collision_shape.shape
-	if shape is CapsuleShape3D:
-		local_bottom_y -= (shape as CapsuleShape3D).height * 0.5
-	elif shape is CylinderShape3D:
-		local_bottom_y -= (shape as CylinderShape3D).height * 0.5
-	elif shape is BoxShape3D:
-		local_bottom_y -= (shape as BoxShape3D).size.y * 0.5
-
-	return local_bottom_y
+		remaining_motion = CharacterGroundSnap.clamp_horizontal_slide(
+			collision.get_remainder().slide(collision.get_normal())
+		)
 
 
 func _snap_to_ground_height() -> void:
-	var space_state := get_world_3d().direct_space_state
-	if space_state == null:
-		return
-
-	var feet_position := global_position + Vector3(0.0, _feet_height_offset, 0.0)
-	var ray_start := feet_position + Vector3.UP * GROUND_SNAP_RAY_START_ABOVE_FEET
-	var ray_end := feet_position - Vector3.UP * GROUND_SNAP_RAY_DISTANCE
-	var query := PhysicsRayQueryParameters3D.create(ray_start, ray_end)
-	query.exclude = [get_rid()]
-
-	var hit := space_state.intersect_ray(query)
-	if hit.is_empty():
-		return
-
-	var floor_normal: Vector3 = hit.normal
-	if floor_normal.y < GROUND_SNAP_MIN_NORMAL_Y:
-		return
-
-	var target_y := float(hit.position.y) - _feet_height_offset
-	var delta_y := target_y - global_position.y
-	if delta_y > GROUND_SNAP_MAX_STEP_UP or delta_y < -GROUND_SNAP_MAX_STEP_DOWN:
-		return
-
-	global_position.y = target_y
+	CharacterGroundSnap.snap_to_ground_height(self, _feet_height_offset)
 
 
 func _get_labyrinth_speed(speed_up: bool) -> float:

@@ -55,6 +55,21 @@ func exit_dialogue_animation_mode() -> void:
 		head_pole_modifier.reset_head_rotation_immediately()
 
 
+func enter_secretly_dancing_mode() -> void:
+	_set_dialogue_animation_condition(false)
+	_set_secretly_dancing_condition(true)
+
+	if look_tracking != null:
+		look_tracking.set_tracking_enabled(false)
+	if head_pole_modifier != null:
+		head_pole_modifier.reset_head_rotation_immediately()
+
+
+func exit_secretly_dancing_mode() -> void:
+	_set_secretly_dancing_condition(false)
+	_set_dialogue_animation_condition(false)
+
+
 func face_towards_position(target_position: Vector3) -> void:
 	var offset := target_position - global_position
 	offset.y = 0.0
@@ -93,3 +108,11 @@ func _set_dialogue_animation_condition(is_in_dialogue: bool) -> void:
 
 	dialogue_animation_tree.set("parameters/conditions/InDialogue", is_in_dialogue)
 	dialogue_animation_tree.set("parameters/conditions/NotInDialogue", not is_in_dialogue)
+
+
+func _set_secretly_dancing_condition(is_playing: bool) -> void:
+	if dialogue_animation_tree == null:
+		return
+
+	dialogue_animation_tree.set("parameters/conditions/PlaySecretlyDancing", is_playing)
+	dialogue_animation_tree.set("parameters/conditions/StopSecretlyDancing", not is_playing)

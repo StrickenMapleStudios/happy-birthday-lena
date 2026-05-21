@@ -1,6 +1,7 @@
 extends "res://assets/scripts/camera_cutscene_target.gd"
 
 const PLAYER_GROUP := &"player_character"
+const CAKE_DIALOGUE := preload("res://assets/dialogue/cake_conversation.dialogue")
 
 @export var torch_lights_root_path: NodePath = ^"MysteryRoom/TorchLights"
 @export var trigger_root_path: NodePath = ^"TorchSequenceTriggers"
@@ -142,3 +143,14 @@ func _is_player_body(body: Node) -> bool:
 
 func _sort_nodes_by_name(a: Node, b: Node) -> bool:
 	return String(a.name).naturalnocasecmp_to(String(b.name)) < 0
+
+
+func handle_dialogue_finished(resource: DialogueResource) -> void:
+	if resource != CAKE_DIALOGUE:
+		return
+
+	var game := get_tree().current_scene
+	if game == null or not game.has_method("start_giant_credits_sequence"):
+		return
+
+	game.call_deferred("start_giant_credits_sequence")

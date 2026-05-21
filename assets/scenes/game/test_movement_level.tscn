@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cgbqg1ajsh5ut"]
 
 [ext_resource type="PackedScene" uid="uid://d28qecfx6dh44" path="res://assets/scenes/common/labyrinth_area.tscn" id="1_rtw1c"]
-[ext_resource type="PackedScene" uid="uid://dwinqt4ms18vm" path="res://assets/scenes/game/giant_character_showcase.tscn" id="5_giant_showcase"]
+[ext_resource type="PackedScene" uid="uid://c8k4giant_credits_show" path="res://assets/scenes/game/giant_credits_showcase.tscn" id="5_giant_showcase"]
 [ext_resource type="PackedScene" uid="uid://b7k3sprucelarge" path="res://assets/scenes/common/trees/spruce_tree_large.tscn" id="6_spruce_large"]
 [ext_resource type="PackedScene" uid="uid://b7k3sprucemedium" path="res://assets/scenes/common/trees/spruce_tree_medium.tscn" id="7_spruce_medium"]
 
@@ -66,7 +66,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_ground")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0315094, 0, -0.001045227)
 navigation_mesh = SubResource("NavigationMesh_test_movement")
 
-[node name="GiantCharacterShowcase" parent="." unique_id=1778353891 instance=ExtResource("5_giant_showcase")]
+[node name="GiantCreditsShowcase" parent="." unique_id=1778353891 instance=ExtResource("5_giant_showcase")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -108.55545)
 
 [node name="SideSpruces" type="Node3D" parent="." unique_id=207331484]

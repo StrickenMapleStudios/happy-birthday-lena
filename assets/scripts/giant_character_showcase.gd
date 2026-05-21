@@ -171,6 +171,18 @@ func exit_dialogue_animation_mode() -> void:
 			giant.call("exit_dialogue_animation_mode")
 
 
+func begin_credits_dance() -> void:
+	for giant in _get_giants():
+		if giant.has_method("enter_secretly_dancing_mode"):
+			giant.call("enter_secretly_dancing_mode")
+
+
+func end_credits_dance() -> void:
+	for giant in _get_giants():
+		if giant.has_method("exit_secretly_dancing_mode"):
+			giant.call("exit_secretly_dancing_mode")
+
+
 func handle_dialogue_finished(_resource: DialogueResource) -> void:
 	var dialogue_state := get_node_or_null(dialogue_state_path) as GiantsIntroDialogueState
 	if dialogue_state == null or not dialogue_state.should_open_gates():

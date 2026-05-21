@@ -1,0 +1,50 @@
+[gd_scene load_steps=2 format=3 uid="uid://b7k3credits_scroll_ui"]
+
+[ext_resource type="Script" path="res://assets/scripts/scrolling_credits_ui.gd" id="1_script"]
+
+[node name="ScrollingCreditsUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="DimOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.42)
+
+[node name="ClipContainer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 120.0
+offset_top = 40.0
+offset_right = -120.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+clip_contents = true
+mouse_filter = 2
+
+[node name="CreditsScroll" type="Control" parent="ClipContainer"]
+layout_mode = 0
+offset_right = 1680.0
+offset_bottom = 4000.0
+mouse_filter = 2
+
+[node name="Entries" type="VBoxContainer" parent="ClipContainer/CreditsScroll"]
+layout_mode = 0
+offset_right = 1680.0
+offset_bottom = 400.0
+size_flags_horizontal = 3
+theme_override_constants/separation = 0

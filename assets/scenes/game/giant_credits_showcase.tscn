@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://c8k4giant_credits_show"]
+
+[ext_resource type="PackedScene" uid="uid://dwinqt4ms18vm" path="res://assets/scenes/game/giant_character_showcase.tscn" id="1_showcase"]
+[ext_resource type="Script" path="res://assets/scripts/giant_credits_showcase.gd" id="2_script"]
+[ext_resource type="PackedScene" uid="uid://b7k3credits_scroll_ui" path="res://assets/scenes/ui/scrolling_credits_ui.tscn" id="3_credits_ui"]
+
+[node name="GiantCreditsShowcase" type="Node3D"]
+script = ExtResource("2_script")
+
+[node name="GiantCharacterShowcase" parent="." instance=ExtResource("1_showcase")]
+
+[node name="CreditsCanvas" type="CanvasLayer" parent="."]
+layer = 60
+
+[node name="ScrollingCreditsUI" parent="CreditsCanvas" instance=ExtResource("3_credits_ui")]

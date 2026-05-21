@@ -1,6 +1,7 @@
 extends CharacterBody3D
 
 const CharacterAnimationLibrary = preload("res://assets/scripts/character_animation_library.gd")
+const CharacterGroundSnap = preload("res://assets/scripts/character_ground_snap.gd")
 const DEFAULT_DIALOGUE_RESOURCE = preload("res://assets/dialogue/friend_intro_template.dialogue")
 const HIYORI_DIALOGUE_RESOURCE = preload("res://assets/dialogue/friend_intro_hiyori.dialogue")
 
@@ -42,9 +43,11 @@ var _root_motion_track_path := NodePath()
 var _saved_animation_tree: AnimationTree
 var _saved_companion_dialogue_transform := Transform3D.IDENTITY
 var _external_motion_enabled := false
+var _feet_height_offset := CharacterGroundSnap.DEFAULT_FEET_HEIGHT_OFFSET
 
 
 func _ready() -> void:
+	_feet_height_offset = CharacterGroundSnap.compute_feet_height_offset(self)
 	CharacterAnimationLibrary.apply_to(animation_player)
 	_apply_dialogue_resource_override()
 	if animation_tree != null:
@@ -56,6 +59,7 @@ func _ready() -> void:
 	_prepare_locomotion_animation(ANIMATION_RUNNING, RUNNING_SPEED_SCALE * locomotion_speed_multiplier)
 	_configure_root_motion_track()
 	_travel_to(STATE_IDLE)
+	call_deferred("_snap_to_ground_height")
 
 
 func _process(delta: float) -> void:
@@ -64,13 +68,16 @@ func _process(delta: float) -> void:
 
 	_update_follow_animation_state()
 	if not _follow_movement_active or _follow_direction.is_zero_approx():
+		_snap_to_ground_height()
 		return
 
 	_rotate_towards(_follow_direction, delta)
 	if _external_motion_enabled:
+		_snap_to_ground_height()
 		return
 
 	_apply_root_motion()
+	_snap_to_ground_height()
 
 
 func set_character_visible(value: bool) -> void:
@@ -352,7 +359,13 @@ func _apply_root_motion() -> void:
 		if collision == null:
 			break
 
-		remaining_motion = collision.get_remainder().slide(collision.get_normal())
+		remaining_motion = CharacterGroundSnap.clamp_horizontal_slide(
+			collision.get_remainder().slide(collision.get_normal())
+		)
+
+
+func _snap_to_ground_height() -> void:
+	CharacterGroundSnap.snap_to_ground_height(self, _feet_height_offset)
 
 
 func _update_look_tracking_state() -> void:
