@@ -83,6 +83,7 @@ var _labyrinth_active := false
 var _active_labyrinth_area: LabyrinthArea
 var _ignored_labyrinth_entry_area: WeakRef
 var _pending_lap_return_context: Dictionary = {}
+var _post_race_return_active := false
 var _reward_demonstration_start_pending := false
 var _credits_active := false
 var _credits_start_pending := false
@@ -141,11 +142,13 @@ func _ready() -> void:
 		RewardService.call("spawn_pending_rewards", self)
 	_capture_pending_lap_race_return()
 	if not _pending_lap_return_context.is_empty():
-		_prepare_scene_for_pending_post_race_dialogue()
-	_try_start_reward_demonstration()
-	_resume_pending_lap_race_return_if_ready()
-	_refresh_cursor_mode()
-	_sync_follower_gameplay_state()
+		_post_race_return_active = true
+		call_deferred("_complete_post_race_scene_setup")
+	else:
+		_try_start_reward_demonstration()
+		_resume_pending_lap_race_return_if_ready()
+		_refresh_cursor_mode()
+		_sync_follower_gameplay_state()
 
 
 func _exit_tree() -> void:
@@ -1201,25 +1204,53 @@ func _hide_follower_actors_for_dialogue() -> void:
 			_hidden_follower_actors.append(follower)
 
 
+func _complete_post_race_scene_setup() -> void:
+	if _pending_lap_return_context.is_empty():
+		_post_race_return_active = false
+		return
+
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_prepare_scene_for_pending_post_race_dialogue()
+	_try_start_reward_demonstration()
+	_resume_pending_lap_race_return_if_ready()
+	_refresh_cursor_mode()
+	_sync_follower_gameplay_state()
+
+
 func _prepare_scene_for_pending_post_race_dialogue() -> void:
 	var player_transform: Variant = _pending_lap_return_context.get("player_transform")
 	if player_transform is Transform3D:
 		player.global_transform = player_transform as Transform3D
 
-	_pause_all_followers_for_dialogue()
+	var npc_path: NodePath = _pending_lap_return_context.get("npc_path", NodePath())
+	var dialogue_npc := get_node_or_null(npc_path) as Node3D
+	_dialogue_target_actor = dialogue_npc
+	_suppress_scene_npcs_for_post_race_dialogue(dialogue_npc)
 
 
-func _pause_all_followers_for_dialogue() -> void:
+func _suppress_scene_npcs_for_post_race_dialogue(dialogue_npc: Node3D) -> void:
+	_hidden_follower_actors.clear()
+	_visible_dialogue_follower_actors.clear()
 	var tree := get_tree()
 	if tree == null:
 		return
 
-	for actor in tree.get_nodes_in_group(&"friendly_followers"):
-		var follower := actor as Node3D
-		if follower == null or follower == player:
+	for state_node in tree.get_nodes_in_group(&"npc_session_state"):
+		var actor := state_node.get_parent() as Node3D
+		if actor == null or actor == player or actor == dialogue_npc:
 			continue
-		if follower.has_method("pause_as_follower_during_dialogue"):
-			follower.call("pause_as_follower_during_dialogue")
+
+		var friend_follow_state := actor.get_node_or_null(^"FriendFollowState")
+		if friend_follow_state != null and friend_follow_state.has_method("set_gameplay_follow_enabled"):
+			friend_follow_state.call("set_gameplay_follow_enabled", false)
+
+		if actor.has_method("pause_as_follower_during_dialogue"):
+			actor.call("pause_as_follower_during_dialogue")
+			_hidden_follower_actors.append(actor)
+		elif actor.has_method("set_character_visible"):
+			actor.call("set_character_visible", false)
+			_hidden_follower_actors.append(actor)
 
 
 func _refresh_dialogue_companion_visibility(speaker: Node3D, camera_actor: Node3D) -> void:
@@ -1428,6 +1459,7 @@ func _sync_follower_gameplay_state() -> void:
 	var follow_enabled := (
 		_input_context == InputContext.GAMEPLAY
 		and not _dialogue_active
+		and not _post_race_return_active
 		and _pending_lap_return_context.is_empty()
 	)
 	for actor in tree.get_nodes_in_group(&"friendly_followers"):
@@ -1714,6 +1746,7 @@ func _start_dialogue_with_target_while_faded(
 		_dialogue_target_actor.call("face_towards_position", player.global_position)
 	_dialogue_target = target
 	_dialogue_active = true
+	_post_race_return_active = false
 	_dialogue_response_selection_active = false
 	AudioService.apply_mix_preset(AUDIO_PRESET_DIALOGUE, AUDIO_PRESET_FADE_DURATION)
 	_prepare_dialogue_target_actor()
@@ -1748,11 +1781,7 @@ func _transition_from_dialogue_to_race(actor: Node3D) -> void:
 	_active_dialogue_resource = null
 	_restore_dialogue_animation_mode(player)
 	_restore_dialogue_animation_mode(_dialogue_target_actor)
-	_restore_follower_actors_after_dialogue()
 	player.global_transform = _saved_player_transform
-	player.set_character_visible(true)
-	if is_instance_valid(_dialogue_target_actor) and _dialogue_target_actor.has_method("set_character_visible"):
-		_dialogue_target_actor.call("set_character_visible", true)
 	_set_dialogue_pivots_active(false)
 	camera_rig.activate_game_camera()
 	player.set_controls_enabled(false)
@@ -1775,6 +1804,7 @@ func _transition_from_dialogue_to_race(actor: Node3D) -> void:
 
 
 func _release_locked_return_transition() -> void:
+	_post_race_return_active = false
 	_pending_race_resolution_context = {}
 	_pending_reward_grant_context = {}
 	_interaction_locked = false

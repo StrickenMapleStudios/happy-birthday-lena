@@ -108,7 +108,7 @@ func _apply_state(state: Dictionary) -> void:
 			should_pause_follow = should_pause_follow or not should_show_character
 		if should_pause_follow and friend_follow_state.has_method("pause_following"):
 			friend_follow_state.call("pause_following")
-		elif should_be_friend and friend_follow_state.has_method("resume_following"):
+		elif should_be_friend and should_show_character and friend_follow_state.has_method("resume_following"):
 			friend_follow_state.call("resume_following")
 
 	var interaction_target := get_parent().get_node_or_null(INTERACTION_TARGET_PATH) as InteractionTarget
