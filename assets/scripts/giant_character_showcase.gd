@@ -30,6 +30,7 @@ const THIRD_RIDDLE_RESPONSE_PREFIXES := [
 ]
 
 const THIRD_RIDDLE_LIFE_RESPONSE_PREFIX := "Все верно."
+const ALL_KEYS_PLAYER_LINE := "Подождите, я собрала все ключи в игре"
 
 @export var left_giant_path: NodePath = ^"GiantCharacterLeft"
 @export var right_giant_path: NodePath = ^"GiantCharacterRight"
@@ -406,6 +407,8 @@ func get_dialogue_camera_actor_for_line(dialogue_line: DialogueLine) -> Node3D:
 		return null
 
 	var text := dialogue_line.text.strip_edges()
+	if text == ALL_KEYS_PLAYER_LINE:
+		return get_player_dialogue_actor()
 	if text == SECOND_RIDDLE_INTRO_TEXT:
 		return get_player_dialogue_actor()
 	if text.begins_with(THIRD_RIDDLE_LIFE_RESPONSE_PREFIX):

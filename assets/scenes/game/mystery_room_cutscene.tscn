@@ -7,9 +7,6 @@
 [ext_resource type="PackedScene" uid="uid://bbj2hguv3jer5" path="res://assets/scenes/common/torch_light.tscn" id="4_torch_light"]
 [ext_resource type="Script" uid="uid://wmpareqch47r" path="res://assets/scripts/interaction_target.gd" id="5_interaction_target"]
 [ext_resource type="Resource" uid="uid://e4btrqkr3fah" path="res://assets/dialogue/cake_conversation.dialogue" id="6_cake_dialogue"]
-[ext_resource type="Script" uid="uid://dhvf3vp2ck5g6" path="res://assets/scripts/cup_reward_presenter.gd" id="9_cup_presenter"]
-[ext_resource type="Script" uid="uid://lekxh0lgag6k" path="res://assets/scripts/cup_cutscene_camera.gd" id="10_cup_cutscene_camera"]
-[ext_resource type="Script" uid="uid://dbw644o4odao5" path="res://assets/scripts/cake_cup_dialogue_state.gd" id="11_cup_dialogue_state"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ym06s"]
 size = Vector3(23.349854, 3.1658936, 5.401367)
@@ -30,12 +27,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.73884475, 0)
 
 [node name="cake" parent="MysteryRoom/Stand_Stairs/Stand" index="0" unique_id=847802907 instance=ExtResource("3_6toka")]
 transform = Transform3D(0.61, 0, 0, 0, 0.61, 0, 0, 0, 0.61, 0, 3.110065, 0)
-
-[node name="CupRewardPresenter" type="Node3D" parent="MysteryRoom/Stand_Stairs/Stand" index="1" unique_id=736152338]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 0)
-script = ExtResource("9_cup_presenter")
-descent_start_offset = Vector3(0, 1, 0)
-descent_end_offset = Vector3(0, 0.15, 0)
 
 [node name="TorchLights" type="Node3D" parent="MysteryRoom" unique_id=68089764]
 
@@ -97,15 +88,6 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0
 [node name="DialogueCamera" type="Camera3D" parent="." unique_id=1830884274]
 transform = Transform3D(0.8344867, -0.27052793, 0.48004833, -2.9327754e-08, 0.8711869, 0.49095145, -0.551028, -0.40969247, 0.726994, 2.2754948, 10.393128, -131.77315)
 far = 2000.0
-
-[node name="CupCutsceneCamera" type="Camera3D" parent="." unique_id=819114416]
-transform = Transform3D(-0.9931911, -0.034900915, 0.11114574, 0, 0.95406884, 0.29958752, -0.11649656, 0.29754764, -0.9475727, 2.45, 4.497965, -127.195175)
-fov = 32.0
-script = ExtResource("10_cup_cutscene_camera")
-look_at_target_path = NodePath("MysteryRoom/Stand_Stairs/Stand/CupRewardPresenter")
-
-[node name="CakeCupDialogueState" type="Node" parent="." unique_id=2081168283]
-script = ExtResource("11_cup_dialogue_state")
 
 [node name="PlayerDialogueAnchor" type="Marker3D" parent="." unique_id=395922302]
 transform = Transform3D(-0.99241084, 0, 0.122966304, 0, 1, 0, -0.122966304, 0, -0.99241084, 0, 0, -121.83751)

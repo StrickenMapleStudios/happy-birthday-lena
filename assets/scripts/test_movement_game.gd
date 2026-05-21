@@ -1795,60 +1795,6 @@ func wait_for_reward_demonstrations() -> void:
 		await get_tree().process_frame
 
 
-func run_dialogue_embedded_cutscene(cutscene_host: Node) -> void:
-	if not _dialogue_active or cutscene_host == null:
-		return
-
-	await _run_dialogue_embedded_cutscene(cutscene_host)
-
-
-func _run_dialogue_embedded_cutscene(cutscene_host: Node) -> void:
-	_interaction_locked = true
-	_set_active_dialogue_input_enabled(false)
-
-	if gameplay_ui_layer != null:
-		gameplay_ui_layer.set_cinematic_bars_visible(true)
-
-	var cup_camera: Camera3D = null
-	var presenter: CupRewardPresenter = null
-	if cutscene_host.has_method("get_cup_cutscene_camera"):
-		cup_camera = cutscene_host.call("get_cup_cutscene_camera") as Camera3D
-	if cutscene_host.has_method("get_cup_reward_presenter"):
-		presenter = cutscene_host.call("get_cup_reward_presenter") as CupRewardPresenter
-
-	var dialogue_camera: Camera3D = null
-	if cutscene_host.has_method("get_dialogue_scene_camera"):
-		dialogue_camera = cutscene_host.call("get_dialogue_scene_camera") as Camera3D
-
-	_set_dialogue_pivots_active(false)
-
-	if cup_camera != null:
-		cup_camera.current = true
-		if cup_camera.has_method("snap_to_target"):
-			cup_camera.call("snap_to_target")
-		await get_tree().physics_frame
-
-	if presenter != null:
-		presenter.begin_presentation()
-		if presenter.is_presenting():
-			await presenter.presentation_finished
-
-	if dialogue_camera != null:
-		dialogue_camera.current = true
-	elif cup_camera != null:
-		cup_camera.current = false
-		_activate_speaker_camera(_dialogue_target_actor)
-
-	if gameplay_ui_layer != null:
-		gameplay_ui_layer.set_cinematic_bars_visible(false)
-
-	_interaction_locked = false
-	_set_active_dialogue_input_enabled(true)
-
-	if is_instance_valid(_active_dialogue_balloon) and _active_dialogue_balloon.has_method("restore_interaction_focus"):
-		_active_dialogue_balloon.call("restore_interaction_focus")
-
-
 func _restore_inventory_from_session_state() -> void:
 	if GameSessionState == null:
 		return

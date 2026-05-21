@@ -22,6 +22,7 @@ if not has_asked_who_they_are
 - Позже.
 	=> later
 - Чит-код.
+	do mark_special_passage_granted()
 	=> pass
 
 ~ menu_without_question
@@ -100,9 +101,32 @@ if not has_asked_who_they_are
 	=> pass
 
 ~ ending
-{{speaker_name}}: Набери мудрость и попробуй еще раз, путница.
+{{speaker_name}}: Наберись мудрости и попробуй еще раз, путница.
 => END
 
 ~ pass
 Гиганты: ТЫ.. МОЖЕШЬ.. ПРОЙТИ..
+if has_special_passage_granted
+	=> key_reward
+if has_all_required_keys
+	=> key_reward
+=> END
+
+~ key_reward
+- Я собрала все ключи.
+	{{player_name}}: Подождите, я собрала все ключи в игре!
+	Гиганты: ...
+	Гигант 1: Кхм. Молодец, путница. Твоя выдающаяся целеустремленность не может остаться без награды.
+	do look_right_giant_at_left_giant()
+	Гигант 2: ...Псс. А у нас есть, что ей подарить?
+	do look_left_giant_at_right_giant()
+	Гигант 1: ...
+	do look_giants_at_dialogue_camera()
+	Гиганты: НАГРАДА ЖДЕТ СВОЕГО ГЕРОЯ.
+	Гигант 2: (Ты не мог проверить заранее? Это буквально единственное, чем можно заняться в игре.)
+	do look_left_giant_at_right_giant()
+	Гигант 1: (А сам-то что? Всю дорогу говорил о нашем предназначении, а по итогу стоим как два истукана и открываем ворота.)
+	{{player_name}}: ...
+	Гигант 2: Прости, путница. Негоже твоим ушам слышать столь срамные беседы.
+	Гигант 2: Твой путь еще не окончен. Можешь пройти.
 => END
