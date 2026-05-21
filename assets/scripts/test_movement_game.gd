@@ -1033,6 +1033,11 @@ func _set_input_context(value: int) -> void:
 			player.set_controls_enabled(false)
 		if interaction_source != null:
 			interaction_source.set_interaction_enabled(false)
+	elif _input_context == InputContext.GAMEPLAY or _input_context == InputContext.LABYRINTH:
+		if player != null:
+			player.set_controls_enabled(true)
+		if interaction_source != null:
+			interaction_source.set_interaction_enabled(true)
 	_set_active_dialogue_input_enabled(value != InputContext.TRANSITION)
 	_refresh_cursor_mode()
 	_refresh_gameplay_world_ui_visibility()
