@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://d28qecfx6dh44" path="res://assets/scenes/common/labyrinth_area.tscn" id="1_rtw1c"]
 [ext_resource type="PackedScene" uid="uid://c8k4giant_credits_show" path="res://assets/scenes/game/giant_credits_showcase.tscn" id="5_giant_showcase"]
+[ext_resource type="PackedScene" uid="uid://daiy6h0d1r3sf" path="res://assets/scenes/game/mystery_room_cutscene.tscn" id="8_mystery_room_cutscene"]
 [ext_resource type="PackedScene" uid="uid://b7k3sprucelarge" path="res://assets/scenes/common/trees/spruce_tree_large.tscn" id="6_spruce_large"]
 [ext_resource type="PackedScene" uid="uid://b7k3sprucemedium" path="res://assets/scenes/common/trees/spruce_tree_medium.tscn" id="7_spruce_medium"]
 
@@ -68,6 +69,9 @@ navigation_mesh = SubResource("NavigationMesh_test_movement")
 
 [node name="GiantCreditsShowcase" parent="." unique_id=1778353891 instance=ExtResource("5_giant_showcase")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -108.55545)
+
+[node name="MysteryRoomCutscene" parent="." unique_id=46491078 instance=ExtResource("8_mystery_room_cutscene")]
+transform = Transform3D(3.519, 0, 0, 0, 3.519, 0, 0, 0, 3.519, 0, 0, -231.529655)
 
 [node name="SideSpruces" type="Node3D" parent="." unique_id=207331484]
 

@@ -1,15 +1,15 @@
-[gd_scene load_steps=4 format=3 uid="uid://c8k4giant_credits_show"]
+[gd_scene format=3 uid="uid://ccgwwjnci7j6t"]
 
 [ext_resource type="PackedScene" uid="uid://dwinqt4ms18vm" path="res://assets/scenes/game/giant_character_showcase.tscn" id="1_showcase"]
-[ext_resource type="Script" path="res://assets/scripts/giant_credits_showcase.gd" id="2_script"]
-[ext_resource type="PackedScene" uid="uid://b7k3credits_scroll_ui" path="res://assets/scenes/ui/scrolling_credits_ui.tscn" id="3_credits_ui"]
+[ext_resource type="Script" uid="uid://mglqncxb4nm5" path="res://assets/scripts/giant_credits_showcase.gd" id="2_script"]
+[ext_resource type="PackedScene" path="res://assets/scenes/ui/scrolling_credits_ui.tscn" id="3_credits_ui"]
 
-[node name="GiantCreditsShowcase" type="Node3D"]
+[node name="GiantCreditsShowcase" type="Node3D" unique_id=1498265500]
 script = ExtResource("2_script")
 
-[node name="GiantCharacterShowcase" parent="." instance=ExtResource("1_showcase")]
+[node name="GiantCharacterShowcase" parent="." unique_id=1813842974 instance=ExtResource("1_showcase")]
 
-[node name="CreditsCanvas" type="CanvasLayer" parent="."]
+[node name="CreditsCanvas" type="CanvasLayer" parent="." unique_id=2122966030]
 layer = 60
 
-[node name="ScrollingCreditsUI" parent="CreditsCanvas" instance=ExtResource("3_credits_ui")]
+[node name="ScrollingCreditsUI" parent="CreditsCanvas" unique_id=1766904531 instance=ExtResource("3_credits_ui")]
