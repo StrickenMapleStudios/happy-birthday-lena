@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://cgbqg1ajsh5ut"]
 
 [ext_resource type="PackedScene" uid="uid://d28qecfx6dh44" path="res://assets/scenes/common/labyrinth_area.tscn" id="1_rtw1c"]
-[ext_resource type="PackedScene" uid="uid://c8k4giant_credits_show" path="res://assets/scenes/game/giant_credits_showcase.tscn" id="5_giant_showcase"]
+[ext_resource type="PackedScene" uid="uid://ccgwwjnci7j6t" path="res://assets/scenes/game/giant_credits_showcase.tscn" id="5_giant_showcase"]
+[ext_resource type="PackedScene" uid="uid://btycuxgjceink" path="res://assets/scenes/common/trees/spruce_tree_large.tscn" id="6_spruce_large"]
+[ext_resource type="PackedScene" uid="uid://dp1kapk25hc6o" path="res://assets/scenes/common/trees/spruce_tree_medium.tscn" id="7_spruce_medium"]
 [ext_resource type="PackedScene" uid="uid://daiy6h0d1r3sf" path="res://assets/scenes/game/mystery_room_cutscene.tscn" id="8_mystery_room_cutscene"]
-[ext_resource type="PackedScene" uid="uid://b7k3sprucelarge" path="res://assets/scenes/common/trees/spruce_tree_large.tscn" id="6_spruce_large"]
-[ext_resource type="PackedScene" uid="uid://b7k3sprucemedium" path="res://assets/scenes/common/trees/spruce_tree_medium.tscn" id="7_spruce_medium"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_test_movement"]
 sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
@@ -38,6 +38,12 @@ albedo_color = Color(0.439216, 0.529412, 0.372549, 1)
 vertices = PackedVector3Array(-300, 0, -300, 300, 0, -300, 300, 0, 300, -300, 0, 300)
 polygons = [PackedInt32Array(0, 1, 2), PackedInt32Array(0, 2, 3)]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_boundary_side"]
+size = Vector3(6, 24, 520)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_boundary_back"]
+size = Vector3(520, 24, 6)
+
 [node name="TestMovementLevel" type="Node3D" unique_id=1638308877]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1304216360]
@@ -67,11 +73,32 @@ surface_material_override/0 = SubResource("StandardMaterial3D_ground")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0315094, 0, -0.001045227)
 navigation_mesh = SubResource("NavigationMesh_test_movement")
 
+[node name="LevelBoundaries" type="Node3D" parent="." unique_id=2103847291]
+
+[node name="BoundaryWallWest" type="StaticBody3D" parent="LevelBoundaries" unique_id=2103847292]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -215.6991, 12, -90)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LevelBoundaries/BoundaryWallWest" unique_id=2103847293]
+shape = SubResource("BoxShape3D_boundary_side")
+
+[node name="BoundaryWallEast" type="StaticBody3D" parent="LevelBoundaries" unique_id=2103847294]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 115, 12, -90)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LevelBoundaries/BoundaryWallEast" unique_id=2103847295]
+shape = SubResource("BoxShape3D_boundary_side")
+
+[node name="BoundaryWallNorth" type="StaticBody3D" parent="LevelBoundaries" unique_id=2103847296]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, -285)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LevelBoundaries/BoundaryWallNorth" unique_id=2103847297]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 361.7011)
+shape = SubResource("BoxShape3D_boundary_back")
+
 [node name="GiantCreditsShowcase" parent="." unique_id=1778353891 instance=ExtResource("5_giant_showcase")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -108.55545)
 
 [node name="MysteryRoomCutscene" parent="." unique_id=46491078 instance=ExtResource("8_mystery_room_cutscene")]
-transform = Transform3D(3.519, 0, 0, 0, 3.519, 0, 0, 0, 3.519, 0, 0, -231.529655)
+transform = Transform3D(3.519, 0, 0, 0, 3.519, 0, 0, 0, 3.519, 0, 0, -231.52965)
 
 [node name="SideSpruces" type="Node3D" parent="." unique_id=207331484]
 
