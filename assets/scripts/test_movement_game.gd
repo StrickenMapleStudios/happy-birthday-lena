@@ -4,6 +4,8 @@ const MAIN_MENU_SCENE_PATH := "res://assets/scenes/menu/menu_main.tscn"
 const DIALOGUE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/dialogue_pause_menu.tscn")
 const CUTSCENE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/cutscene_pause_menu.tscn")
 const LABYRINTH_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/labyrinth_pause_menu.tscn")
+const CREDITS_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/credits_pause_menu.tscn")
+const BIRTHDAY_FINALE_OVERLAY_SCENE := preload("res://assets/scenes/ui/birthday_finale_overlay.tscn")
 
 @onready var camera_rig := $CameraRig
 @onready var dialogue_pivot_right := $DialoguePivotRight
@@ -30,6 +32,8 @@ const INVENTORY_TIME_SCALE_CLOSED := 1.0
 const INVENTORY_TIME_SCALE_OPEN := 0.0
 const DEFAULT_GAME_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
 const SCENE_ENTRY_FADE_IN_DURATION := 0.75
+const BIRTHDAY_FINALE_HOLD_SECONDS := 3.0
+const BIRTHDAY_FINALE_POST_FADE_DELAY_SECONDS := 1.0
 const LABYRINTH_REWARD_SOURCE_ID := &"labyrinth_exit_reward"
 const LABYRINTH_REWARD_MARKER_ID := &"labyrinth_exit_reward_marker"
 const LAP_REWARD_SOURCE_ID := &"lap_finish_reward"
@@ -71,6 +75,7 @@ var _pause_transition_locked := false
 var _dialogue_pause_menu: Node
 var _cutscene_pause_menu: Node
 var _labyrinth_pause_menu: Node
+var _credits_pause_menu: Node
 var _active_pause_menu: Node
 var _inventory_open := false
 var _input_context := InputContext.GAMEPLAY
@@ -88,8 +93,11 @@ var _post_race_return_active := false
 var _reward_demonstration_start_pending := false
 var _credits_active := false
 var _credits_start_pending := false
+var _credits_skip_requested := false
+var _credits_finished_requested := false
 var _pending_reward_grant_context: Dictionary = {}
 var _pending_race_resolution_context: Dictionary = {}
+var _birthday_finale_overlay: CanvasLayer
 
 
 func _ready() -> void:
@@ -128,6 +136,15 @@ func _ready() -> void:
 		labyrinth_pause_menu_root.visible = false
 	add_child(_labyrinth_pause_menu)
 	_connect_pause_menu_signals(_labyrinth_pause_menu)
+	_credits_pause_menu = CREDITS_PAUSE_MENU_SCENE.instantiate()
+	var credits_pause_menu_root := _credits_pause_menu.get_node_or_null("MenuRoot") as Control
+	if credits_pause_menu_root != null:
+		credits_pause_menu_root.visible = false
+	add_child(_credits_pause_menu)
+	_connect_pause_menu_signals(_credits_pause_menu)
+	_birthday_finale_overlay = BIRTHDAY_FINALE_OVERLAY_SCENE.instantiate() as CanvasLayer
+	if _birthday_finale_overlay != null:
+		add_child(_birthday_finale_overlay)
 	if inventory_ui != null:
 		var inventory_menu_root := inventory_ui.get_node_or_null("MenuRoot") as Control
 		if inventory_menu_root != null:
@@ -169,6 +186,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if _pause_active or _pause_transition_locked:
+		return
+
+	if _credits_active:
+		if event.is_action_pressed("ui_cancel"):
+			get_viewport().set_input_as_handled()
+			_open_pause_menu()
 		return
 
 	if not _dialogue_active and not _cutscene_active:
@@ -508,7 +531,15 @@ func _resume_from_pause() -> void:
 
 
 func _open_inventory() -> void:
-	if _inventory_open or _interaction_locked or _pause_active or _dialogue_active or _cutscene_active or inventory_ui == null:
+	if (
+		_inventory_open
+		or _interaction_locked
+		or _pause_active
+		or _dialogue_active
+		or _cutscene_active
+		or _credits_active
+		or inventory_ui == null
+	):
 		return
 
 	_inventory_open = true
@@ -834,9 +865,13 @@ func _connect_pause_menu_signals(menu: Node) -> void:
 		menu.connect("exit_cutscene_requested", Callable(self, "_exit_cutscene_from_pause"))
 	if menu.has_signal("exit_labyrinth_requested"):
 		menu.connect("exit_labyrinth_requested", Callable(self, "_exit_labyrinth_from_pause"))
+	if menu.has_signal("skip_credits_requested"):
+		menu.connect("skip_credits_requested", Callable(self, "_skip_credits_from_pause"))
 
 
 func _get_pause_menu_for_current_context() -> Node:
+	if _credits_active and _credits_pause_menu != null:
+		return _credits_pause_menu
 	if _dialogue_active and _dialogue_pause_menu != null:
 		return _dialogue_pause_menu
 	if _cutscene_active and _cutscene_pause_menu != null:
@@ -1333,6 +1368,8 @@ func _run_giant_credits_sequence(credits_showcase: Node) -> void:
 	if credits_showcase == null or not is_instance_valid(credits_showcase):
 		return
 
+	_credits_skip_requested = false
+	_credits_finished_requested = false
 	_credits_active = true
 	_interaction_locked = true
 	_set_input_context(InputContext.TRANSITION)
@@ -1364,8 +1401,14 @@ func _run_giant_credits_sequence(credits_showcase: Node) -> void:
 	if credits_showcase.has_method("get_credits_duration"):
 		credits_duration = float(credits_showcase.call("get_credits_duration"))
 
-	if credits_duration > 0.0:
-		await get_tree().create_timer(credits_duration).timeout
+	if credits_duration <= 0.0:
+		_credits_finished_requested = true
+	else:
+		var credits_timer := get_tree().create_timer(credits_duration, false)
+		credits_timer.timeout.connect(func() -> void: _credits_finished_requested = true, CONNECT_ONE_SHOT)
+
+	while not _credits_skip_requested and not _credits_finished_requested:
+		await get_tree().process_frame
 
 	_interaction_locked = true
 	_set_input_context(InputContext.TRANSITION)
@@ -1379,12 +1422,36 @@ func _run_giant_credits_sequence(credits_showcase: Node) -> void:
 
 	camera_rig.activate_game_camera()
 	_credits_active = false
-	player.set_controls_enabled(true)
-	interaction_source.set_interaction_enabled(true)
-	gameplay_ui_layer.set_world_ui_visible(true)
-	await SceneTransition.fade_in()
-	_interaction_locked = false
+	await _show_birthday_finale_and_return_to_main_menu()
+
+
+func _skip_credits_from_pause() -> void:
+	if not _pause_active or not _credits_active:
+		return
+
+	get_tree().paused = false
+	_pause_active = false
+	if _active_pause_menu != null:
+		_active_pause_menu.call("close")
+	_active_pause_menu = null
+	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY, AUDIO_PRESET_FADE_DURATION)
+	_credits_skip_requested = true
 	_sync_input_context()
+
+
+func _show_birthday_finale_and_return_to_main_menu() -> void:
+	if _birthday_finale_overlay != null and _birthday_finale_overlay.has_method("show_message"):
+		_birthday_finale_overlay.call("show_message")
+
+	await get_tree().process_frame
+	await SceneTransition.fade_in()
+	await get_tree().create_timer(BIRTHDAY_FINALE_HOLD_SECONDS, true).timeout
+	await SceneTransition.fade_out()
+	if _birthday_finale_overlay != null and _birthday_finale_overlay.has_method("hide_message"):
+		_birthday_finale_overlay.call("hide_message")
+	await SceneTransition.hold_black_screen(BIRTHDAY_FINALE_POST_FADE_DELAY_SECONDS)
+	SessionStatePersistence.flush_scene_npc_states(self)
+	await SceneTransition.change_scene_to_file_from_faded_state(MAIN_MENU_SCENE_PATH)
 
 
 func _find_giant_credits_showcase() -> Node:

@@ -6,42 +6,71 @@ extends Node3D
 @export_range(0.1, 12.0, 0.1) var open_duration_seconds := 3.6
 
 var _doors_opened := false
+var _right_pivot: Node3D
+var _left_pivot: Node3D
+var _right_door_closed_yaw := 0.0
+var _left_door_closed_yaw := 0.0
 
 
 func _ready() -> void:
+	_cache_door_pivots()
 	_ensure_mesh_colliders()
 
 
 func open_doors() -> void:
-	if _doors_opened:
+	if _doors_opened or not _ensure_door_pivots():
 		return
 
+	_doors_opened = true
+	_tween_global_y_rotation(_right_pivot, _right_door_closed_yaw + deg_to_rad(right_door_opened_yaw_degrees))
+	_tween_global_y_rotation(_left_pivot, _left_door_closed_yaw + deg_to_rad(left_door_opened_yaw_degrees))
+
+
+func close_doors() -> void:
+	if not _doors_opened or not _ensure_door_pivots():
+		return
+
+	_doors_opened = false
+	_tween_global_y_rotation(_right_pivot, _right_door_closed_yaw)
+	_tween_global_y_rotation(_left_pivot, _left_door_closed_yaw)
+
+
+func are_doors_open() -> bool:
+	return _doors_opened
+
+
+func _tween_global_y_rotation(pivot: Node3D, target_y: float) -> void:
+	if pivot == null:
+		return
+
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(pivot, ^"global_rotation:y", target_y, open_duration_seconds)
+
+
+func _cache_door_pivots() -> void:
 	var model_root := get_node_or_null(model_root_path) as Node3D
 	if model_root == null:
 		push_warning("WallWithDoor is missing its model root.")
 		return
 
-	var right_pivot := _find_named_node_3d_recursive(model_root, ["pivot", "rightdoor"])
-	var left_pivot := _find_named_node_3d_recursive(model_root, ["pivot", "leftdoor"])
-	if right_pivot == null or left_pivot == null:
+	_right_pivot = _find_named_node_3d_recursive(model_root, ["pivot", "rightdoor"])
+	_left_pivot = _find_named_node_3d_recursive(model_root, ["pivot", "leftdoor"])
+	if _right_pivot == null or _left_pivot == null:
 		push_warning("WallWithDoor is missing left/right door pivots.")
 		return
 
-	_doors_opened = true
-	_tween_global_y_rotation(right_pivot, right_door_opened_yaw_degrees)
-	_tween_global_y_rotation(left_pivot, left_door_opened_yaw_degrees)
+	_right_door_closed_yaw = _right_pivot.global_rotation.y
+	_left_door_closed_yaw = _left_pivot.global_rotation.y
 
 
-func _tween_global_y_rotation(pivot: Node3D, delta_degrees: float) -> void:
-	if pivot == null:
-		return
+func _ensure_door_pivots() -> bool:
+	if _right_pivot != null and _left_pivot != null:
+		return true
 
-	var start_y := pivot.global_rotation.y
-	var target_y := start_y + deg_to_rad(delta_degrees)
-	var tween := create_tween()
-	tween.set_trans(Tween.TRANS_SINE)
-	tween.set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(pivot, ^"global_rotation:y", target_y, open_duration_seconds)
+	_cache_door_pivots()
+	return _right_pivot != null and _left_pivot != null
 
 
 func _find_named_node_3d_recursive(root: Node, required_tokens: Array[String]) -> Node3D:
