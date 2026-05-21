@@ -12,13 +12,14 @@ race_dialogue_state_path = NodePath("RaceDialogueState")
 post_race_scene_path = "res://assets/scenes/game/test_movement.tscn"
 race_config_path = "res://assets/data/lap_races/default_lap_race_config.json"
 special_form_node_path = NodePath("Model/Rig/Skeleton3D/hat_2/ThirdRaceLightning")
+npc_dialogue_name = "ТурбоГонщикСверхзвуковойСоник"
 
 [node name="LapFinishRewardMarker" parent="." unique_id=1770713039 instance=ExtResource("2_reward_marker")]
-transform = Transform3D(0.97437006, 0, -0.22495106, 0, 1, 0, 0.22495106, 0, 0.97437006, 13.173154, 0.12, 1.1786976)
+transform = Transform3D(0.97437006, 0, -0.22495106, 0, 1, 0, 0.22495106, 0, 0.97437006, -10.119256, 0.12000095, 2.3848524)
 marker_id = &"lap_finish_reward_marker"
 
 [node name="LapFinishRewardDemonstrationCamera" type="Camera3D" parent="." unique_id=803235418]
-transform = Transform3D(0.9608082, 0.05320436, -0.2720605, 0, 0.98140955, 0.19192521, 0.27721405, -0.18440329, 0.94294626, 11.79502, 1.7700009, 6.2338653)
+transform = Transform3D(0.9608082, 0.05320436, -0.2720605, 0, 0.9814096, 0.1919252, 0.27721405, -0.1844033, 0.9429464, -11.49739, 1.7700019, 7.44002)
 fov = 35.0
 script = ExtResource("3_demo_camera_script")
 marker_id = &"lap_finish_reward_marker"

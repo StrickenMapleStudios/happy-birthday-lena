@@ -33,7 +33,7 @@ script = ExtResource("5_game")
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
 [node name="LabyrinthArea" parent="Level" index="1" unique_id=298625149]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -115.60146, 0, -12.117727)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -115.60146, 0, -33.65496)
 
 [node name="Sun" parent="Level" index="2" unique_id=1646791676]
 transform = Transform3D(0.2897544, 0.7768078, -0.5592183, -1.5423211e-08, 0.58375525, 0.81192946, 0.95702, -0.23507911, 0.16952161, 0, 5.18316, 0)
@@ -41,149 +41,158 @@ transform = Transform3D(0.2897544, 0.7768078, -0.5592183, -1.5423211e-08, 0.5837
 [node name="RightMidFillC" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="52" unique_id=170010053]
 transform = Transform3D(0.6174072, 0, 0.16541867, 0, 0.7, 0, -0.16541867, 0, 0.6174072, 29.497581, 0, -70.07091)
 
+[node name="RightDoorApproachA4" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="144" unique_id=1164451559]
+transform = Transform3D(-0.7828225, 0, -0.28473955, 0, 0.8340002, 0, 0.28473955, 0, -0.7828225, -93.76108, 0, -121.828804)
+
+[node name="RightDoorOuterA4" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="149" unique_id=409300624]
+transform = Transform3D(-0.55517876, 0, -0.25878075, 0, 0.66799986, 0, 0.25878075, 0, -0.55517876, -97.03151, 0, -111.25551)
+
+[node name="RightMidFillA4" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="151" unique_id=1169064491]
+transform = Transform3D(-0.5419583, 0, -0.25261942, 0, 0.6519999, 0, 0.25261942, 0, -0.5419583, -93.00174, 0, -132.9064)
+
 [node name="RightDoorApproachA6" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="152" unique_id=1416769694 instance=ExtResource("3_iea7l")]
-transform = Transform3D(-0.31636816, 0, -0.77058345, 0, 0.83400005, 0, 0.77058345, 0, -0.31636816, -109.24087, 0, -99.99751)
+transform = Transform3D(-0.31636816, 0, -0.77058345, 0, 0.83400005, 0, 0.77058345, 0, -0.31636816, -109.24087, 0, -121.534744)
 
 [node name="RightDoorOuterA6" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="153" unique_id=1357632074 instance=ExtResource("4_32dgv")]
-transform = Transform3D(-0.1823318, 0, -0.5847615, 0, 0.6679998, 0, 0.5847615, 0, -0.1823318, -103.62307, 0, -90.46176)
+transform = Transform3D(-0.1823318, 0, -0.5847615, 0, 0.6679998, 0, 0.5847615, 0, -0.1823318, -103.62307, 0, -111.99899)
 
 [node name="RightMidFillA6" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="154" unique_id=98750870 instance=ExtResource("4_32dgv")]
-transform = Transform3D(-0.17798917, 0, -0.57083726, 0, 0.6519999, 0, 0.57083726, 0, -0.17798917, -116.9219, 0, -108.01571)
+transform = Transform3D(-0.17798917, 0, -0.57083726, 0, 0.6519999, 0, 0.57083726, 0, -0.17798917, -116.9219, 0, -129.55295)
 
 [node name="LeftSpruceMidNorth2" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="169" unique_id=808394639 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.656308, 0, 0.025163025, 0, 0.72, 0, -0.025163025, 0, 0.656308, -205.23537, 0, -38.785385)
+transform = Transform3D(0.656308, 0, 0.025163025, 0, 0.72, 0, -0.025163025, 0, 0.656308, -205.23537, 0, -60.322617)
 
 [node name="LeftSpruceCenter2" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="170" unique_id=1722420713 instance=ExtResource("3_iea7l")]
-transform = Transform3D(0.6827265, 0, 0.43032587, 0, 0.84, 0, -0.43032587, 0, 0.6827265, -205.32726, 0, -27.242353)
+transform = Transform3D(0.6827265, 0, 0.43032587, 0, 0.84, 0, -0.43032587, 0, 0.6827265, -205.32726, 0, -48.779587)
 
 [node name="LeftSpruceMidSouth2" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="171" unique_id=492532200 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.51275134, 0, 0.32280388, 0, 0.65999997, 0, -0.32280388, 0, 0.51275134, -199.20964, 0, -17.620775)
+transform = Transform3D(0.51275134, 0, 0.32280388, 0, 0.65999997, 0, -0.32280388, 0, 0.51275134, -199.20964, 0, -39.158005)
 
 [node name="LeftSpruceSouth2" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="172" unique_id=135141727 instance=ExtResource("3_iea7l")]
-transform = Transform3D(0.77720875, 0, -0.044129044, 0, 0.7780001, 0, 0.044129044, 0, 0.77720875, -198.01637, 0, -6.998808)
+transform = Transform3D(0.77720875, 0, -0.044129044, 0, 0.7780001, 0, 0.044129044, 0, 0.77720875, -198.01637, 0, -28.53604)
 
 [node name="LeftMidFillA2" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="173" unique_id=1732645528 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.5183927, 0, 0.32628214, 0, 0.6679999, 0, -0.32628214, 0, 0.5183927, -208.20921, 0, -73.979126)
+transform = Transform3D(0.5183927, 0, 0.32628214, 0, 0.6679999, 0, -0.32628214, 0, 0.5183927, -208.20921, 0, -95.51636)
 
 [node name="InnerLeftSlashA2" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="174" unique_id=1496881395 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.48169613, 0, 0.30340767, 0, 0.6219999, 0, -0.30340767, 0, 0.48169613, -207.27557, 0, -87.87619)
+transform = Transform3D(0.48169613, 0, 0.30340767, 0, 0.6219999, 0, -0.30340767, 0, 0.48169613, -207.27557, 0, -109.41342)
 
 [node name="LowerLeftSideA2" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="175" unique_id=1704798462 instance=ExtResource("3_iea7l")]
-transform = Transform3D(0.7768328, 0, -0.038118765, 0, 0.778, 0, 0.038118765, 0, 0.7768328, -204.38104, 0, -56.321636)
+transform = Transform3D(0.7768328, 0, -0.038118765, 0, 0.778, 0, 0.038118765, 0, 0.7768328, -204.38104, 0, -77.85887)
 
 [node name="LeftSpruceMidNorth3" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="176" unique_id=581797699 instance=ExtResource("4_32dgv")]
-transform = Transform3D(-0.052003607, 0, -0.6547283, 0, 0.72, 0, 0.6547283, 0, -0.052003607, -166.12224, 0, -124.038345)
+transform = Transform3D(-0.052003607, 0, -0.6547283, 0, 0.72, 0, 0.6547283, 0, -0.052003607, -166.12224, 0, -145.57558)
 
 [node name="LeftSpruceCenter3" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="177" unique_id=2042406030 instance=ExtResource("3_iea7l")]
-transform = Transform3D(0.34726244, 0, -0.7284948, 0, 0.8399999, 0, 0.7284948, 0, 0.34726244, -177.57478, 0, -125.483734)
+transform = Transform3D(0.34726244, 0, -0.7284948, 0, 0.8399999, 0, 0.7284948, 0, 0.34726244, -177.57478, 0, -147.02097)
 
 [node name="LeftSpruceMidSouth3" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="178" unique_id=526861615 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.260423, 0, -0.54707974, 0, 0.65999997, 0, 0.54707974, 0, 0.260423, -187.8476, 0, -120.537094)
+transform = Transform3D(0.260423, 0, -0.54707974, 0, 0.65999997, 0, 0.54707974, 0, 0.260423, -187.8476, 0, -142.07433)
 
 [node name="LeftSpruceSouth3" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="179" unique_id=1871783720 instance=ExtResource("3_iea7l")]
-transform = Transform3D(-0.13500035, 0, -0.7666653, 0, 0.778, 0, 0.7666653, 0, -0.13500035, -198.53621, 0, -120.598145)
+transform = Transform3D(-0.13500035, 0, -0.7666653, 0, 0.778, 0, 0.7666653, 0, -0.13500035, -198.53621, 0, -142.13538)
 
 [node name="LeftMidFillA3" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="180" unique_id=173289096 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.26321536, 0, -0.55309, 0, 0.6679998, 0, 0.55309, 0, 0.26321536, -130.82263, 0, -122.863)
+transform = Transform3D(0.26321536, 0, -0.55309, 0, 0.6679998, 0, 0.55309, 0, 0.26321536, -130.82263, 0, -144.40024)
 
 [node name="LeftMidFillA4" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="181" unique_id=373230381 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.26321536, 0, -0.55309, 0, 0.6679998, 0, 0.55309, 0, 0.26321536, -202.0099, 0, -103.007385)
+transform = Transform3D(0.26321536, 0, -0.55309, 0, 0.6679998, 0, 0.55309, 0, 0.26321536, -202.0099, 0, -124.54462)
 
 [node name="InnerLeftSlashA3" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="182" unique_id=859616292 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.24480392, 0, -0.51396346, 0, 0.6219999, 0, 0.51396346, 0, 0.24480392, -117.13106, 0, -120.30551)
+transform = Transform3D(0.24480392, 0, -0.51396346, 0, 0.6219999, 0, 0.51396346, 0, 0.24480392, -117.13106, 0, -141.84274)
 
 [node name="LowerLeftSideA3" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="183" unique_id=1217469247 instance=ExtResource("3_iea7l")]
-transform = Transform3D(-0.12898746, 0, -0.7669971, 0, 0.778, 0, 0.7669971, 0, -0.12898746, -148.80728, 0, -121.132706)
+transform = Transform3D(-0.12898746, 0, -0.7669971, 0, 0.778, 0, 0.7669971, 0, -0.12898746, -148.80728, 0, -142.66994)
 
 [node name="LeftSpruceMidNorth4" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="184" unique_id=1305007367 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.05200356, 0, 0.65472835, 0, 0.72, 0, -0.65472835, 0, 0.05200356, -138.75739, 0, -132.64803)
+transform = Transform3D(0.05200356, 0, 0.65472835, 0, 0.72, 0, -0.65472835, 0, 0.05200356, -138.75739, 0, -154.18526)
 
 [node name="LeftSpruceCenter4" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="185" unique_id=600291637 instance=ExtResource("3_iea7l")]
-transform = Transform3D(-0.34726253, 0, 0.7284948, 0, 0.84000003, 0, -0.7284948, 0, -0.34726253, -127.30484, 0, -131.20264)
+transform = Transform3D(-0.34726253, 0, 0.7284948, 0, 0.84000003, 0, -0.7284948, 0, -0.34726253, -127.30484, 0, -152.73987)
 
 [node name="LeftSpruceMidSouth4" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="186" unique_id=1065795349 instance=ExtResource("4_32dgv")]
-transform = Transform3D(-0.26042306, 0, 0.5470798, 0, 0.65999997, 0, -0.5470798, 0, -0.26042306, -117.41581, 0, -129.85518)
+transform = Transform3D(-0.26042306, 0, 0.5470798, 0, 0.65999997, 0, -0.5470798, 0, -0.26042306, -117.41581, 0, -151.39241)
 
 [node name="LeftSpruceSouth4" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="187" unique_id=1583048001 instance=ExtResource("3_iea7l")]
-transform = Transform3D(0.1350003, 0, 0.7666654, 0, 0.778, 0, -0.7666654, 0, 0.1350003, -103.85347, -3.8146973e-06, -122.10179)
+transform = Transform3D(0.1350003, 0, 0.7666654, 0, 0.778, 0, -0.7666654, 0, 0.1350003, -103.85347, -3.8146973e-06, -143.63902)
 
 [node name="LeftMidFillA5" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="188" unique_id=1412526906 instance=ExtResource("4_32dgv")]
-transform = Transform3D(-0.2632154, 0, 0.5530899, 0, 0.66799974, 0, -0.5530899, 0, -0.2632154, -168.72632, 0, -136.25247)
+transform = Transform3D(-0.2632154, 0, 0.5530899, 0, 0.66799974, 0, -0.5530899, 0, -0.2632154, -168.72632, 0, -157.7897)
 
 [node name="InnerLeftSlashA4" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="189" unique_id=941246814 instance=ExtResource("4_32dgv")]
-transform = Transform3D(-0.24480397, 0, 0.51396346, 0, 0.6219999, 0, -0.51396346, 0, -0.24480397, -187.74857, 0, -136.38086)
+transform = Transform3D(-0.24480397, 0, 0.51396346, 0, 0.6219999, 0, -0.51396346, 0, -0.24480397, -187.74857, 0, -157.91809)
 
 [node name="LowerLeftSideA4" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="190" unique_id=1665786046 instance=ExtResource("3_iea7l")]
-transform = Transform3D(0.1289874, 0, 0.7669971, 0, 0.77799994, 0, -0.7669971, 0, 0.1289874, -156.07234, 0, -135.55367)
+transform = Transform3D(0.1289874, 0, 0.7669971, 0, 0.77799994, 0, -0.7669971, 0, 0.1289874, -156.07234, 0, -157.0909)
 
 [node name="LeftSpruceMidNorth8" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="191" unique_id=840709670 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.5918418, 0, -0.284775, 0, 0.72, 0, 0.284775, 0, 0.5918418, -206.57413, 0, -126.88263)
+transform = Transform3D(0.5918418, 0, -0.284775, 0, 0.72, 0, 0.284775, 0, 0.5918418, -206.57413, 0, -148.41986)
 
 [node name="LeftSpruceCenter8" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="192" unique_id=1335431220 instance=ExtResource("3_iea7l")]
-transform = Transform3D(0.8047232, 0, 0.06096548, 0, 0.84000003, 0, -0.06096548, 0, 0.8047232, -212.05507, 0, -116.72343)
+transform = Transform3D(0.8047232, 0, 0.06096548, 0, 0.84000003, 0, -0.06096548, 0, 0.8047232, -212.05507, 0, -138.26065)
 
 [node name="LeftSpruceMidSouth8" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="193" unique_id=642224464 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.60419464, 0, 0.045446187, 0, 0.65999997, 0, -0.045446187, 0, 0.60419464, -211.14897, 0, -105.357735)
+transform = Transform3D(0.60419464, 0, 0.045446187, 0, 0.65999997, 0, -0.045446187, 0, 0.60419464, -211.14897, 0, -126.894966)
 
 [node name="LeftMidFillA9" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="194" unique_id=1258068802 instance=ExtResource("4_32dgv")]
-transform = Transform3D(-0.61080736, 0, -0.04588145, 0, 0.6679997, 0, 0.04588145, 0, -0.61080736, -218.90494, 0, -128.8618)
+transform = Transform3D(-0.61080736, 0, -0.04588145, 0, 0.6679997, 0, 0.04588145, 0, -0.61080736, -218.90494, 0, -150.39903)
 
 [node name="InnerLeftSlashA8" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="195" unique_id=204534094 instance=ExtResource("4_32dgv")]
-transform = Transform3D(-0.5676733, 0, -0.042830497, 0, 0.6219999, 0, 0.042830497, 0, -0.5676733, -225.88936, 0, -111.16773)
+transform = Transform3D(-0.5676733, 0, -0.042830497, 0, 0.6219999, 0, 0.042830497, 0, -0.5676733, -225.88936, 0, -132.70496)
 
 [node name="LowerLeftSideA7" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="196" unique_id=711271574 instance=ExtResource("3_iea7l")]
-transform = Transform3D(-0.66876364, 0, 0.3970862, 0, 0.7779999, 0, -0.3970862, 0, -0.66876364, -213.6867, 0, -140.41089)
+transform = Transform3D(-0.66876364, 0, 0.3970862, 0, 0.7779999, 0, -0.3970862, 0, -0.66876364, -213.6867, 0, -161.94812)
 
 [node name="LeftSpruceMidNorth5" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="197" unique_id=770265805 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.6558085, 0, -0.035900086, 0, 0.72, 0, 0.035900086, 0, 0.6558085, -219.55338, 0, -45.96407)
+transform = Transform3D(0.6558085, 0, -0.035900086, 0, 0.72, 0, 0.035900086, 0, 0.6558085, -219.55338, 0, -67.5013)
 
 [node name="LeftSpruceCenter5" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="198" unique_id=1436181463 instance=ExtResource("3_iea7l")]
-transform = Transform3D(0.7197421, 0, 0.36505798, 0, 0.84, 0, -0.36505798, 0, 0.7197421, -220.71692, 0, -34.479477)
+transform = Transform3D(0.7197421, 0, 0.36505798, 0, 0.84, 0, -0.36505798, 0, 0.7197421, -220.71692, 0, -56.01671)
 
 [node name="LeftSpruceMidSouth5" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="199" unique_id=705334691 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.54051554, 0, 0.2737871, 0, 0.6599999, 0, -0.2737871, 0, 0.54051554, -215.51935, 0, -24.331303)
+transform = Transform3D(0.54051554, 0, 0.2737871, 0, 0.6599999, 0, -0.2737871, 0, 0.54051554, -215.51935, 0, -45.868534)
 
 [node name="LeftMidFillA6" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="200" unique_id=116745450 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.5464552, 0, 0.27672625, 0, 0.6679997, 0, -0.27672625, 0, 0.5464552, -219.24576, 0, -81.28189)
+transform = Transform3D(0.5464552, 0, 0.27672625, 0, 0.6679997, 0, -0.27672625, 0, 0.5464552, -219.24576, 0, -102.81912)
 
 [node name="InnerLeftSlashA5" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="201" unique_id=1445118585 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.50779307, 0, 0.25735903, 0, 0.6219999, 0, -0.25735903, 0, 0.50779307, -217.02547, 0, -95.03218)
+transform = Transform3D(0.50779307, 0, 0.25735903, 0, 0.6219999, 0, -0.25735903, 0, 0.50779307, -217.02547, 0, -116.56941)
 
 [node name="LowerLeftSideA5" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="202" unique_id=1851955294 instance=ExtResource("3_iea7l")]
-transform = Transform3D(0.76993495, 0, -0.11010206, 0, 0.7779999, 0, 0.11010206, 0, 0.76993495, -217.07407, 0, -63.345196)
+transform = Transform3D(0.76993495, 0, -0.11010206, 0, 0.7779999, 0, 0.11010206, 0, 0.76993495, -217.07407, 0, -84.88243)
 
 [node name="LeftSpruceMidNorth6" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="203" unique_id=1824887976 instance=ExtResource("4_32dgv")]
-transform = Transform3D(-0.65580845, 0, 0.035900034, 0, 0.72, 0, -0.035900034, 0, -0.65580845, -228.83286, 0, -73.1091)
+transform = Transform3D(-0.65580845, 0, 0.035900034, 0, 0.72, 0, -0.035900034, 0, -0.65580845, -228.83286, 0, -94.64633)
 
 [node name="LeftSpruceCenter6" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="204" unique_id=1246583621 instance=ExtResource("3_iea7l")]
-transform = Transform3D(-0.719742, 0, -0.36505806, 0, 0.84000003, 0, 0.36505806, 0, -0.719742, -227.66931, 0, -84.593704)
+transform = Transform3D(-0.719742, 0, -0.36505806, 0, 0.84000003, 0, 0.36505806, 0, -0.719742, -227.66931, 0, -106.130936)
 
 [node name="LeftSpruceMidSouth6" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="205" unique_id=456777389 instance=ExtResource("4_32dgv")]
-transform = Transform3D(-0.54051554, 0, -0.27378714, 0, 0.6599999, 0, 0.27378714, 0, -0.54051554, -226.56525, 0, -94.51286)
+transform = Transform3D(-0.54051554, 0, -0.27378714, 0, 0.6599999, 0, 0.27378714, 0, -0.54051554, -226.56525, 0, -116.050095)
 
 [node name="LeftMidFillA8" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="206" unique_id=523530444 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.3595311, 0, -0.49591133, 0, 0.6679997, 0, 0.49591133, 0, 0.3595311, -145.24603, 0, -96.176346)
+transform = Transform3D(0.3595311, 0, -0.49591133, 0, 0.6679997, 0, 0.49591133, 0, 0.3595311, -145.24603, 0, -117.71358)
 
 [node name="InnerLeftSlashA7" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="207" unique_id=509721593 instance=ExtResource("4_32dgv")]
-transform = Transform3D(0.33430278, 0, -0.46079186, 0, 0.6219999, 0, 0.46079186, 0, 0.33430278, -131.31766, 0, -96.15483)
+transform = Transform3D(0.33430278, 0, -0.46079186, 0, 0.6219999, 0, 0.46079186, 0, 0.33430278, -131.31766, 0, -117.69206)
 
 [node name="LeftSpruceMidNorth7" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="208" unique_id=1696056303 instance=ExtResource("4_32dgv")]
-transform = Transform3D(-0.068090774, 0, 0.65325123, 0, 0.72, 0, -0.65325123, 0, -0.068090774, -154.82996, 0, -104.35286)
+transform = Transform3D(-0.068090774, 0, 0.65325123, 0, 0.72, 0, -0.65325123, 0, -0.068090774, -154.82996, 0, -125.89009)
 
 [node name="LeftSpruceCenter7" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="209" unique_id=2062108619 instance=ExtResource("3_iea7l")]
-transform = Transform3D(-0.47411397, 0, 0.65307873, 0, 0.84000003, 0, -0.65307873, 0, -0.47411397, -143.3057, 0, -105.01713)
+transform = Transform3D(-0.47411397, 0, 0.65307873, 0, 0.84000003, 0, -0.65307873, 0, -0.47411397, -143.3057, 0, -126.55436)
 
 [node name="LeftSpruceMidSouth7" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="210" unique_id=1580830225 instance=ExtResource("4_32dgv")]
-transform = Transform3D(-0.35569116, 0, 0.49051026, 0, 0.65999997, 0, -0.49051026, 0, -0.35569116, -133.33662, 0, -105.492966)
+transform = Transform3D(-0.35569116, 0, 0.49051026, 0, 0.65999997, 0, -0.49051026, 0, -0.35569116, -133.33662, 0, -127.0302)
 
 [node name="LeftMidFillA7" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="211" unique_id=1672297978 instance=ExtResource("4_32dgv")]
-transform = Transform3D(-0.54645514, 0, -0.27672625, 0, 0.6679997, 0, 0.27672625, 0, -0.54645514, -231.69983, 0, -43.060646)
+transform = Transform3D(-0.54645514, 0, -0.27672625, 0, 0.6679997, 0, 0.27672625, 0, -0.54645514, -231.69983, 0, -64.59788)
 
 [node name="InnerLeftSlashA6" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="212" unique_id=925879554 instance=ExtResource("4_32dgv")]
-transform = Transform3D(-0.50779307, 0, -0.25735906, 0, 0.622, 0, 0.25735906, 0, -0.50779307, -231.36076, 0, -24.040997)
+transform = Transform3D(-0.50779307, 0, -0.25735906, 0, 0.622, 0, 0.25735906, 0, -0.50779307, -231.36076, 0, -45.578228)
 
 [node name="LowerLeftSideA6" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="213" unique_id=299531160 instance=ExtResource("3_iea7l")]
-transform = Transform3D(-0.76993495, 0, 0.11010198, 0, 0.7779999, 0, -0.11010198, 0, -0.76993495, -231.31216, 0, -55.727978)
+transform = Transform3D(-0.76993495, 0, 0.11010198, 0, 0.7779999, 0, -0.11010198, 0, -0.76993495, -231.31216, 0, -77.26521)
 
 [node name="character" parent="." unique_id=77292897 instance=ExtResource("2_player")]
 

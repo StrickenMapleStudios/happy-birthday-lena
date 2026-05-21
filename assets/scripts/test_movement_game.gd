@@ -4,7 +4,6 @@ const MAIN_MENU_SCENE_PATH := "res://assets/scenes/menu/menu_main.tscn"
 const DIALOGUE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/dialogue_pause_menu.tscn")
 const CUTSCENE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/cutscene_pause_menu.tscn")
 const LABYRINTH_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/labyrinth_pause_menu.tscn")
-const FOUND_ITEM_POPUP_SCENE := preload("res://assets/scenes/ui/found_item_popup.tscn")
 
 @onready var camera_rig := $CameraRig
 @onready var dialogue_pivot_right := $DialoguePivotRight
@@ -73,7 +72,6 @@ var _cutscene_pause_menu: Node
 var _labyrinth_pause_menu: Node
 var _active_pause_menu: Node
 var _inventory_open := false
-var _found_item_popup_open := false
 var _input_context := InputContext.GAMEPLAY
 var _focus_before_pause: WeakRef
 var _inventory_data: InventoryData = InventoryData.new()
@@ -84,7 +82,6 @@ var _inventory_time_scale_tween: Tween
 var _labyrinth_active := false
 var _active_labyrinth_area: LabyrinthArea
 var _ignored_labyrinth_entry_area: WeakRef
-var _found_item_popup: FoundItemPopup
 var _pending_lap_return_context: Dictionary = {}
 var _reward_demonstration_start_pending := false
 var _credits_active := false
@@ -101,7 +98,6 @@ func _ready() -> void:
 	add_child(_inventory_data)
 	_restore_inventory_from_session_state()
 	_inventory_data.inventory_changed.connect(Callable(self, "_save_inventory_to_session_state"))
-	_inventory_data.item_added.connect(Callable(self, "_on_inventory_item_added"))
 	if interaction_source != null:
 		interaction_source.interaction_requested.connect(_on_interaction_requested)
 		interaction_source.interaction_target_changed.connect(_on_interaction_target_changed)
@@ -136,11 +132,6 @@ func _ready() -> void:
 			inventory_menu_root.visible = false
 		inventory_ui.set_inventory(_inventory_data)
 		inventory_ui.close_requested.connect(_close_inventory)
-	_found_item_popup = FOUND_ITEM_POPUP_SCENE.instantiate() as FoundItemPopup
-	if _found_item_popup != null:
-		add_child(_found_item_popup)
-		_found_item_popup.close()
-		_found_item_popup.continue_requested.connect(_close_found_item_popup)
 	_connect_labyrinth_area_signals()
 	if camera_rig != null and camera_rig.has_signal("labyrinth_view_yaw_changed"):
 		camera_rig.connect("labyrinth_view_yaw_changed", Callable(self, "_on_labyrinth_view_yaw_changed"))
@@ -163,9 +154,6 @@ func _exit_tree() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _is_scene_transition_active():
-		return
-
-	if _found_item_popup_open:
 		return
 
 	if _inventory_open:
@@ -473,7 +461,6 @@ func _open_pause_menu() -> void:
 		_pause_active
 		or _interaction_locked
 		or _inventory_open
-		or _found_item_popup_open
 		or pause_menu == null
 		or _input_context == InputContext.TRANSITION
 		or _is_scene_transition_active()
@@ -512,7 +499,7 @@ func _resume_from_pause() -> void:
 
 
 func _open_inventory() -> void:
-	if _inventory_open or _found_item_popup_open or _interaction_locked or _pause_active or _dialogue_active or _cutscene_active or inventory_ui == null:
+	if _inventory_open or _interaction_locked or _pause_active or _dialogue_active or _cutscene_active or inventory_ui == null:
 		return
 
 	_inventory_open = true
@@ -1017,10 +1004,6 @@ func _sync_input_context() -> void:
 		_set_input_context(InputContext.TRANSITION)
 		return
 
-	if _found_item_popup_open:
-		_set_input_context(InputContext.INVENTORY)
-		return
-
 	if _inventory_open:
 		_set_input_context(InputContext.INVENTORY)
 		return
@@ -1310,7 +1293,7 @@ func _find_giant_credits_showcase() -> Node:
 func _try_start_reward_demonstration(start_from_faded_state: bool = false) -> void:
 	if _reward_demonstration_start_pending or _demonstration_active or _interaction_locked:
 		return
-	if _dialogue_active or _cutscene_active or _pause_active or _inventory_open or _found_item_popup_open:
+	if _dialogue_active or _cutscene_active or _pause_active or _inventory_open:
 		return
 
 	var demonstration_camera := _consume_next_reward_demonstration_camera()
@@ -1399,7 +1382,7 @@ func _sync_follower_gameplay_state() -> void:
 
 
 func _try_handle_non_dialogue_interaction(target: InteractionTarget) -> bool:
-	if _interaction_locked or _dialogue_active or _cutscene_active or _labyrinth_active or _found_item_popup_open or target == null or not target.is_interaction_available():
+	if _interaction_locked or _dialogue_active or _cutscene_active or _labyrinth_active or target == null or not target.is_interaction_available():
 		return false
 
 	var interaction_owner := target.get_parent()
@@ -1815,30 +1798,3 @@ func _save_inventory_to_session_state() -> void:
 		return
 
 	GameSessionState.save_inventory_state(_inventory_data.serialize_state())
-
-
-func _on_inventory_item_added(item: InventoryItemData, quantity: int) -> void:
-	if item == null or _found_item_popup == null:
-		return
-	if _pause_active or _dialogue_active or _cutscene_active:
-		return
-
-	_found_item_popup_open = true
-	_tween_inventory_time_scale(INVENTORY_TIME_SCALE_OPEN)
-	player.set_controls_enabled(false)
-	interaction_source.set_interaction_enabled(false)
-	_sync_input_context()
-	_found_item_popup.open_for_item(item, quantity)
-
-
-func _close_found_item_popup() -> void:
-	if not _found_item_popup_open:
-		return
-
-	_found_item_popup_open = false
-	if _found_item_popup != null:
-		_found_item_popup.close()
-	_tween_inventory_time_scale(INVENTORY_TIME_SCALE_CLOSED)
-	player.set_controls_enabled(true)
-	interaction_source.set_interaction_enabled(true)
-	_sync_input_context()
