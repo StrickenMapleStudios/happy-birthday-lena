@@ -92,6 +92,8 @@ func become_friend() -> void:
 	var actor := get_parent()
 	if actor != null and not actor.is_in_group(FRIEND_FOLLOWERS_GROUP):
 		actor.add_to_group(FRIEND_FOLLOWERS_GROUP)
+	if actor != null and actor.has_method("set_character_visible"):
+		actor.call("set_character_visible", true)
 	var interaction_target := get_node_or_null(INTERACTION_TARGET_PATH)
 	if interaction_target != null and interaction_target.has_method("set_interaction_enabled"):
 		interaction_target.call("set_interaction_enabled", false)

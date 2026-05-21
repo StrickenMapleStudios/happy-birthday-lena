@@ -3,6 +3,7 @@ extends Node
 class_name NpcSessionStateComponent
 
 const SESSION_STATE_GROUP := &"npc_session_state"
+const FRIEND_FOLLOWERS_GROUP := &"friendly_followers"
 const FRIEND_FOLLOW_STATE_PATH := ^"FriendFollowState"
 const DIALOGUE_CYCLE_STATE_PATH := ^"DialogueCycleState"
 const INTERACTION_TARGET_PATH := ^"InteractionTarget"
@@ -60,7 +61,9 @@ func restore_visibility_from_session() -> void:
 
 	var saved_state := GameSessionState.get_npc_state(_session_scene_path, _session_node_path)
 	var should_show_character := true
-	if saved_state.has("character_visible"):
+	if actor.is_in_group(FRIEND_FOLLOWERS_GROUP):
+		should_show_character = true
+	elif saved_state.has("character_visible"):
 		should_show_character = bool(saved_state.get("character_visible", true))
 	# Visibility saved while follow was paused is dialogue-only and should not persist.
 	if bool(saved_state.get("follow_paused", false)):
@@ -86,7 +89,11 @@ func _capture_state() -> Dictionary:
 			follow_paused = bool(friend_follow_state.call("is_follow_paused"))
 			state["follow_paused"] = follow_paused
 
-	if actor.has_method("is_character_visible") and not follow_paused:
+	if (
+		actor.has_method("is_character_visible")
+		and not follow_paused
+		and not actor.is_in_group(FRIEND_FOLLOWERS_GROUP)
+	):
 		state["character_visible"] = bool(actor.call("is_character_visible"))
 
 	var interaction_target := get_parent().get_node_or_null(INTERACTION_TARGET_PATH) as InteractionTarget
@@ -110,7 +117,9 @@ func _apply_state(state: Dictionary) -> void:
 				actor.global_transform = transform
 
 	var should_show_character := true
-	if state.has("character_visible"):
+	if actor != null and actor.is_in_group(FRIEND_FOLLOWERS_GROUP):
+		should_show_character = true
+	elif state.has("character_visible"):
 		should_show_character = bool(state.get("character_visible", true))
 	if bool(state.get("follow_paused", false)) and not should_show_character:
 		should_show_character = true

@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://bj4ag638jujau" path="res://assets/scripts/labyrinth_area.gd" id="2_script"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/reward_marker.tscn" id="3_reward_marker"]
 [ext_resource type="Script" uid="uid://d1tdb5cfv171" path="res://assets/scripts/reward_demonstration_camera.gd" id="4_demo_camera_script"]
-[ext_resource type="Script" path="res://assets/scripts/camera_visibility_cull.gd" id="5_visibility_cull"]
+[ext_resource type="Script" uid="uid://df1xrkv32hvgc" path="res://assets/scripts/camera_visibility_cull.gd" id="5_visibility_cull"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
 size = Vector3(6, 4, 6)
@@ -12,7 +12,7 @@ size = Vector3(6, 4, 6)
 [node name="LabyrinthArea" type="Node3D" unique_id=881928972]
 script = ExtResource("2_script")
 
-[node name="CameraVisibilityCull" type="Node" parent="."]
+[node name="CameraVisibilityCull" type="Node" parent="." unique_id=39000251]
 script = ExtResource("5_visibility_cull")
 cull_roots = Array[NodePath]([NodePath("../LabyrinthModel"), NodePath("../LabyrinthColliderBody")])
 
@@ -23,6 +23,7 @@ transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 0, 0, 0)
 collision_layer = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EntryTrigger" unique_id=496247715]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.040614903, 0, 0, 0)
 shape = SubResource("BoxShape3D_trigger")
 
 [node name="ReturnPoint" type="Marker3D" parent="." unique_id=546223101]
@@ -43,4 +44,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -68.20542, 0, -75.174)
 collision_layer = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ExitTrigger" unique_id=1962004466]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.037495196, 0, 0, 0)
 shape = SubResource("BoxShape3D_trigger")

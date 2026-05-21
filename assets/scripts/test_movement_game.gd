@@ -1298,6 +1298,18 @@ func _restore_all_npc_visibility_from_session() -> void:
 		state_node.call("restore_visibility_from_session")
 
 
+func _ensure_all_followers_visible() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+
+	for actor in tree.get_nodes_in_group(&"friendly_followers"):
+		var follower := actor as Node3D
+		if follower == null or not follower.has_method("set_character_visible"):
+			continue
+		follower.call("set_character_visible", true)
+
+
 func _suppress_scene_npcs_for_post_race_dialogue(dialogue_npc: Node3D) -> void:
 	_hidden_follower_actors.clear()
 	_visible_dialogue_follower_actors.clear()
@@ -1316,9 +1328,6 @@ func _suppress_scene_npcs_for_post_race_dialogue(dialogue_npc: Node3D) -> void:
 
 		if actor.has_method("pause_as_follower_during_dialogue"):
 			actor.call("pause_as_follower_during_dialogue")
-			_hidden_follower_actors.append(actor)
-		elif actor.has_method("set_character_visible"):
-			actor.call("set_character_visible", false)
 			_hidden_follower_actors.append(actor)
 
 
@@ -1355,6 +1364,7 @@ func _restore_follower_actors_after_dialogue() -> void:
 
 	_visible_dialogue_follower_actors.clear()
 	_restore_all_npc_visibility_from_session()
+	_ensure_all_followers_visible()
 
 
 func _on_reward_spawned(_source_id: StringName, marker: RewardMarker, _pickup: PickupItem) -> void:

@@ -1,10 +1,13 @@
 extends "res://assets/scripts/camera_cutscene_target.gd"
 
 const PLAYER_GROUP := &"player_character"
+const ROOM_COLLISION_MESH_TOKENS := ["wall", "column", "pillar", "col_"]
 const CAKE_DIALOGUE := preload("res://assets/dialogue/cake_conversation.dialogue")
 const CAKE_INNER_VOICE_PREFIX := "("
 const CANDLE_FLAME_NAME_TOKENS := ["flame", "candle", "fire", "wick", "пламя", "свеч"]
 
+@export var auto_create_room_collisions := true
+@export var room_collision_root_path: NodePath = ^"MysteryRoom"
 @export var torch_lights_root_path: NodePath = ^"MysteryRoom/TorchLights"
 @export var trigger_root_path: NodePath = ^"TorchSequenceTriggers"
 @export var cake_root_path: NodePath = ^"MysteryRoom/Stand_Stairs/Stand/cake"
@@ -22,6 +25,8 @@ var _candle_flame_nodes: Array[Node3D] = []
 
 
 func _ready() -> void:
+	if auto_create_room_collisions:
+		_create_room_physics_collisions()
 	_collect_torch_groups()
 	_set_initial_torch_state()
 	_connect_trigger_areas()
@@ -197,6 +202,60 @@ func _collect_candle_flame_nodes() -> Array[Node3D]:
 				break
 
 	return _candle_flame_nodes
+
+
+func _create_room_physics_collisions() -> void:
+	var room_root := get_node_or_null(room_collision_root_path) as Node3D
+	if room_root == null:
+		return
+	if room_root.get_node_or_null("RoomPhysicsCollisions") != null:
+		return
+
+	var collisions_parent := StaticBody3D.new()
+	collisions_parent.name = "RoomPhysicsCollisions"
+	room_root.add_child(collisions_parent)
+
+	for mesh_instance in room_root.find_children("*", "MeshInstance3D", true, false):
+		if mesh_instance == null or not _should_create_collision_for_mesh(mesh_instance):
+			continue
+		_add_mesh_collision_body(collisions_parent, mesh_instance as MeshInstance3D)
+
+
+func _should_create_collision_for_mesh(mesh_instance: MeshInstance3D) -> bool:
+	if mesh_instance.mesh == null:
+		return false
+
+	var normalized_name := String(mesh_instance.name).to_lower()
+	for token in ROOM_COLLISION_MESH_TOKENS:
+		if normalized_name.find(token) != -1:
+			return true
+
+	var parent := mesh_instance.get_parent()
+	var room_root := get_node_or_null(room_collision_root_path)
+	while parent != null and parent != room_root:
+		var parent_name := String(parent.name).to_lower()
+		for token in ROOM_COLLISION_MESH_TOKENS:
+			if parent_name.find(token) != -1:
+				return true
+		parent = parent.get_parent()
+
+	return false
+
+
+func _add_mesh_collision_body(collisions_parent: StaticBody3D, mesh_instance: MeshInstance3D) -> void:
+	var body := StaticBody3D.new()
+	body.name = "%sCollision" % mesh_instance.name
+	collisions_parent.add_child(body)
+	body.transform = collisions_parent.global_transform.affine_inverse() * mesh_instance.global_transform
+
+	var collision_shape := CollisionShape3D.new()
+	var convex_shape := mesh_instance.mesh.create_convex_shape(true)
+	if convex_shape == null:
+		body.queue_free()
+		return
+
+	collision_shape.shape = convex_shape
+	body.add_child(collision_shape)
 
 
 func _is_player_body(body: Node) -> bool:

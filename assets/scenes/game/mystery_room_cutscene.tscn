@@ -10,10 +10,10 @@
 [ext_resource type="Script" uid="uid://qnjae4do8pus" path="res://assets/scripts/cake_dialogue_state.gd" id="7_cake_dialogue_state"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ym06s"]
-size = Vector3(23.349854, 3.1658936, 5.401367)
+size = Vector3(40, 3.1658936, 5.401367)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_torch_trigger"]
-size = Vector3(10, 4, 4)
+size = Vector3(40, 4, 4)
 
 [node name="MysteryRoomCutscene" type="Node3D" unique_id=46491078]
 script = ExtResource("2_cutscene")

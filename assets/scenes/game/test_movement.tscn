@@ -197,7 +197,7 @@ transform = Transform3D(-0.76993495, 0, 0.11010198, 0, 0.7779999, 0, -0.11010198
 [node name="character" parent="." unique_id=77292897 instance=ExtResource("2_player")]
 
 [node name="npc" parent="." unique_id=680308868 instance=ExtResource("3_npc")]
-transform = Transform3D(-0.2923717, 0, 0.9563047, 0, 1, 0, -0.9563047, 0, -0.2923717, -21.993208, 0, 111.62996)
+transform = Transform3D(-0.2923717, 0, 0.9563047, 0, 1, 0, -0.9563047, 0, -0.2923717, -25.203167, 0, 111.62996)
 npc_dialogue_name = "НеАнтиЛена"
 
 [node name="npc2" parent="." unique_id=949489206 instance=ExtResource("3_npc")]
