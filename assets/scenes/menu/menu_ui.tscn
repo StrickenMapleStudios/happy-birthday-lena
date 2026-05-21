@@ -63,7 +63,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 108
 theme_override_constants/margin_right = 56
-theme_override_constants/margin_top = 56
+theme_override_constants/margin_top = 206
 theme_override_constants/margin_bottom = 56
 
 [node name="Layout" type="Control" parent="SafeMargin"]
@@ -71,21 +71,22 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Sidebar" type="VBoxContainer" parent="SafeMargin/Layout"]
+[node name="MenuContentScale" type="Control" parent="SafeMargin/Layout"]
+custom_minimum_size = Vector2(900, 888)
+layout_mode = 0
+offset_right = 900.0
+offset_bottom = 888.0
+
+[node name="Sidebar" type="VBoxContainer" parent="SafeMargin/Layout/MenuContentScale"]
 custom_minimum_size = Vector2(540, 0)
-layout_mode = 1
-anchors_preset = -1
-anchor_top = 0.64
-anchor_bottom = 0.64
-offset_top = -520.0
+layout_mode = 0
 offset_right = 540.0
-grow_vertical = 0
 theme_override_constants/separation = 32
 
-[node name="TitleBlock" type="VBoxContainer" parent="SafeMargin/Layout/Sidebar"]
+[node name="TitleBlock" type="VBoxContainer" parent="SafeMargin/Layout/MenuContentScale/Sidebar"]
 theme_override_constants/separation = -26
 
-[node name="HappyBirthdayLabel" type="Label" parent="SafeMargin/Layout/Sidebar/TitleBlock"]
+[node name="HappyBirthdayLabel" type="Label" parent="SafeMargin/Layout/MenuContentScale/Sidebar/TitleBlock"]
 theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
 theme_override_constants/outline_size = 8
@@ -94,7 +95,7 @@ theme_override_font_sizes/font_size = 84
 text = "Happy Birthday"
 uppercase = true
 
-[node name="LenaLabel" type="Label" parent="SafeMargin/Layout/Sidebar/TitleBlock"]
+[node name="LenaLabel" type="Label" parent="SafeMargin/Layout/MenuContentScale/Sidebar/TitleBlock"]
 theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
 theme_override_constants/outline_size = 10
@@ -103,12 +104,12 @@ theme_override_font_sizes/font_size = 138
 text = "Lena"
 uppercase = true
 
-[node name="ButtonStack" type="VBoxContainer" parent="SafeMargin/Layout/Sidebar"]
+[node name="ButtonStack" type="VBoxContainer" parent="SafeMargin/Layout/MenuContentScale/Sidebar"]
 layout_mode = 2
 theme = SubResource("Theme_buttons")
 theme_override_constants/separation = 14
 
-[node name="PlayButton" type="Button" parent="SafeMargin/Layout/Sidebar/ButtonStack"]
+[node name="PlayButton" type="Button" parent="SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack"]
 custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -127,7 +128,7 @@ icon = ExtResource("6_play_icon")
 text = "PLAY"
 alignment = 0
 
-[node name="OptionsButton" type="Button" parent="SafeMargin/Layout/Sidebar/ButtonStack"]
+[node name="OptionsButton" type="Button" parent="SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack"]
 custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -146,7 +147,7 @@ icon = ExtResource("7_gear_icon")
 text = "OPTIONS"
 alignment = 0
 
-[node name="ExitButton" type="Button" parent="SafeMargin/Layout/Sidebar/ButtonStack"]
+[node name="ExitButton" type="Button" parent="SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack"]
 custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -165,7 +166,7 @@ icon = ExtResource("8_exit_icon")
 text = "EXIT"
 alignment = 0
 
-[node name="OptionsPanel" parent="SafeMargin/Layout" instance=ExtResource("2_options")]
+[node name="OptionsPanel" parent="SafeMargin/Layout/MenuContentScale" instance=ExtResource("2_options")]
 visible = false
 layout_mode = 1
 anchors_preset = 15

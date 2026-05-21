@@ -2,19 +2,23 @@ extends Control
 
 const PLAY_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
 const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
+const MENU_CONTENT_BASE_SCALE := 1.2
+const MENU_REFERENCE_SIZE := Vector2(1920.0, 1080.0)
+const MENU_CONTENT_UNSCALED_SIZE := Vector2(900.0, 888.0)
 
 @onready var menu_character: Node = get_parent().get_node_or_null("menuEnvironment/character")
-@onready var sidebar: VBoxContainer = $SafeMargin/Layout/Sidebar
-@onready var play_button: Button = $SafeMargin/Layout/Sidebar/ButtonStack/PlayButton
-@onready var options_button: Button = $SafeMargin/Layout/Sidebar/ButtonStack/OptionsButton
-@onready var exit_button: Button = $SafeMargin/Layout/Sidebar/ButtonStack/ExitButton
-@onready var options_screen: Control = $SafeMargin/Layout/OptionsPanel
+@onready var menu_content_scale: Control = $SafeMargin/Layout/MenuContentScale
+@onready var sidebar: VBoxContainer = $SafeMargin/Layout/MenuContentScale/Sidebar
+@onready var play_button: Button = $SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/PlayButton
+@onready var options_button: Button = $SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/OptionsButton
+@onready var exit_button: Button = $SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/ExitButton
+@onready var options_screen: Control = $SafeMargin/Layout/MenuContentScale/OptionsPanel
 @onready var confirm_dialog = $ConfirmDialog
 
 @onready var menu_buttons: Array[Button] = [
-	$SafeMargin/Layout/Sidebar/ButtonStack/PlayButton,
-	$SafeMargin/Layout/Sidebar/ButtonStack/OptionsButton,
-	$SafeMargin/Layout/Sidebar/ButtonStack/ExitButton,
+	$SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/PlayButton,
+	$SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/OptionsButton,
+	$SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/ExitButton,
 ]
 
 var _exit_in_progress := false
@@ -23,6 +27,8 @@ var _ui_transition_locked := false
 
 
 func _ready() -> void:
+	get_viewport().size_changed.connect(_update_menu_content_scale)
+	_update_menu_content_scale()
 	play_button.pressed.connect(_on_play_pressed)
 	options_button.pressed.connect(_show_options_screen)
 	exit_button.pressed.connect(_on_exit_pressed)
@@ -177,3 +183,25 @@ func _set_button_mouse_filter(buttons: Array, filter: Control.MouseFilter) -> vo
 	for button in buttons:
 		if button is Control:
 			(button as Control).mouse_filter = filter
+
+
+func _update_menu_content_scale() -> void:
+	if menu_content_scale == null:
+		return
+
+	var scale_factor := _compute_menu_content_scale()
+	menu_content_scale.scale = Vector2(scale_factor, scale_factor)
+	menu_content_scale.pivot_offset = Vector2.ZERO
+	menu_content_scale.size = MENU_CONTENT_UNSCALED_SIZE
+
+
+func _compute_menu_content_scale() -> float:
+	var viewport_size := get_viewport_rect().size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		return MENU_CONTENT_BASE_SCALE
+
+	var responsive_fit := minf(
+		viewport_size.x / MENU_REFERENCE_SIZE.x,
+		viewport_size.y / MENU_REFERENCE_SIZE.y
+	)
+	return MENU_CONTENT_BASE_SCALE * minf(1.0, responsive_fit)
