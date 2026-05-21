@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/confirm_dialog.tscn" id="3_confirm"]
 [ext_resource type="FontFile" path="res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf" id="4_title_font"]
 [ext_resource type="FontFile" path="res://assets/art/fonts/Paytone_One/PaytoneOne-Regular.ttf" id="5_body_font"]
-[ext_resource type="Texture2D" path="res://assets/art/sprites/plus-icon.png" id="6_plus_icon"]
+[ext_resource type="Texture2D" path="res://assets/art/sprites/play-button-arrowhead.png" id="6_play_icon"]
 [ext_resource type="Texture2D" path="res://assets/art/sprites/gear-icon.png" id="7_gear_icon"]
 [ext_resource type="Texture2D" path="res://assets/art/sprites/exit-icon.png" id="8_exit_icon"]
 
@@ -62,20 +62,30 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 108
-theme_override_constants/margin_top = 76
 theme_override_constants/margin_right = 56
+theme_override_constants/margin_top = 56
 theme_override_constants/margin_bottom = 56
 
-[node name="Sidebar" type="VBoxContainer" parent="SafeMargin"]
-custom_minimum_size = Vector2(540, 0)
+[node name="Layout" type="Control" parent="SafeMargin"]
 layout_mode = 2
-size_flags_horizontal = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Sidebar" type="VBoxContainer" parent="SafeMargin/Layout"]
+custom_minimum_size = Vector2(540, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.64
+anchor_bottom = 0.64
+offset_top = -520.0
+offset_right = 540.0
+grow_vertical = 0
 theme_override_constants/separation = 32
 
-[node name="TitleBlock" type="VBoxContainer" parent="SafeMargin/Sidebar"]
+[node name="TitleBlock" type="VBoxContainer" parent="SafeMargin/Layout/Sidebar"]
 theme_override_constants/separation = -26
 
-[node name="HappyBirthdayLabel" type="Label" parent="SafeMargin/Sidebar/TitleBlock"]
+[node name="HappyBirthdayLabel" type="Label" parent="SafeMargin/Layout/Sidebar/TitleBlock"]
 theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
 theme_override_constants/outline_size = 8
@@ -84,7 +94,7 @@ theme_override_font_sizes/font_size = 84
 text = "Happy Birthday"
 uppercase = true
 
-[node name="LenaLabel" type="Label" parent="SafeMargin/Sidebar/TitleBlock"]
+[node name="LenaLabel" type="Label" parent="SafeMargin/Layout/Sidebar/TitleBlock"]
 theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
 theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
 theme_override_constants/outline_size = 10
@@ -93,12 +103,12 @@ theme_override_font_sizes/font_size = 138
 text = "Lena"
 uppercase = true
 
-[node name="ButtonStack" type="VBoxContainer" parent="SafeMargin/Sidebar"]
+[node name="ButtonStack" type="VBoxContainer" parent="SafeMargin/Layout/Sidebar"]
 layout_mode = 2
 theme = SubResource("Theme_buttons")
 theme_override_constants/separation = 14
 
-[node name="NewGameButton" type="Button" parent="SafeMargin/Sidebar/ButtonStack"]
+[node name="PlayButton" type="Button" parent="SafeMargin/Layout/Sidebar/ButtonStack"]
 custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -113,11 +123,11 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
 theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
 theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
 icon_alignment = 0
-icon = ExtResource("6_plus_icon")
-text = "NEW GAME"
+icon = ExtResource("6_play_icon")
+text = "PLAY"
 alignment = 0
 
-[node name="OptionsButton" type="Button" parent="SafeMargin/Sidebar/ButtonStack"]
+[node name="OptionsButton" type="Button" parent="SafeMargin/Layout/Sidebar/ButtonStack"]
 custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -136,7 +146,7 @@ icon = ExtResource("7_gear_icon")
 text = "OPTIONS"
 alignment = 0
 
-[node name="ExitButton" type="Button" parent="SafeMargin/Sidebar/ButtonStack"]
+[node name="ExitButton" type="Button" parent="SafeMargin/Layout/Sidebar/ButtonStack"]
 custom_minimum_size = Vector2(520, 84)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -155,80 +165,14 @@ icon = ExtResource("8_exit_icon")
 text = "EXIT"
 alignment = 0
 
-[node name="OptionsPanel" parent="SafeMargin" instance=ExtResource("2_options")]
+[node name="OptionsPanel" parent="SafeMargin/Layout" instance=ExtResource("2_options")]
 visible = false
-size_flags_horizontal = 0
-
-[node name="SaveSlotScreen" type="VBoxContainer" parent="SafeMargin"]
-visible = false
-custom_minimum_size = Vector2(920, 0)
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_constants/separation = 16
-
-[node name="SaveSlotTitle" type="Label" parent="SafeMargin/SaveSlotScreen"]
-theme_override_colors/font_color = Color(1, 0.741176, 0, 1)
-theme_override_colors/font_outline_color = Color(0.368627, 0.270588, 0, 1)
-theme_override_constants/outline_size = 10
-theme_override_fonts/font = ExtResource("4_title_font")
-theme_override_font_sizes/font_size = 88
-text = "SELECT SLOT"
-uppercase = true
-
-[node name="SaveSlotSubtitle" type="Label" parent="SafeMargin/SaveSlotScreen"]
-theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 0.92)
-theme_override_fonts/font = ExtResource("5_body_font")
-theme_override_font_sizes/font_size = 24
-text = "Choose where to begin Lena's adventure"
-uppercase = true
-
-[node name="SlotList" type="VBoxContainer" parent="SafeMargin/SaveSlotScreen"]
-layout_mode = 2
-size_flags_horizontal = 0
-theme = SubResource("Theme_buttons")
-theme_override_constants/separation = 14
-
-[node name="SaveSlotButton01" type="Button" parent="SafeMargin/SaveSlotScreen/SlotList"]
-custom_minimum_size = Vector2(880, 120)
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
-theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
-theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
-theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
-text = "01  EMPTY SLOT          START A NEW ADVENTURE FROM SLOT 01"
-alignment = 0
-
-[node name="SaveSlotButton02" type="Button" parent="SafeMargin/SaveSlotScreen/SlotList"]
-custom_minimum_size = Vector2(880, 120)
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
-theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
-theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
-theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
-text = "02  EMPTY SLOT          START A NEW ADVENTURE FROM SLOT 02"
-alignment = 0
-
-[node name="SaveSlotButton03" type="Button" parent="SafeMargin/SaveSlotScreen/SlotList"]
-custom_minimum_size = Vector2(880, 120)
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
-theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
-theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
-theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
-text = "03  EMPTY SLOT          START A NEW ADVENTURE FROM SLOT 03"
-alignment = 0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="ConfirmDialog" parent="." instance=ExtResource("3_confirm")]
 visible = false
