@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="HappyBirthdayLena"
-run/main_scene="uid://co68ht25jm67p"
+run/main_scene="uid://dk6375uhsedxh"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 

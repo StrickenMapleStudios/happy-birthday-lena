@@ -30,12 +30,6 @@ script = ExtResource("5_game")
 [node name="Level" parent="." unique_id=1638308877 instance=ExtResource("1_level")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
-[node name="LabyrinthArea" parent="Level" index="1" unique_id=298625149]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -115.60146, 0, -33.65496)
-
-[node name="Sun" parent="Level" index="2" unique_id=1646791676]
-transform = Transform3D(0.2897544, 0.7768078, -0.5592183, -1.5423211e-08, 0.58375525, 0.81192946, 0.95702, -0.23507911, 0.16952161, 0, 5.18316, 0)
-
 [node name="character" parent="." unique_id=77292897 instance=ExtResource("2_player")]
 
 [node name="npc" parent="." unique_id=680308868 instance=ExtResource("3_npc")]
