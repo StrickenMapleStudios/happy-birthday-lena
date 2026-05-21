@@ -29,6 +29,7 @@ const INVENTORY_TIME_SCALE_DURATION := 0.5
 const INVENTORY_TIME_SCALE_CLOSED := 1.0
 const INVENTORY_TIME_SCALE_OPEN := 0.0
 const DEFAULT_GAME_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
+const SCENE_ENTRY_FADE_IN_DURATION := 0.75
 const LABYRINTH_REWARD_SOURCE_ID := &"labyrinth_exit_reward"
 const LABYRINTH_REWARD_MARKER_ID := &"labyrinth_exit_reward_marker"
 const LAP_REWARD_SOURCE_ID := &"lap_finish_reward"
@@ -149,6 +150,7 @@ func _ready() -> void:
 		_resume_pending_lap_race_return_if_ready()
 		_refresh_cursor_mode()
 		_sync_follower_gameplay_state()
+		call_deferred("_ensure_scene_entry_fade_in")
 
 
 func _exit_tree() -> void:
@@ -1205,6 +1207,17 @@ func _hide_follower_actors_for_dialogue() -> void:
 			_hidden_follower_actors.append(follower)
 
 
+func _ensure_scene_entry_fade_in() -> void:
+	if _post_race_return_active:
+		return
+
+	await get_tree().process_frame
+	if SceneTransition.is_transitioning():
+		await SceneTransition.transition_finished
+	if SceneTransition.is_screen_black():
+		await SceneTransition.fade_in(SCENE_ENTRY_FADE_IN_DURATION)
+
+
 func _complete_post_race_scene_setup() -> void:
 	if _pending_lap_return_context.is_empty():
 		_post_race_return_active = false
@@ -1826,6 +1839,7 @@ func _release_locked_return_transition() -> void:
 	player.set_controls_enabled(true)
 	interaction_source.set_interaction_enabled(true)
 	_sync_input_context()
+	call_deferred("_ensure_scene_entry_fade_in")
 
 
 func _resolve_pending_lap_race_outcome(actor: Node3D) -> void:

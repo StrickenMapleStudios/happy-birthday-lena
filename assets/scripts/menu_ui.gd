@@ -1,6 +1,8 @@
 extends Control
 
 const PLAY_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
+const SCENE_FADE_OUT_DURATION := 0.75
+const SCENE_FADE_IN_DURATION := 0.75
 const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
 const MENU_CONTENT_BASE_SCALE := 1.2
 const MENU_REFERENCE_SIZE := Vector2(1920.0, 1080.0)
@@ -87,11 +89,13 @@ func _on_play_pressed() -> void:
 	if RewardService != null and RewardService.has_method("reset_state"):
 		RewardService.call("reset_state")
 	_begin_ui_transition_lock()
+	SceneTransition.preload_scene(PLAY_SCENE_PATH)
 	if menu_character != null and menu_character.has_method("stand_up_and_wait"):
 		await menu_character.call("stand_up_and_wait")
 	else:
 		_set_character_standing(true)
-	await SceneTransition.change_scene_to_file(PLAY_SCENE_PATH)
+	await SceneTransition.fade_out(SCENE_FADE_OUT_DURATION)
+	await SceneTransition.change_scene_to_file_from_faded_state(PLAY_SCENE_PATH, SCENE_FADE_IN_DURATION)
 
 
 func _on_exit_pressed() -> void:

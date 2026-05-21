@@ -12,6 +12,7 @@ const VISIBLE_COLOR := Color.WHITE
 @export_range(0.0, 10.0, 0.01, "or_greater") var mid_delay: float = 1.1
 @export_range(0.0, 10.0, 0.01, "or_greater") var post_delay: float = 1.0
 @export_range(0.0, 1.0, 0.01, "or_greater") var char_fade_duration: float = 0.045
+@export_range(0.0, 5.0, 0.01, "or_greater") var menu_fade_out_duration: float = 0.75
 
 @onready var line_1: HBoxContainer = $CenterContainer/IntroText/Line1Center/Line1
 @onready var line_2: HBoxContainer = $CenterContainer/IntroText/Line2Center/Line2
@@ -25,7 +26,8 @@ func _ready() -> void:
 	_line_1_chars = _build_line(line_1, line_1_text, line_1_font_size)
 	_line_2_chars = _build_line(line_2, line_2_text, line_2_font_size)
 	await _play_intro()
-	await SceneTransition.change_scene_to_file(MENU_SCENE_PATH)
+	await SceneTransition.fade_out(menu_fade_out_duration)
+	await SceneTransition.change_scene_to_file_from_faded_state(MENU_SCENE_PATH)
 
 
 func _play_intro() -> void:

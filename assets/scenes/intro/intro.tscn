@@ -1,17 +1,13 @@
 [gd_scene format=3 uid="uid://co68ht25jm67p"]
 
 [ext_resource type="Script" uid="uid://yfao84d2og6l" path="res://assets/scripts/intro.gd" id="1_8g0vv"]
-[ext_resource type="FontFile" uid="uid://hqvb0vokuiuo" path="res://assets/art/fonts/Excalifont-Regular/Excalifont-Regular.ttf" id="2_t2d5c"]
-
-[sub_resource type="FontVariation" id="FontVariation_f3l1n"]
-base_font = ExtResource("2_t2d5c")
-variation_embolden = 0.35
+[ext_resource type="FontFile" uid="uid://dkrxonksevp7k" path="res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf" id="2_font"]
 
 [sub_resource type="Theme" id="Theme_kq6pn"]
 Label/colors/font_color = Color(1, 1, 1, 1)
 Label/colors/font_outline_color = Color(0, 0, 0, 1)
 Label/constants/outline_size = 4
-Label/fonts/font = SubResource("FontVariation_f3l1n")
+Label/fonts/font = ExtResource("2_font")
 
 [node name="Intro" type="Control" unique_id=990160228]
 layout_mode = 3
