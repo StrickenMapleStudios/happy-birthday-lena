@@ -37,6 +37,7 @@ const ALL_KEYS_PLAYER_LINE := "Подождите, я собрала все кл
 @export var dialogue_camera_path: NodePath = ^"Camera3D"
 @export var interaction_target_path: NodePath = ^"InteractionTarget"
 @export var auto_trigger_path: NodePath = ^"AutoDialogueTrigger"
+@export var follower_disable_trigger_path: NodePath = ^"FollowerDisableTrigger"
 @export var wall_with_door_path: NodePath = ^"WallWithDoor"
 @export var dialogue_state_path: NodePath = ^"GiantsIntroDialogueState"
 @export var dialogue_speaker_pivot_path: NodePath = ^"DialogueSpeakerPivot"
@@ -51,11 +52,13 @@ const ALL_KEYS_PLAYER_LINE := "Подождите, я собрала все кл
 @export_range(0.5, 20.0, 0.1) var player_anchor_margin := 3.5
 
 var _interaction_radius := 0.0
+var _followers_disabled := false
 
 
 func _ready() -> void:
 	_configure_interaction_target()
 	_configure_auto_trigger()
+	_configure_follower_disable_trigger()
 	_fit_interaction_geometry_to_giants()
 
 
@@ -267,6 +270,28 @@ func _configure_auto_trigger() -> void:
 	auto_trigger.set("consume_after_activation", false)
 	if auto_trigger.has_method("set_activation_enabled"):
 		auto_trigger.call("set_activation_enabled", true)
+
+
+func _configure_follower_disable_trigger() -> void:
+	var trigger := get_node_or_null(follower_disable_trigger_path) as Area3D
+	if trigger == null or trigger.is_connected("body_entered", Callable(self, "_on_follower_disable_trigger_body_entered")):
+		return
+
+	trigger.body_entered.connect(_on_follower_disable_trigger_body_entered)
+
+
+func _on_follower_disable_trigger_body_entered(body: Node) -> void:
+	if _followers_disabled or not _is_player_body(body):
+		return
+
+	_followers_disabled = true
+	var current_scene := get_tree().current_scene
+	if current_scene != null and current_scene.has_method("set_followers_gameplay_enabled"):
+		current_scene.call("set_followers_gameplay_enabled", false)
+
+
+func _is_player_body(body: Node) -> bool:
+	return body is Node and body.is_in_group(&"player_character")
 
 
 func _compute_combined_mesh_bounds() -> AABB:

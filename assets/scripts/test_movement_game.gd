@@ -102,6 +102,7 @@ var _credits_finished_requested := false
 var _pending_reward_grant_context: Dictionary = {}
 var _pending_race_resolution_context: Dictionary = {}
 var _birthday_finale_overlay: CanvasLayer
+var _followers_gameplay_enabled := true
 
 
 func _ready() -> void:
@@ -1586,6 +1587,7 @@ func _sync_follower_gameplay_state() -> void:
 		and not _dialogue_active
 		and not _post_race_return_active
 		and _pending_lap_return_context.is_empty()
+		and _followers_gameplay_enabled
 	)
 	for actor in tree.get_nodes_in_group(&"friendly_followers"):
 		if actor == null:
@@ -1594,6 +1596,14 @@ func _sync_follower_gameplay_state() -> void:
 		var friend_follow_state := actor.get_node_or_null(^"FriendFollowState")
 		if friend_follow_state != null and friend_follow_state.has_method("set_gameplay_follow_enabled"):
 			friend_follow_state.call("set_gameplay_follow_enabled", follow_enabled)
+
+
+func set_followers_gameplay_enabled(value: bool) -> void:
+	if _followers_gameplay_enabled == value:
+		return
+
+	_followers_gameplay_enabled = value
+	_sync_follower_gameplay_state()
 
 
 func _try_handle_non_dialogue_interaction(target: InteractionTarget) -> bool:

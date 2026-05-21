@@ -18,7 +18,7 @@ const GAMEPLAY_COLLISION_GROUP := &"gameplay_collision_state_receivers"
 @onready var dialogue_animation_tree: AnimationTree = $Model/AnimationPlayer/DialogueAnimationTree
 @onready var _gameplay_collision_body: StaticBody3D = get_node_or_null(gameplay_collision_body_path) as StaticBody3D
 
-var _generated_collision_shapes: Array[CollisionShape3D] = []
+var _gameplay_collision_shapes: Array[CollisionShape3D] = []
 var _gameplay_collision_enabled := false
 var _character_visible := true
 
@@ -29,7 +29,7 @@ func _ready() -> void:
 	if dialogue_animation_tree != null:
 		dialogue_animation_tree.active = true
 		_set_dialogue_animation_condition(false)
-	_build_gameplay_collision_shapes()
+	_cache_gameplay_collision_shapes()
 	_apply_gameplay_collision_state()
 
 	var interaction_target := get_node_or_null(interaction_target_path) as InteractionTarget
@@ -135,45 +135,18 @@ func _set_secretly_dancing_condition(is_playing: bool) -> void:
 	dialogue_animation_tree.set("parameters/conditions/StopSecretlyDancing", not is_playing)
 
 
-func _build_gameplay_collision_shapes() -> void:
-	if _gameplay_collision_body == null or not _generated_collision_shapes.is_empty():
+func _cache_gameplay_collision_shapes() -> void:
+	_gameplay_collision_shapes.clear()
+	if _gameplay_collision_body == null:
 		return
 
-	var visual_root := get_node_or_null(visual_root_path) as Node3D
-	if visual_root == null:
-		return
-
-	for mesh_instance in _collect_visible_mesh_instances(visual_root):
-		var mesh := mesh_instance.mesh
-		if mesh == null:
-			continue
-
-		var shape := mesh.create_trimesh_shape()
-		if shape == null:
-			continue
-
-		var collision_shape := CollisionShape3D.new()
-		collision_shape.name = "%sGameplayCollision" % mesh_instance.name
-		collision_shape.shape = shape
-		collision_shape.transform = global_transform.affine_inverse() * mesh_instance.global_transform
-		_gameplay_collision_body.add_child(collision_shape)
-		collision_shape.owner = owner
-		_generated_collision_shapes.append(collision_shape)
-
-
-func _collect_visible_mesh_instances(root: Node) -> Array[MeshInstance3D]:
-	var result: Array[MeshInstance3D] = []
-	for child in root.get_children():
-		if child is MeshInstance3D:
-			var mesh_instance := child as MeshInstance3D
-			if mesh_instance.visible and mesh_instance.mesh != null:
-				result.append(mesh_instance)
-		result.append_array(_collect_visible_mesh_instances(child))
-	return result
+	for child in _gameplay_collision_body.get_children():
+		if child is CollisionShape3D:
+			_gameplay_collision_shapes.append(child as CollisionShape3D)
 
 
 func _apply_gameplay_collision_state() -> void:
 	var is_enabled := _gameplay_collision_enabled and _character_visible
-	for collision_shape in _generated_collision_shapes:
+	for collision_shape in _gameplay_collision_shapes:
 		if collision_shape != null:
 			collision_shape.disabled = not is_enabled

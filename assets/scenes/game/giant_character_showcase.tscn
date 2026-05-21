@@ -15,6 +15,9 @@ radius = 12.0
 [sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
 size = Vector3(107.62305, 18, 53.012695)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_follow_disable_trigger"]
+size = Vector3(120, 18, 18)
+
 [node name="GiantCharacterShowcase" type="Node3D" unique_id=1778353891]
 script = ExtResource("2_script")
 dialogue_resource = ExtResource("5_dialogue")
@@ -75,3 +78,11 @@ script = ExtResource("4_auto_trigger")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="AutoDialogueTrigger" unique_id=1833445175]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8.506348)
 shape = SubResource("BoxShape3D_trigger")
+
+[node name="FollowerDisableTrigger" type="Area3D" parent="." unique_id=1812755001]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -18)
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FollowerDisableTrigger" unique_id=1812755002]
+shape = SubResource("BoxShape3D_follow_disable_trigger")
