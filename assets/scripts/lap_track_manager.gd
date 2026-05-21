@@ -14,7 +14,7 @@ const RACE_RESULT_LOSE := &"lose"
 
 @export var lap_track_path: NodePath = ^"../LapTrack"
 @export var player_path: NodePath = ^"../PlayerCharacter"
-@export var npc_runner_path: NodePath = ^"../NpcRunner"
+@export var npc_runner_path: NodePath = ^"../NpcTurboSupersonicSonic"
 @export var npc_lane_runner_path: NodePath = ^"../NpcLaneRunner"
 @export var camera_rig_path: NodePath = ^"../CameraRig"
 @export var countdown_ui_path: NodePath = ^"../LapCountdownUi"

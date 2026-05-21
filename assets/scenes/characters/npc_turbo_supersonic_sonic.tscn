@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://chvhh60chh3pj"]
+
+[ext_resource type="PackedScene" path="res://assets/scenes/characters/race_challenger_npc.tscn" id="1_race_npc"]
+
+[node name="NpcTurboSupersonicSonic" instance=ExtResource("1_race_npc")]
+npc_dialogue_name = "ТурбоГонщикСверхзвуковойСоник"
+locomotion_speed_multiplier = 1.0
+
+[node name="InteractionTarget" parent="." index="3"]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="LookTracking" parent="." index="4"]
+collision_layer = 0
+collision_mask = 0
+monitoring = false

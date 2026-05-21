@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://ds7rcowipbcrj" path="res://assets/scenes/common/lap_track.tscn" id="1_lap_track"]
 [ext_resource type="PackedScene" uid="uid://dmb72unyvr0t3" path="res://assets/scenes/characters/player_character.tscn" id="2_player"]
-[ext_resource type="PackedScene" path="res://assets/scenes/characters/npc_lap_runner.tscn" id="3_npc_runner"]
+[ext_resource type="PackedScene" path="res://assets/scenes/characters/npc_turbo_supersonic_sonic.tscn" id="3_npc_runner"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/lap_camera_rig.tscn" id="4_camera_rig"]
 [ext_resource type="Script" uid="uid://cb5u8hgv00ycv" path="res://assets/scripts/lap_lane_runner.gd" id="5_lane_runner"]
 [ext_resource type="Script" uid="uid://dbjn2yb148gdq" path="res://assets/scripts/lap_track_showcase.gd" id="6_showcase"]
@@ -162,7 +162,7 @@ transform = Transform3D(0.5897147, 0, -0.20647334, 0, 0.7, 0, 0.20647334, 0, 0.5
 
 [node name="PlayerCharacter" parent="." unique_id=546921540 instance=ExtResource("2_player")]
 
-[node name="NpcRunner" parent="." unique_id=1175272748 instance=ExtResource("3_npc_runner")]
+[node name="NpcTurboSupersonicSonic" parent="." unique_id=1175272748 instance=ExtResource("3_npc_runner")]
 
 [node name="NpcLaneRunner" type="Node" parent="." unique_id=2068378393]
 script = ExtResource("5_lane_runner")

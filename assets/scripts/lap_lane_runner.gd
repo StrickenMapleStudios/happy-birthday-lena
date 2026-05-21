@@ -3,7 +3,7 @@ extends Node
 signal lap_completed(total_laps: int)
 
 @export var lap_track_path: NodePath = ^"../LapTrack"
-@export var runner_path: NodePath = ^"../NpcRunner"
+@export var runner_path: NodePath = ^"../NpcTurboSupersonicSonic"
 @export_enum("Inner", "Outer") var lane_side := 1
 @export_range(0.5, 4.0, 0.05) var root_motion_speed_multiplier := 1.35
 @export_range(0.25, 8.0, 0.05) var look_ahead_distance := 1.8

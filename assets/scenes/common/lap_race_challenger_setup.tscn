@@ -6,7 +6,7 @@
 
 [node name="LapRaceChallengerSetup" type="Node3D" unique_id=62719591]
 
-[node name="RaceChallenger" parent="." unique_id=885401511 instance=ExtResource("1_race_npc")]
+[node name="TurboSupersonicSonic" parent="." unique_id=885401511 instance=ExtResource("1_race_npc")]
 interaction_target_path = NodePath("InteractionTarget")
 race_dialogue_state_path = NodePath("RaceDialogueState")
 post_race_scene_path = "res://assets/scenes/game/test_movement.tscn"

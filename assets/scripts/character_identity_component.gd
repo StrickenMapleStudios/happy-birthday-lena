@@ -47,7 +47,7 @@ func get_validation_error() -> String:
 	if dialogue_name.is_empty():
 		return "Character dialogue name is empty."
 
-	if dialogue_name == "Хиёри":
+	if dialogue_name == "Хиёри" or dialogue_name == "ТурбоГонщикСверхзвуковойСоник":
 		return ""
 	if not CharacterNameRules.is_dialogue_name_valid(dialogue_name):
 		return "Character dialogue name '%s' does not match regex '%s'." % [
