@@ -52,19 +52,42 @@ func _restore_state() -> void:
 	_apply_state(saved_state)
 
 
+func restore_visibility_from_session() -> void:
+	_cache_session_identity()
+	var actor := get_parent() as Node3D
+	if actor == null or not actor.has_method("set_character_visible"):
+		return
+
+	var saved_state := GameSessionState.get_npc_state(_session_scene_path, _session_node_path)
+	var should_show_character := true
+	if saved_state.has("character_visible"):
+		should_show_character = bool(saved_state.get("character_visible", true))
+	# Visibility saved while follow was paused is dialogue-only and should not persist.
+	if bool(saved_state.get("follow_paused", false)):
+		should_show_character = true
+
+	actor.call("set_character_visible", should_show_character)
+
+
 func _capture_state() -> Dictionary:
 	var state := {}
 	var actor := get_parent() as Node3D
-	if actor != null:
+	if actor == null or not actor.is_inside_tree():
+		return state
+
+	if not _is_invalid_saved_transform(actor.global_transform):
 		state["global_transform"] = actor.global_transform
-		if actor.has_method("is_character_visible"):
-			state["character_visible"] = bool(actor.call("is_character_visible"))
 
 	var friend_follow_state := get_parent().get_node_or_null(FRIEND_FOLLOW_STATE_PATH)
+	var follow_paused := false
 	if friend_follow_state != null:
 		state["is_friend"] = bool(friend_follow_state.get("is_friend"))
 		if friend_follow_state.has_method("is_follow_paused"):
-			state["follow_paused"] = bool(friend_follow_state.call("is_follow_paused"))
+			follow_paused = bool(friend_follow_state.call("is_follow_paused"))
+			state["follow_paused"] = follow_paused
+
+	if actor.has_method("is_character_visible") and not follow_paused:
+		state["character_visible"] = bool(actor.call("is_character_visible"))
 
 	var interaction_target := get_parent().get_node_or_null(INTERACTION_TARGET_PATH) as InteractionTarget
 	if interaction_target != null:
@@ -82,12 +105,16 @@ func _apply_state(state: Dictionary) -> void:
 	if actor != null and state.has("global_transform"):
 		var saved_transform: Variant = state.get("global_transform")
 		if saved_transform is Transform3D:
-			actor.global_transform = saved_transform as Transform3D
+			var transform := saved_transform as Transform3D
+			if not _is_invalid_saved_transform(transform):
+				actor.global_transform = transform
 
 	var should_show_character := true
 	if state.has("character_visible"):
 		should_show_character = bool(state.get("character_visible", true))
-	if actor != null and state.has("character_visible") and actor.has_method("set_character_visible"):
+	if bool(state.get("follow_paused", false)) and not should_show_character:
+		should_show_character = true
+	if actor != null and actor.has_method("set_character_visible"):
 		actor.call("set_character_visible", should_show_character)
 
 	var friend_follow_state := get_parent().get_node_or_null(FRIEND_FOLLOW_STATE_PATH)
@@ -118,3 +145,7 @@ func _apply_state(state: Dictionary) -> void:
 	var dialogue_cycle_state := get_parent().get_node_or_null(DIALOGUE_CYCLE_STATE_PATH)
 	if dialogue_cycle_state != null and state.has("who_are_you_loop_count"):
 		dialogue_cycle_state.set("who_are_you_loop_count", int(state.get("who_are_you_loop_count", 0)))
+
+
+func _is_invalid_saved_transform(transform: Transform3D) -> bool:
+	return transform.origin.is_equal_approx(Vector3.ZERO) and transform.basis.is_equal_approx(Basis.IDENTITY)

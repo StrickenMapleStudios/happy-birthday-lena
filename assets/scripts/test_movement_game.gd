@@ -152,7 +152,6 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
-	SessionStatePersistence.flush_scene_npc_states(self)
 	_kill_inventory_time_scale_tween()
 	_set_inventory_time_scale(INVENTORY_TIME_SCALE_CLOSED)
 
@@ -605,6 +604,7 @@ func _return_to_main_menu() -> void:
 	_focus_before_pause = null
 	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY, AUDIO_PRESET_FADE_DURATION)
 	_sync_input_context()
+	SessionStatePersistence.flush_scene_npc_states(self)
 	await SceneTransition.change_scene_to_file(MAIN_MENU_SCENE_PATH)
 
 
@@ -1178,7 +1178,6 @@ func _restore_dialogue_animation_mode(actor: Node3D) -> void:
 
 
 func _hide_follower_actors_for_dialogue() -> void:
-	_hidden_follower_actors.clear()
 	_visible_dialogue_follower_actors.clear()
 	var tree := get_tree()
 	if tree == null:
@@ -1198,6 +1197,8 @@ func _hide_follower_actors_for_dialogue() -> void:
 			if follower.has_method("pause_following_for_dialogue"):
 				follower.call("pause_following_for_dialogue")
 				_visible_dialogue_follower_actors.append(follower)
+			continue
+		if follower in _hidden_follower_actors:
 			continue
 		if follower.has_method("pause_as_follower_during_dialogue"):
 			follower.call("pause_as_follower_during_dialogue")
@@ -1227,6 +1228,17 @@ func _prepare_scene_for_pending_post_race_dialogue() -> void:
 	var dialogue_npc := get_node_or_null(npc_path) as Node3D
 	_dialogue_target_actor = dialogue_npc
 	_suppress_scene_npcs_for_post_race_dialogue(dialogue_npc)
+
+
+func _restore_all_npc_visibility_from_session() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+
+	for state_node in tree.get_nodes_in_group(&"npc_session_state"):
+		if state_node == null or not state_node.has_method("restore_visibility_from_session"):
+			continue
+		state_node.call("restore_visibility_from_session")
 
 
 func _suppress_scene_npcs_for_post_race_dialogue(dialogue_npc: Node3D) -> void:
@@ -1274,6 +1286,8 @@ func _restore_follower_actors_after_dialogue() -> void:
 			continue
 		if actor.has_method("resume_as_follower_after_dialogue"):
 			actor.call("resume_as_follower_after_dialogue")
+		elif actor.has_method("set_character_visible"):
+			actor.call("set_character_visible", true)
 
 	_hidden_follower_actors.clear()
 	for actor in _visible_dialogue_follower_actors:
@@ -1283,6 +1297,7 @@ func _restore_follower_actors_after_dialogue() -> void:
 			actor.call("resume_following_after_dialogue")
 
 	_visible_dialogue_follower_actors.clear()
+	_restore_all_npc_visibility_from_session()
 
 
 func _on_reward_spawned(_source_id: StringName, marker: RewardMarker, _pickup: PickupItem) -> void:

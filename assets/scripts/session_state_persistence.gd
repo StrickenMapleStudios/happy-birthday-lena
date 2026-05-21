@@ -25,7 +25,9 @@ static func flush_scene_npc_states(scene_root: Node) -> void:
 
 static func _flush_npc_states_recursive(node: Node) -> void:
 	if node.is_in_group(NPC_SESSION_STATE_GROUP) and node.has_method("save_state"):
-		node.call("save_state")
+		var actor := node.get_parent()
+		if actor != null and actor.is_inside_tree():
+			node.call("save_state")
 
 	for child in node.get_children():
 		_flush_npc_states_recursive(child)

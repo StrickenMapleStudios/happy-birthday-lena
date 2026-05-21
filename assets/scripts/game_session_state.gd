@@ -45,7 +45,14 @@ func save_npc_state(scene_path: String, node_path: NodePath, npc_state: Dictiona
 		return
 
 	var scene_npcs: Dictionary = _npc_states_by_scene.get(scene_path, {})
-	scene_npcs[String(node_path)] = npc_state.duplicate(true)
+	var node_key := String(node_path)
+	var merged_state: Dictionary = {}
+	var existing_state: Variant = scene_npcs.get(node_key, {})
+	if typeof(existing_state) == TYPE_DICTIONARY:
+		merged_state = (existing_state as Dictionary).duplicate(true)
+	for key in npc_state:
+		merged_state[key] = npc_state[key]
+	scene_npcs[node_key] = merged_state
 	_npc_states_by_scene[scene_path] = scene_npcs
 
 
