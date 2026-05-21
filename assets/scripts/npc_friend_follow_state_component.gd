@@ -114,6 +114,10 @@ func resume_following() -> void:
 	_last_requested_target = Vector3.INF
 
 
+func is_follow_paused() -> bool:
+	return _follow_paused
+
+
 func set_gameplay_follow_enabled(value: bool) -> void:
 	if _gameplay_follow_enabled == value:
 		return

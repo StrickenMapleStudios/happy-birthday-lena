@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bbj2hguv3jer5" path="res://assets/scenes/common/torch_light.tscn" id="4_torch_light"]
 [ext_resource type="Script" uid="uid://wmpareqch47r" path="res://assets/scripts/interaction_target.gd" id="5_interaction_target"]
 [ext_resource type="Resource" uid="uid://e4btrqkr3fah" path="res://assets/dialogue/cake_conversation.dialogue" id="6_cake_dialogue"]
-[ext_resource type="Script" path="res://assets/scripts/cake_dialogue_state.gd" id="7_cake_dialogue_state"]
+[ext_resource type="Script" uid="uid://qnjae4do8pus" path="res://assets/scripts/cake_dialogue_state.gd" id="7_cake_dialogue_state"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ym06s"]
 size = Vector3(23.349854, 3.1658936, 5.401367)
@@ -18,7 +18,7 @@ size = Vector3(10, 4, 4)
 [node name="MysteryRoomCutscene" type="Node3D" unique_id=46491078]
 script = ExtResource("2_cutscene")
 
-[node name="CakeDialogueState" type="Node" parent="."]
+[node name="CakeDialogueState" type="Node" parent="." unique_id=1699858056]
 script = ExtResource("7_cake_dialogue_state")
 
 [node name="MysteryRoom" parent="." unique_id=1521331465 instance=ExtResource("1_mystery_room")]
@@ -32,9 +32,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.73884475, 0)
 [node name="cake" parent="MysteryRoom/Stand_Stairs/Stand" index="0" unique_id=847802907 instance=ExtResource("3_6toka")]
 transform = Transform3D(0.61, 0, 0, 0, 0.61, 0, 0, 0, 0.61, 0, 3.110065, 0)
 
-[node name="CandleLight" type="OmniLight3D" parent="MysteryRoom/Stand_Stairs/Stand/cake"]
+[node name="CandleLight" type="OmniLight3D" parent="MysteryRoom/Stand_Stairs/Stand/cake" unique_id=86194053]
+transform = Transform3D(0.9099119, 0, 0, 0, 0.9099119, 0, 0, 0, 0.9099119, 0, 1.6834774, 0)
 visible = false
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, 0)
 light_color = Color(1, 0.82, 0.55, 1)
 light_energy = 4.0
 light_indirect_energy = 0.15

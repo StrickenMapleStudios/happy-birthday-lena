@@ -16,11 +16,6 @@ func _ready() -> void:
 	call_deferred("_initialize_session_state")
 
 
-func _initialize_session_state() -> void:
-	_cache_session_identity()
-	_restore_state()
-
-
 func save_state() -> void:
 	if GameSessionState == null or _session_scene_path.is_empty() or _session_node_path.is_empty():
 		return
@@ -41,6 +36,11 @@ func _cache_session_identity() -> void:
 	_session_node_path = current_scene.get_path_to(actor)
 
 
+func _initialize_session_state() -> void:
+	_cache_session_identity()
+	_restore_state()
+
+
 func _restore_state() -> void:
 	if GameSessionState == null or _session_scene_path.is_empty() or _session_node_path.is_empty():
 		return
@@ -54,10 +54,17 @@ func _restore_state() -> void:
 
 func _capture_state() -> Dictionary:
 	var state := {}
+	var actor := get_parent() as Node3D
+	if actor != null:
+		state["global_transform"] = actor.global_transform
+		if actor.has_method("is_character_visible"):
+			state["character_visible"] = bool(actor.call("is_character_visible"))
 
 	var friend_follow_state := get_parent().get_node_or_null(FRIEND_FOLLOW_STATE_PATH)
 	if friend_follow_state != null:
 		state["is_friend"] = bool(friend_follow_state.get("is_friend"))
+		if friend_follow_state.has_method("is_follow_paused"):
+			state["follow_paused"] = bool(friend_follow_state.call("is_follow_paused"))
 
 	var interaction_target := get_parent().get_node_or_null(INTERACTION_TARGET_PATH) as InteractionTarget
 	if interaction_target != null:
@@ -71,6 +78,18 @@ func _capture_state() -> Dictionary:
 
 
 func _apply_state(state: Dictionary) -> void:
+	var actor := get_parent() as Node3D
+	if actor != null and state.has("global_transform"):
+		var saved_transform: Variant = state.get("global_transform")
+		if saved_transform is Transform3D:
+			actor.global_transform = saved_transform as Transform3D
+
+	var should_show_character := true
+	if state.has("character_visible"):
+		should_show_character = bool(state.get("character_visible", true))
+	if actor != null and state.has("character_visible") and actor.has_method("set_character_visible"):
+		actor.call("set_character_visible", should_show_character)
+
 	var friend_follow_state := get_parent().get_node_or_null(FRIEND_FOLLOW_STATE_PATH)
 	if friend_follow_state != null and state.has("is_friend"):
 		var should_be_friend := bool(state.get("is_friend", false))
@@ -79,9 +98,18 @@ func _apply_state(state: Dictionary) -> void:
 		else:
 			friend_follow_state.set("is_friend", should_be_friend)
 			if should_be_friend:
-				var actor := get_parent()
 				if actor != null and not actor.is_in_group(&"friendly_followers"):
 					actor.add_to_group(&"friendly_followers")
+			elif actor != null:
+				actor.remove_from_group(&"friendly_followers")
+
+		var should_pause_follow := state.has("follow_paused") and bool(state.get("follow_paused", false))
+		if state.has("character_visible"):
+			should_pause_follow = should_pause_follow or not should_show_character
+		if should_pause_follow and friend_follow_state.has_method("pause_following"):
+			friend_follow_state.call("pause_following")
+		elif should_be_friend and friend_follow_state.has_method("resume_following"):
+			friend_follow_state.call("resume_following")
 
 	var interaction_target := get_parent().get_node_or_null(INTERACTION_TARGET_PATH) as InteractionTarget
 	if interaction_target != null and state.has("interaction_enabled"):

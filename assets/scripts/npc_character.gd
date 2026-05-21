@@ -44,6 +44,7 @@ var _saved_animation_tree: AnimationTree
 var _saved_companion_dialogue_transform := Transform3D.IDENTITY
 var _external_motion_enabled := false
 var _feet_height_offset := CharacterGroundSnap.DEFAULT_FEET_HEIGHT_OFFSET
+var _character_visible := true
 
 
 func _ready() -> void:
@@ -81,9 +82,14 @@ func _process(delta: float) -> void:
 
 
 func set_character_visible(value: bool) -> void:
+	_character_visible = value
 	var visual_root := get_node_or_null(visual_root_path) as Node3D
 	if visual_root != null:
 		visual_root.visible = value
+
+
+func is_character_visible() -> bool:
+	return _character_visible
 
 
 func enter_dialogue_animation_mode(_is_talking: bool) -> void:

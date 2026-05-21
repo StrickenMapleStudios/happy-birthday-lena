@@ -391,7 +391,8 @@ func _run_finish_sequence() -> void:
 	var return_scene_path := DEFAULT_RETURN_SCENE_PATH
 	if LapRaceFlow != null and LapRaceFlow.has_method("get_return_scene_path"):
 		return_scene_path = String(LapRaceFlow.call("get_return_scene_path", DEFAULT_RETURN_SCENE_PATH))
-	await SceneTransition.change_scene_to_file(return_scene_path, finish_fade_duration, 0.35)
+	await SceneTransition.change_scene_to_file(return_scene_path, finish_fade_duration, 0.0)
+	SceneTransition.ensure_black()
 
 
 func _queue_finish_reward() -> void:

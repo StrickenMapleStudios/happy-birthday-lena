@@ -140,6 +140,8 @@ func _ready() -> void:
 			RewardService.connect("reward_spawned", Callable(self, "_on_reward_spawned"))
 		RewardService.call("spawn_pending_rewards", self)
 	_capture_pending_lap_race_return()
+	if not _pending_lap_return_context.is_empty():
+		_prepare_scene_for_pending_post_race_dialogue()
 	_try_start_reward_demonstration()
 	_resume_pending_lap_race_return_if_ready()
 	_refresh_cursor_mode()
@@ -666,6 +668,7 @@ func _set_dialogue_speaker(speaker: Node3D, dialogue_line: DialogueLine = null) 
 	var camera_actor := _get_dialogue_camera_actor(speaker, dialogue_line)
 	_apply_dialogue_animation_roles(speaker)
 	player.set_character_visible(speaker == player or camera_actor == player)
+	_refresh_dialogue_companion_visibility(speaker, camera_actor)
 	if is_instance_valid(_dialogue_target_actor) and _dialogue_target_actor.has_method("set_character_visible"):
 		var should_show_target_actor := (
 			speaker == _dialogue_target_actor
@@ -1198,6 +1201,42 @@ func _hide_follower_actors_for_dialogue() -> void:
 			_hidden_follower_actors.append(follower)
 
 
+func _prepare_scene_for_pending_post_race_dialogue() -> void:
+	var player_transform: Variant = _pending_lap_return_context.get("player_transform")
+	if player_transform is Transform3D:
+		player.global_transform = player_transform as Transform3D
+
+	_pause_all_followers_for_dialogue()
+
+
+func _pause_all_followers_for_dialogue() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+
+	for actor in tree.get_nodes_in_group(&"friendly_followers"):
+		var follower := actor as Node3D
+		if follower == null or follower == player:
+			continue
+		if follower.has_method("pause_as_follower_during_dialogue"):
+			follower.call("pause_as_follower_during_dialogue")
+
+
+func _refresh_dialogue_companion_visibility(speaker: Node3D, camera_actor: Node3D) -> void:
+	for actor in _hidden_follower_actors:
+		if actor == null:
+			continue
+		if actor.has_method("set_character_visible"):
+			actor.call("set_character_visible", false)
+
+	for actor in _visible_dialogue_follower_actors:
+		if actor == null:
+			continue
+		var should_show := actor == speaker or actor == camera_actor
+		if actor.has_method("set_character_visible"):
+			actor.call("set_character_visible", should_show)
+
+
 func _restore_follower_actors_after_dialogue() -> void:
 	for actor in _hidden_follower_actors:
 		if actor == null:
@@ -1386,7 +1425,11 @@ func _sync_follower_gameplay_state() -> void:
 	if tree == null:
 		return
 
-	var follow_enabled := _input_context == InputContext.GAMEPLAY
+	var follow_enabled := (
+		_input_context == InputContext.GAMEPLAY
+		and not _dialogue_active
+		and _pending_lap_return_context.is_empty()
+	)
 	for actor in tree.get_nodes_in_group(&"friendly_followers"):
 		if actor == null:
 			continue
@@ -1677,6 +1720,9 @@ func _start_dialogue_with_target_while_faded(
 	_set_dialogue_speaker(_dialogue_target_actor)
 	_sync_input_context()
 	_start_dialogue_balloon(dialogue_resource, target.get_dialogue_start_title())
+	await get_tree().process_frame
+	if SceneTransition.is_screen_black():
+		await SceneTransition.fade_in()
 	_interaction_locked = false
 	_sync_input_context()
 
@@ -1720,6 +1766,9 @@ func _transition_from_dialogue_to_race(actor: Node3D) -> void:
 	_restore_player_transform_after_sequence = true
 	AudioService.apply_mix_preset(AUDIO_PRESET_GAMEPLAY, AUDIO_PRESET_FADE_DURATION)
 	_sync_input_context()
+	var current_scene := get_tree().current_scene
+	if current_scene != null:
+		SessionStatePersistence.flush_scene_npc_states(current_scene)
 	await get_tree().process_frame
 	if is_instance_valid(actor) and actor.has_method("start_race_transition"):
 		await actor.call("start_race_transition")

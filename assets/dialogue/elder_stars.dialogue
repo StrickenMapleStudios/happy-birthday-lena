@@ -17,8 +17,6 @@
 - Понятно.
 	Лена: Буду иметь в виду.
 	Старец: Смотри вверх почаще.
-	if has_presentable_followers
-		=> friends_prompt
 	=> END
 
 ~ gathering
@@ -30,13 +28,9 @@
 - Послушаю ещё.
 	Лена: Расскажите, когда будет "достаточно".
 	Старец: Когда шестая звезда встанет на одной линии с твоим сердцем.
-	if has_presentable_followers
-		=> friends_prompt
 	=> END
 - Мне пора.
 	Лена: Вернусь позже.
-	if has_presentable_followers
-		=> friends_prompt
 	=> END
 
 ~ constellation_ready
@@ -49,14 +43,10 @@
 	Лена: Я приму. Спасибо, старец.
 	do queue_constellation_reward()
 	Старец: Забирай. Пусть каждая звезда помнит дорогу домой.
-	if has_presentable_followers
-		=> friends_prompt
 	=> END
 - Ещё не время.
 	Лена: Я вернусь, когда буду готова.
 	Старец: Созвездие потерпит. Огоньки никуда не денутся.
-	if has_presentable_followers
-		=> friends_prompt
 	=> END
 
 ~ reward_claimed
@@ -66,80 +56,4 @@
 - До свидания.
 	Лена: До встречи, старец.
 	Старец: Иди. Ночь ещё молода.
-	if has_presentable_followers
-		=> friends_prompt
 	=> END
-
-~ friends_prompt
-Старец: Не хочешь представить своих друзей?
-Лена: Думаю, они справятся сами.
-=> friends_roll_call
-
-~ friends_roll_call
-if has_not_lena
-	=> friend_not_lena
-if has_anti_lena
-	=> friend_anti_lena
-if has_anti_not_lena
-	=> friend_anti_not_lena
-if has_not_anti_lena
-	=> friend_not_anti_lena
-if has_hiyori
-	=> friend_hiyori
-=> friends_roll_call_done
-
-~ friend_not_lena
-НеЛена: Я НеЛена.
-=> after_friend_not_lena
-
-~ after_friend_not_lena
-if has_anti_lena
-	=> friend_anti_lena
-if has_anti_not_lena
-	=> friend_anti_not_lena
-if has_not_anti_lena
-	=> friend_not_anti_lena
-if has_hiyori
-	=> friend_hiyori
-=> friends_roll_call_done
-
-~ friend_anti_lena
-АнтиЛена: Я АнтиЛена.
-=> after_friend_anti_lena
-
-~ after_friend_anti_lena
-if has_anti_not_lena
-	=> friend_anti_not_lena
-if has_not_anti_lena
-	=> friend_not_anti_lena
-if has_hiyori
-	=> friend_hiyori
-=> friends_roll_call_done
-
-~ friend_anti_not_lena
-АнтиНеЛена: Я АнтиНеЛена.
-=> after_friend_anti_not_lena
-
-~ after_friend_anti_not_lena
-if has_not_anti_lena
-	=> friend_not_anti_lena
-if has_hiyori
-	=> friend_hiyori
-=> friends_roll_call_done
-
-~ friend_not_anti_lena
-НеАнтиЛена: Я НеАнтиЛена.
-=> after_friend_not_anti_lena
-
-~ after_friend_not_anti_lena
-if has_hiyori
-	=> friend_hiyori
-=> friends_roll_call_done
-
-~ friend_hiyori
-Хиёри: Я Хиёри.
-=> friends_roll_call_done
-
-~ friends_roll_call_done
-Старец: Хорошо. Теперь я вижу ваше созвездие целиком.
-=> END
