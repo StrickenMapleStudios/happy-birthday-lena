@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" path="res://assets/art/sprites/play-button-arrowhead.png" id="6_play_icon"]
 [ext_resource type="Texture2D" path="res://assets/art/sprites/gear-icon.png" id="7_gear_icon"]
 [ext_resource type="Texture2D" path="res://assets/art/sprites/exit-icon.png" id="8_exit_icon"]
+[ext_resource type="Texture2D" path="res://assets/art/sprites/scroll.png" id="9_credits_icon"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_dark"]
 content_margin_left = 42.0
@@ -145,6 +146,25 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
 icon_alignment = 0
 icon = ExtResource("7_gear_icon")
 text = "OPTIONS"
+alignment = 0
+
+[node name="CreditsButton" type="Button" parent="SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack"]
+custom_minimum_size = Vector2(520, 84)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/h_separation = 18
+theme_override_constants/icon_max_width = 28
+theme_override_colors/font_color = Color(0.968627, 0.968627, 0.968627, 1)
+theme_override_colors/font_pressed_color = Color(0.921569, 0.921569, 0.921569, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 34
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_dark")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_gold")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_gold")
+icon_alignment = 0
+icon = ExtResource("9_credits_icon")
+text = "CREDITS"
 alignment = 0
 
 [node name="ExitButton" type="Button" parent="SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack"]

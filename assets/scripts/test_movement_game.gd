@@ -1,6 +1,7 @@
 extends Node3D
 
 const MAIN_MENU_SCENE_PATH := "res://assets/scenes/menu/menu_main.tscn"
+const CREDITS_SCENE_PATH := "res://assets/scenes/game/credits_scene.tscn"
 const DIALOGUE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/dialogue_pause_menu.tscn")
 const CUTSCENE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/cutscene_pause_menu.tscn")
 const LABYRINTH_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/labyrinth_pause_menu.tscn")
@@ -32,6 +33,8 @@ const INVENTORY_TIME_SCALE_CLOSED := 1.0
 const INVENTORY_TIME_SCALE_OPEN := 0.0
 const DEFAULT_GAME_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
 const SCENE_ENTRY_FADE_IN_DURATION := 0.75
+const CREDITS_VISIBLE_SECONDS := 15.0
+const CREDITS_END_FADE_OUT_DURATION := 3.0
 const BIRTHDAY_FINALE_HOLD_SECONDS := 3.0
 const BIRTHDAY_FINALE_POST_FADE_DELAY_SECONDS := 1.0
 const LABYRINTH_REWARD_SOURCE_ID := &"labyrinth_exit_reward"
@@ -301,13 +304,19 @@ func _start_giant_credits_sequence_deferred() -> void:
 	if not can_start_giant_credits_sequence():
 		return
 
-	var credits_showcase := _find_giant_credits_showcase()
-	if credits_showcase == null:
-		push_warning("Giant credits showcase was not found in the current scene.")
-		return
-
 	_credits_start_pending = true
-	call_deferred("_run_giant_credits_sequence", credits_showcase)
+	call_deferred("_transition_to_credits_scene")
+
+
+func _transition_to_credits_scene() -> void:
+	_credits_start_pending = false
+	_interaction_locked = true
+	_set_input_context(InputContext.TRANSITION)
+	player.set_controls_enabled(false)
+	interaction_source.set_interaction_enabled(false)
+	gameplay_ui_layer.set_world_ui_visible(false)
+	SessionStatePersistence.flush_scene_npc_states(self)
+	await SceneTransition.change_scene_to_file(CREDITS_SCENE_PATH)
 
 
 func _start_dialogue_with_target(
@@ -1397,14 +1406,10 @@ func _run_giant_credits_sequence(credits_showcase: Node) -> void:
 	_interaction_locked = false
 	_sync_input_context()
 
-	var credits_duration := 45.0
-	if credits_showcase.has_method("get_credits_duration"):
-		credits_duration = float(credits_showcase.call("get_credits_duration"))
-
-	if credits_duration <= 0.0:
+	if CREDITS_VISIBLE_SECONDS <= 0.0:
 		_credits_finished_requested = true
 	else:
-		var credits_timer := get_tree().create_timer(credits_duration, false)
+		var credits_timer := get_tree().create_timer(CREDITS_VISIBLE_SECONDS, false)
 		credits_timer.timeout.connect(func() -> void: _credits_finished_requested = true, CONNECT_ONE_SHOT)
 
 	while not _credits_skip_requested and not _credits_finished_requested:
@@ -1412,7 +1417,7 @@ func _run_giant_credits_sequence(credits_showcase: Node) -> void:
 
 	_interaction_locked = true
 	_set_input_context(InputContext.TRANSITION)
-	await SceneTransition.fade_out()
+	await SceneTransition.fade_out(CREDITS_END_FADE_OUT_DURATION)
 
 	if credits_showcase.has_method("end_credits"):
 		credits_showcase.call("end_credits")

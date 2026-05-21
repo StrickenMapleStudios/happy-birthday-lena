@@ -1,6 +1,7 @@
 extends Control
 
 const PLAY_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
+const CREDITS_SCENE_PATH := "res://assets/scenes/game/credits_scene.tscn"
 const SCENE_FADE_OUT_DURATION := 0.75
 const SCENE_FADE_IN_DURATION := 0.75
 const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
@@ -12,6 +13,7 @@ const MENU_CONTENT_UNSCALED_SIZE := Vector2(900.0, 888.0)
 @onready var menu_content_scale: Control = $SafeMargin/Layout/MenuContentScale
 @onready var sidebar: VBoxContainer = $SafeMargin/Layout/MenuContentScale/Sidebar
 @onready var play_button: Button = $SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/PlayButton
+@onready var credits_button: Button = $SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/CreditsButton
 @onready var options_button: Button = $SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/OptionsButton
 @onready var exit_button: Button = $SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/ExitButton
 @onready var options_screen: Control = $SafeMargin/Layout/MenuContentScale/OptionsPanel
@@ -20,11 +22,13 @@ const MENU_CONTENT_UNSCALED_SIZE := Vector2(900.0, 888.0)
 @onready var menu_buttons: Array[Button] = [
 	$SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/PlayButton,
 	$SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/OptionsButton,
+	$SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/CreditsButton,
 	$SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/ExitButton,
 ]
 
 var _exit_in_progress := false
 var _play_in_progress := false
+var _credits_in_progress := false
 var _ui_transition_locked := false
 
 
@@ -32,6 +36,7 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_update_menu_content_scale)
 	_update_menu_content_scale()
 	play_button.pressed.connect(_on_play_pressed)
+	credits_button.pressed.connect(_on_credits_pressed)
 	options_button.pressed.connect(_show_options_screen)
 	exit_button.pressed.connect(_on_exit_pressed)
 	UINavigation.bind_hover_focus_controls(menu_buttons)
@@ -96,6 +101,17 @@ func _on_play_pressed() -> void:
 		_set_character_standing(true)
 	await SceneTransition.fade_out(SCENE_FADE_OUT_DURATION)
 	await SceneTransition.change_scene_to_file_from_faded_state(PLAY_SCENE_PATH, SCENE_FADE_IN_DURATION)
+
+
+func _on_credits_pressed() -> void:
+	if _credits_in_progress:
+		return
+
+	_credits_in_progress = true
+	_begin_ui_transition_lock()
+	SceneTransition.preload_scene(CREDITS_SCENE_PATH)
+	await SceneTransition.fade_out(SCENE_FADE_OUT_DURATION)
+	await SceneTransition.change_scene_to_file_from_faded_state(CREDITS_SCENE_PATH, SCENE_FADE_IN_DURATION)
 
 
 func _on_exit_pressed() -> void:

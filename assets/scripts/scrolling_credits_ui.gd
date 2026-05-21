@@ -21,7 +21,10 @@ const TEMPLATE_PROFESSIONS := [
 @export var credit_name := DEFAULT_CREDIT_NAME
 @export var professions: PackedStringArray = PackedStringArray(TEMPLATE_PROFESSIONS)
 @export_range(10.0, 200.0, 1.0) var scroll_speed := 42.0
-@export_range(0.0, 1.0, 0.01) var dim_strength := 0.42
+@export_range(0.0, 4.0, 0.01) var blur_strength := 1.45
+@export_range(0.0, 1.0, 0.01) var dim_strength := 0.08
+@export_range(0.0, 10.0, 0.01) var blur_delay_seconds := 0.875
+@export_range(0.0, 5.0, 0.01) var blur_fade_duration := 0.3
 @export_range(0, 256, 1) var role_font_size := 34
 @export_range(0, 256, 1) var name_font_size := 34
 @export_range(0.0, 400.0, 1.0) var row_spacing := 28.0
@@ -33,13 +36,13 @@ const TEMPLATE_PROFESSIONS := [
 @onready var _entries: VBoxContainer = $ClipContainer/CreditsScroll/Entries
 
 var _scrolling := false
+var _blur_tween: Tween
 
 
 func _ready() -> void:
 	visible = false
 	_build_entries()
-	if _dim_overlay != null:
-		_dim_overlay.color = Color(0.0, 0.0, 0.0, dim_strength)
+	_apply_blur_state_immediately(0.0)
 
 
 func _process(delta: float) -> void:
@@ -54,10 +57,13 @@ func start_scrolling() -> void:
 	_scroll_root.position.y = top_padding
 	_scrolling = true
 	visible = true
+	_schedule_delayed_blur()
 
 
 func stop_scrolling() -> void:
 	_scrolling = false
+	_kill_blur_tween()
+	_apply_blur_state_immediately(0.0)
 	visible = false
 
 
@@ -115,3 +121,41 @@ func _create_entry_row(profession: String) -> Control:
 	row.add_child(name_label)
 
 	return row
+
+
+func _schedule_delayed_blur() -> void:
+	_kill_blur_tween()
+	_apply_blur_state_immediately(0.0)
+	if _dim_overlay == null:
+		return
+
+	_blur_tween = create_tween()
+	_blur_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	if blur_delay_seconds > 0.0:
+		_blur_tween.tween_interval(blur_delay_seconds)
+	var blur_material := _dim_overlay.material as ShaderMaterial
+	if blur_material == null:
+		return
+	_blur_tween.tween_method(_set_blur_amount, 0.0, blur_strength, blur_fade_duration)
+
+
+func _set_blur_amount(value: float) -> void:
+	if _dim_overlay == null:
+		return
+
+	var blur_material := _dim_overlay.material as ShaderMaterial
+	if blur_material == null:
+		return
+
+	blur_material.set_shader_parameter("blur_lod", value)
+	blur_material.set_shader_parameter("tint_color", Color(0.18, 0.2, 0.16, dim_strength))
+
+
+func _apply_blur_state_immediately(value: float) -> void:
+	_set_blur_amount(value)
+
+
+func _kill_blur_tween() -> void:
+	if _blur_tween != null and _blur_tween.is_valid():
+		_blur_tween.kill()
+	_blur_tween = null

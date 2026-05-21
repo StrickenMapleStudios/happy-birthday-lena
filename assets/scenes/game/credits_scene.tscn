@@ -1,0 +1,63 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://assets/scripts/credits_scene.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://dwinqt4ms18vm" path="res://assets/scenes/game/giant_character_showcase.tscn" id="2_showcase"]
+[ext_resource type="PackedScene" path="res://assets/scenes/ui/scrolling_credits_ui.tscn" id="3_credits_ui"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_credits"]
+sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)
+sky_horizon_color = Color(0.729412, 0.882353, 0.984314, 1)
+ground_bottom_color = Color(0.286275, 0.317647, 0.270588, 1)
+ground_horizon_color = Color(0.54902, 0.596078, 0.486275, 1)
+
+[sub_resource type="Sky" id="Sky_credits"]
+sky_material = SubResource("ProceduralSkyMaterial_credits")
+
+[sub_resource type="Environment" id="Environment_credits"]
+background_mode = 2
+sky = SubResource("Sky_credits")
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.2
+reflected_light_source = 1
+tonemap_mode = 2
+ssao_enabled = true
+ssao_radius = 0.45
+ssao_intensity = 1.6
+ssao_power = 1.8
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_credits_ground"]
+size = Vector2(600, 600)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_credits_ground"]
+albedo_color = Color(0.439216, 0.529412, 0.372549, 1)
+
+[node name="CreditsScene" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_credits")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.2897544, 0.7768078, -0.5592183, -1.5423211e-08, 0.58375525, 0.81192946, 0.95702, -0.23507911, 0.16952161, 0, 5.18316, 0)
+light_color = Color(1, 0.952941, 0.858824, 1)
+light_energy = 0.85
+light_cull_mask = 1
+shadow_enabled = true
+shadow_bias = 0.02
+shadow_normal_bias = 0.12
+directional_shadow_blend_splits = true
+directional_shadow_fade_start = 0.75
+directional_shadow_max_distance = 1301.8
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.014071941, -0.029748935, 0.002511382)
+mesh = SubResource("PlaneMesh_credits_ground")
+surface_material_override/0 = SubResource("StandardMaterial3D_credits_ground")
+
+[node name="GiantCharacterShowcase" parent="." instance=ExtResource("2_showcase")]
+
+[node name="CreditsCanvas" type="CanvasLayer" parent="."]
+layer = 60
+
+[node name="ScrollingCreditsUI" parent="CreditsCanvas" instance=ExtResource("3_credits_ui")]
