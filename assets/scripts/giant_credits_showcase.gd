@@ -54,8 +54,8 @@ func _stop_giants_dancing() -> void:
 
 
 func _close_gate_for_credits() -> void:
-	if _wall_with_door != null and _wall_with_door.has_method("close_doors"):
-		_wall_with_door.call("close_doors")
+	if _wall_with_door != null and _wall_with_door.has_method("close_doors_immediately"):
+		_wall_with_door.call("close_doors_immediately")
 
 
 func _set_credits_ui_active(is_active: bool) -> void:

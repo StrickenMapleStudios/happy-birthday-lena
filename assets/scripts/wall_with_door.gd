@@ -35,6 +35,15 @@ func close_doors() -> void:
 	_tween_global_y_rotation(_left_pivot, _left_door_closed_yaw)
 
 
+func close_doors_immediately() -> void:
+	if not _ensure_door_pivots():
+		return
+
+	_doors_opened = false
+	_right_pivot.global_rotation.y = _right_door_closed_yaw
+	_left_pivot.global_rotation.y = _left_door_closed_yaw
+
+
 func are_doors_open() -> bool:
 	return _doors_opened
 
