@@ -4,6 +4,7 @@ const PLAY_SCENE_PATH := "res://assets/scenes/game/test_movement.tscn"
 const CREDITS_SCENE_PATH := "res://assets/scenes/game/credits_scene.tscn"
 const SCENE_FADE_OUT_DURATION := 0.75
 const SCENE_FADE_IN_DURATION := 0.75
+const EXIT_FADE_OUT_DURATION := 0.5
 const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
 const MENU_CONTENT_BASE_SCALE := 1.2
 const MENU_REFERENCE_SIZE := Vector2(1920.0, 1080.0)
@@ -149,6 +150,7 @@ func _confirm_exit() -> void:
 	if menu_character != null and menu_character.has_method("play_goodbye"):
 		await menu_character.call("play_goodbye")
 
+	await SceneTransition.fade_out(EXIT_FADE_OUT_DURATION)
 	get_tree().quit.call_deferred()
 
 
