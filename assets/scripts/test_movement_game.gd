@@ -43,6 +43,7 @@ const LAP_REWARD_SOURCE_ID := &"lap_finish_reward"
 const LAP_REWARD_MARKER_ID := &"lap_finish_reward_marker"
 const BRASS_KEY_ITEM := preload("res://assets/data/items/brass_key_item.tres")
 const GIANT_CREDITS_SHOWCASE_GROUP := &"giant_credits_showcase"
+const GAMEPLAY_COLLISION_GROUP := &"gameplay_collision_state_receivers"
 
 const CURSOR_MODE_INGAME := Input.MOUSE_MODE_CAPTURED
 const CURSOR_MODE_UI := Input.MOUSE_MODE_VISIBLE
@@ -161,6 +162,7 @@ func _ready() -> void:
 		if RewardService.has_signal("reward_spawned") and not RewardService.is_connected("reward_spawned", Callable(self, "_on_reward_spawned")):
 			RewardService.connect("reward_spawned", Callable(self, "_on_reward_spawned"))
 		RewardService.call("spawn_pending_rewards", self)
+	_sync_gameplay_collision_state()
 	_capture_pending_lap_race_return()
 	if not _pending_lap_return_context.is_empty():
 		_post_race_return_active = true
@@ -170,6 +172,7 @@ func _ready() -> void:
 		_resume_pending_lap_race_return_if_ready()
 		_refresh_cursor_mode()
 		_sync_follower_gameplay_state()
+		_sync_gameplay_collision_state()
 		call_deferred("_ensure_scene_entry_fade_in")
 
 
@@ -1126,6 +1129,7 @@ func _set_input_context(value: int) -> void:
 	_refresh_cursor_mode()
 	_refresh_gameplay_world_ui_visibility()
 	_sync_follower_gameplay_state()
+	_sync_gameplay_collision_state()
 
 
 func _is_scene_transition_active() -> bool:
@@ -1141,6 +1145,17 @@ func _refresh_gameplay_world_ui_visibility() -> void:
 func _set_gameplay_world_ui_visible(is_visible: bool) -> void:
 	if gameplay_ui_layer != null:
 		gameplay_ui_layer.set_world_ui_visible(is_visible)
+
+
+func _sync_gameplay_collision_state() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+
+	var collisions_enabled := _input_context == InputContext.GAMEPLAY
+	for node in tree.get_nodes_in_group(GAMEPLAY_COLLISION_GROUP):
+		if node != null and node.has_method("set_gameplay_collision_enabled"):
+			node.call("set_gameplay_collision_enabled", collisions_enabled)
 
 
 func _set_active_dialogue_input_enabled(enabled: bool) -> void:

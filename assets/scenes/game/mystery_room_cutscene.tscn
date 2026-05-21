@@ -9,6 +9,13 @@
 [ext_resource type="Resource" uid="uid://e4btrqkr3fah" path="res://assets/dialogue/cake_conversation.dialogue" id="6_cake_dialogue"]
 [ext_resource type="Script" uid="uid://qnjae4do8pus" path="res://assets/scripts/cake_dialogue_state.gd" id="7_cake_dialogue_state"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_side_wall"]
+size = Vector3(1.5, 24.1, 161.1)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_column"]
+height = 24.05
+radius = 1.9
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_ym06s"]
 size = Vector3(40, 3.1658936, 5.401367)
 
@@ -91,6 +98,91 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -126.617)
 
 [node name="TorchLight16" parent="MysteryRoom/TorchLights" unique_id=856451466 instance=ExtResource("4_torch_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.401, 12.116365, -145.313)
+
+[node name="WallsCollision" type="StaticBody3D" parent="MysteryRoom" unique_id=679620001]
+
+[node name="LeftWallCollision" type="CollisionShape3D" parent="MysteryRoom/WallsCollision" unique_id=679620002]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.467703, 12, -80.535065)
+shape = SubResource("BoxShape3D_side_wall")
+
+[node name="RightWallCollision" type="CollisionShape3D" parent="MysteryRoom/WallsCollision" unique_id=679620003]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.596241, 12, -80.535065)
+shape = SubResource("BoxShape3D_side_wall")
+
+[node name="ColumnsCollision" type="StaticBody3D" parent="MysteryRoom" unique_id=679620004]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.0287714)
+
+[node name="ColumnCollision_L_01" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620005]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.7871, 12.015, -6.977)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_R_01" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620006]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.7871, 12.015, -6.977)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_L_02" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620007]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.7871, 12.015, -25.681)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_R_02" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620008]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.7871, 12.015, -25.681)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_L_03" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620009]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.7871, 12.015, -44.385)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_R_03" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620010]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.7871, 12.015, -44.385)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_L_04" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620011]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.7871, 12.015, -63.09)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_R_04" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620012]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.7871, 12.015, -63.09)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_L_05" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620013]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.7871, 12.015, -81.794)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_R_05" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620014]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.7871, 12.015, -81.794)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_L_06" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620015]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.7871, 12.015, -100.498)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_R_06" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620016]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.7871, 12.015, -100.498)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_L_07" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620017]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.7871, 12.015, -119.202)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_R_07" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620018]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.7871, 12.015, -119.202)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_L_08" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620019]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.7871, 12.015, -137.907)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_R_08" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620020]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.7871, 12.015, -137.907)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_L_09" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620021]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.7871, 12.015, -156.611)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="ColumnCollision_R_09" type="CollisionShape3D" parent="MysteryRoom/ColumnsCollision" unique_id=679620022]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.7871, 12.015, -156.611)
+shape = SubResource("CylinderShape3D_column")
 
 [node name="CutsceneCamera" type="Camera3D" parent="." unique_id=564982831]
 transform = Transform3D(-1, 8.092387e-15, -8.742279e-08, -5.78652e-08, 0.7495915, 0.6619008, 6.5531374e-08, 0.6619008, -0.7495915, 1.686718, 11.201238, -141.15044)

@@ -62,6 +62,8 @@ graph_offset = Vector2(-72, -6)
 [node name="GiantCharacter" type="Node3D"]
 script = ExtResource("2_script")
 
+[node name="GameplayCollisionBody" type="StaticBody3D" parent="."]
+
 [node name="Model" parent="." index="0" instance=ExtResource("1_character")]
 
 [node name="AnimationPlayer" parent="Model" index="1"]
