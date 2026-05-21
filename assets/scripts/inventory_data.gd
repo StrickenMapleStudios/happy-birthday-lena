@@ -86,6 +86,23 @@ func get_slots(category: StringName) -> Array:
 	return _slots_by_category.get(category, [])
 
 
+func count_item_quantity(item_id: StringName) -> int:
+	if item_id.is_empty():
+		return 0
+
+	var total := 0
+	for category in CATEGORY_ORDER:
+		var slots: Array = get_slots(category)
+		for slot_variant in slots:
+			var slot: Dictionary = slot_variant
+			var item := slot.get("item") as InventoryItemData
+			if item == null or item.item_id != item_id:
+				continue
+			total += int(slot.get("quantity", 0))
+
+	return total
+
+
 func get_selected_category() -> StringName:
 	return _selected_category
 

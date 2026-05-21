@@ -43,6 +43,12 @@ func _process(delta: float) -> void:
 	visual_root.rotation.y += delta * 0.45
 
 
+func set_reward_presentation_hidden(hidden: bool) -> void:
+	if visual_root == null:
+		return
+	visual_root.visible = not hidden
+
+
 func play_reward_reveal(duration: float = 0.45) -> void:
 	if visual_root == null:
 		return

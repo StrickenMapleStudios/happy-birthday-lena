@@ -2,6 +2,12 @@ extends "res://assets/scripts/camera_cutscene_target.gd"
 
 const PLAYER_GROUP := &"player_character"
 const CAKE_DIALOGUE := preload("res://assets/dialogue/cake_conversation.dialogue")
+const BRASS_KEY_ITEM_ID := &"brass_key"
+const REQUIRED_KEY_COUNT := 3
+const TEST_ALWAYS_PLAY_CUP_CUTSCENE := true
+
+@export var cup_reward_presenter_path: NodePath = ^"MysteryRoom/Stand_Stairs/Stand/CupRewardPresenter"
+@export var cup_cutscene_camera_path: NodePath = ^"CupCutsceneCamera"
 
 @export var torch_lights_root_path: NodePath = ^"MysteryRoom/TorchLights"
 @export var trigger_root_path: NodePath = ^"TorchSequenceTriggers"
@@ -18,6 +24,60 @@ func _ready() -> void:
 	_collect_torch_groups()
 	_set_initial_torch_state()
 	_connect_trigger_areas()
+
+
+func play_cup_reward_cutscene() -> void:
+	if not _should_play_cup_cutscene():
+		return
+
+	var game := get_tree().current_scene
+	if game == null or not game.has_method("run_dialogue_embedded_cutscene"):
+		return
+
+	await game.call("run_dialogue_embedded_cutscene", self)
+	_mark_cup_cutscene_played()
+
+
+func _should_play_cup_cutscene() -> bool:
+	if TEST_ALWAYS_PLAY_CUP_CUTSCENE:
+		return true
+	if _has_played_cup_cutscene():
+		return false
+	return _has_required_keys()
+
+
+func _has_played_cup_cutscene() -> bool:
+	if GameSessionState == null:
+		return false
+	return GameSessionState.has_played_cake_cup_cutscene()
+
+
+func _mark_cup_cutscene_played() -> void:
+	if GameSessionState == null:
+		return
+	GameSessionState.mark_cake_cup_cutscene_played()
+
+
+func _has_required_keys() -> bool:
+	var inventory := _get_game_inventory()
+	if inventory == null:
+		return false
+	return inventory.count_item_quantity(BRASS_KEY_ITEM_ID) >= REQUIRED_KEY_COUNT
+
+
+func _get_game_inventory() -> InventoryData:
+	var game := get_tree().current_scene
+	if game == null or not game.has_method("get_inventory_data"):
+		return null
+	return game.call("get_inventory_data") as InventoryData
+
+
+func get_cup_cutscene_camera() -> Camera3D:
+	return get_node_or_null(cup_cutscene_camera_path) as Camera3D
+
+
+func get_cup_reward_presenter() -> CupRewardPresenter:
+	return get_node_or_null(cup_reward_presenter_path) as CupRewardPresenter
 
 
 func _collect_torch_groups() -> void:
@@ -153,4 +213,4 @@ func handle_dialogue_finished(resource: DialogueResource) -> void:
 	if game == null or not game.has_method("start_giant_credits_sequence"):
 		return
 
-	game.call_deferred("start_giant_credits_sequence")
+	game.call("start_giant_credits_sequence")
