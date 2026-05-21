@@ -6,7 +6,7 @@ extends Node3D
 @export var dialogue_player_anchor_path: NodePath = ^"PlayerDialogueAnchor"
 @export var return_player_to_origin_after_cutscene := false
 @export var preserve_player_height_during_cutscene := true
-@export var dialogue_speaker_name := "Cake"
+@export var dialogue_speaker_name := "Торт"
 
 
 func get_cutscene_camera() -> Camera3D:

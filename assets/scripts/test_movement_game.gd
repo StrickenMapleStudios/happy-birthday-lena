@@ -414,7 +414,10 @@ func _exit_dialogue_mode(skip_fade_in: bool = false) -> void:
 	_interaction_locked = true
 	_set_input_context(InputContext.TRANSITION)
 	_set_active_dialogue_input_enabled(false)
-	await SceneTransition.fade_out()
+	if skip_fade_in:
+		SceneTransition.ensure_black()
+	else:
+		await SceneTransition.fade_out()
 	if is_instance_valid(_active_dialogue_balloon):
 		if _active_dialogue_balloon.has_method("close_balloon"):
 			_active_dialogue_balloon.call("close_balloon")
@@ -1243,7 +1246,11 @@ func _run_giant_credits_sequence(credits_showcase: Node) -> void:
 	if credits_showcase.has_method("get_credits_camera"):
 		credits_camera = credits_showcase.call("get_credits_camera") as Camera3D
 
-	await SceneTransition.fade_out()
+	SceneTransition.release_transition_lock()
+	if SceneTransition.is_screen_black():
+		SceneTransition.ensure_black()
+	else:
+		await SceneTransition.fade_out()
 	_set_dialogue_pivots_active(false)
 	if credits_camera != null:
 		credits_camera.current = true

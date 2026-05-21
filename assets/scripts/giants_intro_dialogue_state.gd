@@ -48,6 +48,18 @@ func mark_special_passage_granted() -> void:
 	has_special_passage_granted = true
 
 
+func refresh_keys_for_pass() -> void:
+	_refresh_required_keys_status()
+
+
+func collected_all_brass_keys() -> bool:
+	var inventory := _get_game_inventory()
+	if inventory == null:
+		return false
+
+	return inventory.count_item_quantity(BRASS_KEY_ITEM_ID) >= REQUIRED_KEY_COUNT
+
+
 func _refresh_required_keys_status() -> void:
 	var inventory := _get_game_inventory()
 	if inventory == null:

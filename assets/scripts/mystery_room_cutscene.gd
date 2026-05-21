@@ -3,22 +3,29 @@ extends "res://assets/scripts/camera_cutscene_target.gd"
 const PLAYER_GROUP := &"player_character"
 const CAKE_DIALOGUE := preload("res://assets/dialogue/cake_conversation.dialogue")
 const CAKE_INNER_VOICE_PREFIX := "("
+const CANDLE_FLAME_NAME_TOKENS := ["flame", "candle", "fire", "wick", "пламя", "свеч"]
 
 @export var torch_lights_root_path: NodePath = ^"MysteryRoom/TorchLights"
 @export var trigger_root_path: NodePath = ^"TorchSequenceTriggers"
+@export var cake_root_path: NodePath = ^"MysteryRoom/Stand_Stairs/Stand/cake"
+@export var candle_light_path: NodePath = ^"MysteryRoom/Stand_Stairs/Stand/cake/CandleLight"
+@export var candle_flame_paths: Array[NodePath] = []
 @export_range(1, 8, 1) var torches_per_group := 2
 @export_range(1, 8, 1) var initially_enabled_pairs := 1
 @export_range(0.01, 2.0, 0.01) var finale_activation_delay := 0.2
+@export_range(0.0, 5.0, 0.05) var candle_reveal_delay := 0.75
 
 var _torch_groups: Array[Array] = []
 var _activated_group_count := 0
 var _finale_sequence_started := false
+var _candle_flame_nodes: Array[Node3D] = []
 
 
 func _ready() -> void:
 	_collect_torch_groups()
 	_set_initial_torch_state()
 	_connect_trigger_areas()
+	_hide_candle()
 
 
 func _collect_torch_groups() -> void:
@@ -61,6 +68,7 @@ func _on_torch_trigger_body_entered(body: Node3D, pair_index: int, trigger: Area
 
 	_finale_sequence_started = true
 	await _activate_finale_sequence()
+	await _reveal_candle_after_delay()
 
 
 func _activate_torches_up_to(group_index: int) -> void:
@@ -136,6 +144,59 @@ func _set_group_enabled(group_index: int, value: bool) -> void:
 	for torch in _torch_groups[group_index]:
 		if torch is OmniLight3D:
 			(torch as OmniLight3D).visible = value
+
+
+func _hide_candle() -> void:
+	var candle_light := get_node_or_null(candle_light_path) as OmniLight3D
+	if candle_light != null:
+		candle_light.visible = false
+
+	for flame_node in _collect_candle_flame_nodes():
+		flame_node.visible = false
+
+
+func _reveal_candle_after_delay() -> void:
+	if candle_reveal_delay > 0.0:
+		await get_tree().create_timer(candle_reveal_delay).timeout
+
+	var candle_light := get_node_or_null(candle_light_path) as OmniLight3D
+	if candle_light != null:
+		candle_light.visible = true
+
+	for flame_node in _collect_candle_flame_nodes():
+		flame_node.visible = true
+
+
+func _collect_candle_flame_nodes() -> Array[Node3D]:
+	if not _candle_flame_nodes.is_empty():
+		return _candle_flame_nodes
+
+	if not candle_flame_paths.is_empty():
+		for node_path in candle_flame_paths:
+			var flame_node := get_node_or_null(node_path) as Node3D
+			if flame_node != null:
+				_candle_flame_nodes.append(flame_node)
+		return _candle_flame_nodes
+
+	var cake_root := get_node_or_null(cake_root_path)
+	if cake_root == null:
+		return _candle_flame_nodes
+
+	var candle_light := get_node_or_null(candle_light_path)
+	for child in cake_root.find_children("*", "Node3D", true, false):
+		var node := child as Node3D
+		if node == null or node == cake_root or node == candle_light:
+			continue
+		if node is OmniLight3D:
+			continue
+
+		var normalized_name := node.name.to_lower()
+		for token in CANDLE_FLAME_NAME_TOKENS:
+			if normalized_name.find(token) != -1:
+				_candle_flame_nodes.append(node)
+				break
+
+	return _candle_flame_nodes
 
 
 func _is_player_body(body: Node) -> bool:

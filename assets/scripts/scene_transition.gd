@@ -92,13 +92,26 @@ func fade_in(duration: float = default_fade_in_duration) -> void:
 	_finish_transition()
 
 
-func hold_black_screen(duration: float) -> void:
-	if duration <= 0.0:
-		return
+func is_screen_black() -> bool:
+	return _overlay.modulate.a >= 0.99
 
+
+func ensure_black() -> void:
 	_overlay.visible = true
 	_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	_overlay.modulate.a = 1.0
+
+
+func release_transition_lock() -> void:
+	if _is_transitioning:
+		_finish_transition()
+
+
+func hold_black_screen(duration: float) -> void:
+	ensure_black()
+	if duration <= 0.0:
+		return
+
 	await get_tree().create_timer(duration).timeout
 
 

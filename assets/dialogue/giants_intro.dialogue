@@ -105,10 +105,11 @@ if not has_asked_who_they_are
 => END
 
 ~ pass
+do refresh_keys_for_pass()
 Гиганты: ТЫ.. МОЖЕШЬ.. ПРОЙТИ..
 if has_special_passage_granted
 	=> key_reward
-if has_all_required_keys
+if collected_all_brass_keys()
 	=> key_reward
 => END
 
