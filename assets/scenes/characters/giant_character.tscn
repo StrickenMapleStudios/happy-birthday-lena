@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://ccjs06m5tpi8k"]
+[gd_scene load_steps=13 format=3 uid="uid://ccjs06m5tpi8k"]
 
 [ext_resource type="PackedScene" uid="uid://cuvqsplyq6dy6" path="res://assets/art/models/characters/character.glb" id="1_character"]
 [ext_resource type="Script" uid="uid://bicyrpaeap474" path="res://assets/scripts/giant_character.gd" id="2_script"]
@@ -23,16 +23,67 @@ radius = 8.0
 height = 18.0
 radius = 12.0
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dialogue_idle"]
+animation = &"Idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dialogue_guarding"]
+animation = &"Guarding"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_secretly_dancing"]
+animation = &"SecretlyDancing"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_dialogue_start"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idle_to_guarding"]
+advance_mode = 2
+advance_condition = &"InDialogue"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_guarding_to_idle"]
+advance_mode = 2
+advance_condition = &"NotInDialogue"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_idle_to_secretly_dancing"]
+advance_mode = 2
+advance_condition = &"PlaySecretlyDancing"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_guarding_to_secretly_dancing"]
+advance_mode = 2
+advance_condition = &"PlaySecretlyDancing"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_secretly_dancing_to_idle"]
+advance_mode = 2
+advance_condition = &"StopSecretlyDancing"
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_dialogue"]
+states/Idle/node = SubResource("AnimationNodeAnimation_dialogue_idle")
+states/Idle/position = Vector2(364, 181)
+states/Guarding/node = SubResource("AnimationNodeAnimation_dialogue_guarding")
+states/Guarding/position = Vector2(366, 59)
+states/SecretlyDancing/node = SubResource("AnimationNodeAnimation_secretly_dancing")
+states/SecretlyDancing/position = Vector2(620, 120)
+states/Start/position = Vector2(160, 116)
+transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_dialogue_start"), "Idle", "Guarding", SubResource("AnimationNodeStateMachineTransition_idle_to_guarding"), "Guarding", "Idle", SubResource("AnimationNodeStateMachineTransition_guarding_to_idle"), "Idle", "SecretlyDancing", SubResource("AnimationNodeStateMachineTransition_idle_to_secretly_dancing"), "Guarding", "SecretlyDancing", SubResource("AnimationNodeStateMachineTransition_guarding_to_secretly_dancing"), "SecretlyDancing", "Idle", SubResource("AnimationNodeStateMachineTransition_secretly_dancing_to_idle")]
+graph_offset = Vector2(-72, -6)
+
 [node name="GiantCharacter" type="Node3D" unique_id=1353215827]
 script = ExtResource("2_script")
 
 [node name="Model" parent="." unique_id=239122375 instance=ExtResource("1_character")]
 
+[node name="AnimationPlayer" parent="Model" index="1"]
+autoplay = "Idle"
+
+[node name="DialogueAnimationTree" type="AnimationTree" parent="Model/AnimationPlayer" index="0"]
+active = true
+tree_root = SubResource("AnimationNodeStateMachine_dialogue")
+anim_player = NodePath("..")
+
 [node name="Skeleton3D" parent="Model/Rig" parent_id_path=PackedInt32Array(239122375, 1090432954) index="0" unique_id=326594645]
 bones/22/scale = Vector3(0.685, 0.685, 0.685)
 
 [node name="hat_2" parent="Model/Rig/Skeleton3D" index="0" unique_id=2023058978]
-transform = Transform3D(0.9348506, -0.03758748, -0.026437357, 0.045928106, 0.746216, 0.5631262, -0.0015369824, -0.5637446, 0.7471613, -0.03951983, -0.43706158, -1.8104632)
+transform = Transform3D(0.9356907, -0.019275656, -0.0130011, 0.023138054, 0.7205888, 0.59688824, -0.0022831543, -0.5970257, 0.7208436, -0.019563554, 0.045357704, -3.532848)
 visible = false
 
 [node name="GameplayCollisionBody" type="StaticBody3D" parent="." unique_id=702590605]

@@ -4,6 +4,11 @@ class_name ScrollingCreditsUI
 
 const TITLE_FONT := preload("res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf")
 const DEFAULT_CREDIT_NAME := "Артем Айрапетов"
+const LAPTOP_CREDIT_ROLE := "Ноутбук"
+const LAPTOP_CREDIT_NAME := "Тигран Айрапетов"
+const SPECIAL_CREDIT_NAMES_BY_ROLE := {
+	LAPTOP_CREDIT_ROLE: LAPTOP_CREDIT_NAME,
+}
 
 const TEMPLATE_PROFESSIONS := [
 	"Режиссёр",
@@ -16,6 +21,7 @@ const TEMPLATE_PROFESSIONS := [
 	"Звукорежиссёр",
 	"Тестировщик",
 	"Продюсер",
+	"Ноутбук",
 ]
 
 @export var credit_name := DEFAULT_CREDIT_NAME
@@ -101,18 +107,19 @@ func _create_entry_row(profession: String) -> Control:
 	var row := HBoxContainer.new()
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_theme_constant_override("separation", 48)
+	var normalized_profession := profession.strip_edges()
 
 	var role_label := Label.new()
-	role_label.text = profession
+	role_label.text = normalized_profession
 	role_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	role_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	role_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	role_label.add_theme_font_override("font", TITLE_FONT)
 	role_label.add_theme_font_size_override("font_size", role_font_size)
 	role_label.add_theme_color_override("font_color", Color(0.95, 0.9, 0.72, 1.0))
 	row.add_child(role_label)
 
 	var name_label := Label.new()
-	name_label.text = credit_name
+	name_label.text = String(SPECIAL_CREDIT_NAMES_BY_ROLE.get(normalized_profession, credit_name))
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	name_label.add_theme_font_override("font", TITLE_FONT)
