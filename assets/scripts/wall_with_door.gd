@@ -8,6 +8,10 @@ extends Node3D
 var _doors_opened := false
 
 
+func _ready() -> void:
+	_ensure_mesh_colliders()
+
+
 func open_doors() -> void:
 	if _doors_opened:
 		return
@@ -59,5 +63,62 @@ func _find_named_node_3d_recursive(root: Node, required_tokens: Array[String]) -
 		var match := _find_named_node_3d_recursive(child, required_tokens)
 		if match != null:
 			return match
+
+	return null
+
+
+func _ensure_mesh_colliders() -> void:
+	var model_root := get_node_or_null(model_root_path) as Node3D
+	if model_root == null:
+		return
+
+	for mesh_instance in _collect_mesh_instances(model_root):
+		if _has_trimesh_collision_child(mesh_instance):
+			continue
+
+		mesh_instance.create_trimesh_collision()
+		var body := _find_static_body_child(mesh_instance)
+		if body != null:
+			body.collision_layer = 1
+			body.collision_mask = 0
+
+
+func _collect_mesh_instances(root: Node) -> Array[MeshInstance3D]:
+	var result: Array[MeshInstance3D] = []
+	if root == null:
+		return result
+
+	for child in root.get_children():
+		if child is MeshInstance3D:
+			result.append(child as MeshInstance3D)
+		result.append_array(_collect_mesh_instances(child))
+
+	return result
+
+
+func _has_trimesh_collision_child(mesh_instance: MeshInstance3D) -> bool:
+	for child in mesh_instance.get_children():
+		var body := child as StaticBody3D
+		if body == null:
+			continue
+
+		for shape_node in body.get_children():
+			var collision_shape := shape_node as CollisionShape3D
+			if collision_shape == null or collision_shape.shape == null:
+				continue
+			if (
+				collision_shape.shape is ConcavePolygonShape3D
+				or collision_shape.shape is ConvexPolygonShape3D
+			):
+				return true
+
+	return false
+
+
+func _find_static_body_child(node: Node) -> StaticBody3D:
+	for child in node.get_children():
+		var body := child as StaticBody3D
+		if body != null:
+			return body
 
 	return null

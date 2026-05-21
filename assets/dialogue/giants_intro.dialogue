@@ -21,9 +21,9 @@ if not has_asked_who_they_are
 	=> ready
 - Позже.
 	=> later
-- Чит-код.
-	do mark_special_passage_granted()
-	=> pass
+#- Чит-код.
+#	do mark_special_passage_granted()
+#	=> pass
 
 ~ menu_without_question
 {{speaker_name}}: Чтобы пройти дальше, ты должна отгадать 3 наши загадки.

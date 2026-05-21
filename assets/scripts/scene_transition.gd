@@ -92,6 +92,16 @@ func fade_in(duration: float = default_fade_in_duration) -> void:
 	_finish_transition()
 
 
+func hold_black_screen(duration: float) -> void:
+	if duration <= 0.0:
+		return
+
+	_overlay.visible = true
+	_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	_overlay.modulate.a = 1.0
+	await get_tree().create_timer(duration).timeout
+
+
 func preload_scene(scene_path: String, use_sub_threads: bool = true) -> void:
 	var load_status := ResourceLoader.load_threaded_get_status(scene_path)
 	if load_status == ResourceLoader.THREAD_LOAD_IN_PROGRESS or load_status == ResourceLoader.THREAD_LOAD_LOADED:

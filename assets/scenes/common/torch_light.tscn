@@ -5,5 +5,13 @@ light_color = Color(1, 0.721569, 0.423529, 1)
 light_energy = 16.0
 light_indirect_energy = 0.2
 light_specular = 0.15
-omni_range = 7.5
-omni_attenuation = 1.2
+omni_range = 14.0
+omni_attenuation = 1.05
+
+[node name="TorchFillLight" type="OmniLight3D" parent="."]
+light_color = Color(1, 0.721569, 0.423529, 1)
+light_energy = 5.5
+light_indirect_energy = 0.35
+light_specular = 0.0
+omni_range = 24.0
+omni_attenuation = 0.85

@@ -2,6 +2,7 @@ extends "res://assets/scripts/camera_cutscene_target.gd"
 
 const PLAYER_GROUP := &"player_character"
 const CAKE_DIALOGUE := preload("res://assets/dialogue/cake_conversation.dialogue")
+const CAKE_INNER_VOICE_PREFIX := "("
 
 @export var torch_lights_root_path: NodePath = ^"MysteryRoom/TorchLights"
 @export var trigger_root_path: NodePath = ^"TorchSequenceTriggers"
@@ -143,6 +144,31 @@ func _is_player_body(body: Node) -> bool:
 
 func _sort_nodes_by_name(a: Node, b: Node) -> bool:
 	return String(a.name).naturalnocasecmp_to(String(b.name)) < 0
+
+
+func get_player_dialogue_actor() -> Node3D:
+	var tree := get_tree()
+	if tree == null:
+		return null
+
+	return tree.get_first_node_in_group(PLAYER_GROUP) as Node3D
+
+
+func should_skip_dialogue_exit_fade_in() -> bool:
+	return true
+
+
+func get_dialogue_camera_actor_for_line(dialogue_line: DialogueLine) -> Node3D:
+	if dialogue_line == null:
+		return null
+
+	var text := dialogue_line.text.strip_edges()
+	if text == "...":
+		return get_player_dialogue_actor()
+	if text.begins_with(CAKE_INNER_VOICE_PREFIX):
+		return get_player_dialogue_actor()
+
+	return null
 
 
 func handle_dialogue_finished(resource: DialogueResource) -> void:

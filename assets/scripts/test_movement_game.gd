@@ -753,7 +753,15 @@ func _on_dialogue_ended(resource: DialogueResource) -> void:
 		if finished_dialogue_actor.has_method("try_grant_pending_reward"):
 			reward_granted = reward_granted or bool(finished_dialogue_actor.call("try_grant_pending_reward"))
 	should_chain_reward_demonstration = should_chain_reward_demonstration or _has_queued_reward_demonstration()
-	await _exit_dialogue_mode(should_chain_reward_demonstration)
+	var skip_dialogue_exit_fade_in := should_chain_reward_demonstration
+	if (
+		is_instance_valid(finished_dialogue_actor)
+		and finished_dialogue_actor.has_method("should_skip_dialogue_exit_fade_in")
+	):
+		skip_dialogue_exit_fade_in = skip_dialogue_exit_fade_in or bool(
+			finished_dialogue_actor.call("should_skip_dialogue_exit_fade_in")
+		)
+	await _exit_dialogue_mode(skip_dialogue_exit_fade_in)
 
 	if is_instance_valid(finished_dialogue_actor) and finished_dialogue_actor.has_method("handle_dialogue_finished"):
 		finished_dialogue_actor.call("handle_dialogue_finished", resource)
