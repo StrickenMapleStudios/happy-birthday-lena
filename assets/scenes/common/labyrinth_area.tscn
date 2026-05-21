@@ -4,12 +4,17 @@
 [ext_resource type="Script" uid="uid://bj4ag638jujau" path="res://assets/scripts/labyrinth_area.gd" id="2_script"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/reward_marker.tscn" id="3_reward_marker"]
 [ext_resource type="Script" uid="uid://d1tdb5cfv171" path="res://assets/scripts/reward_demonstration_camera.gd" id="4_demo_camera_script"]
+[ext_resource type="Script" path="res://assets/scripts/camera_visibility_cull.gd" id="5_visibility_cull"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
 size = Vector3(6, 4, 6)
 
 [node name="LabyrinthArea" type="Node3D" unique_id=881928972]
 script = ExtResource("2_script")
+
+[node name="CameraVisibilityCull" type="Node" parent="."]
+script = ExtResource("5_visibility_cull")
+cull_roots = Array[NodePath]([NodePath("../LabyrinthModel"), NodePath("../LabyrinthColliderBody")])
 
 [node name="LabyrinthModel" parent="." unique_id=1364326507 instance=ExtResource("1_labyrinth_model")]
 transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 0, 0, 0)

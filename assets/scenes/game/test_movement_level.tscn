@@ -2,8 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://d28qecfx6dh44" path="res://assets/scenes/common/labyrinth_area.tscn" id="1_rtw1c"]
 [ext_resource type="PackedScene" uid="uid://dwinqt4ms18vm" path="res://assets/scenes/game/giant_character_showcase.tscn" id="5_giant_showcase"]
-[ext_resource type="PackedScene" uid="uid://jgs2yvp5lmdi" path="res://addons/Free Forest Nature Pack/Trees/Spruce/Flat_Tree_Spruce_large.glb" id="6_spruce_large"]
-[ext_resource type="PackedScene" uid="uid://berhpqhc32tqf" path="res://addons/Free Forest Nature Pack/Trees/Spruce/Flat_Tree_Spruce_medium.glb" id="7_spruce_medium"]
+[ext_resource type="PackedScene" uid="uid://b7k3sprucelarge" path="res://assets/scenes/common/trees/spruce_tree_large.tscn" id="6_spruce_large"]
+[ext_resource type="PackedScene" uid="uid://b7k3sprucemedium" path="res://assets/scenes/common/trees/spruce_tree_medium.tscn" id="7_spruce_medium"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_test_movement"]
 sky_top_color = Color(0.454902, 0.67451, 0.94902, 1)

@@ -2,9 +2,9 @@
 
 [ext_resource type="PackedScene" uid="uid://cgbqg1ajsh5ut" path="res://assets/scenes/game/test_movement_level.tscn" id="1_level"]
 [ext_resource type="PackedScene" uid="uid://dmb72unyvr0t3" path="res://assets/scenes/characters/player_character.tscn" id="2_player"]
-[ext_resource type="PackedScene" uid="uid://jgs2yvp5lmdi" path="res://addons/Free Forest Nature Pack/Trees/Spruce/Flat_Tree_Spruce_large.glb" id="3_iea7l"]
+[ext_resource type="PackedScene" uid="uid://btycuxgjceink" path="res://assets/scenes/common/trees/spruce_tree_large.tscn" id="3_iea7l"]
 [ext_resource type="PackedScene" path="res://assets/scenes/characters/npc_character.tscn" id="3_npc"]
-[ext_resource type="PackedScene" uid="uid://berhpqhc32tqf" path="res://addons/Free Forest Nature Pack/Trees/Spruce/Flat_Tree_Spruce_medium.glb" id="4_32dgv"]
+[ext_resource type="PackedScene" uid="uid://dp1kapk25hc6o" path="res://assets/scenes/common/trees/spruce_tree_medium.tscn" id="4_32dgv"]
 [ext_resource type="Script" uid="uid://b84roxoxwu700" path="res://assets/scripts/test_movement_camera.gd" id="4_camera"]
 [ext_resource type="PackedScene" path="res://assets/scenes/game/elder_character_showcase.tscn" id="4_elder_showcase"]
 [ext_resource type="Script" uid="uid://ptlmyvnfxne6" path="res://assets/scripts/test_movement_game.gd" id="5_game"]
