@@ -36,7 +36,7 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -115.60146, 0, -12.117727)
 
 [node name="Sun" parent="Level" index="2" unique_id=1646791676]
-transform = Transform3D(0.97688025, -0.17317292, 0.12512311, -2.744855e-09, 0.58371055, 0.8119618, -0.21360919, -0.7931832, 0.5703443, 0, 5.18316, 0)
+transform = Transform3D(0.2897544, 0.7768078, -0.5592183, -1.5423211e-08, 0.58375525, 0.81192946, 0.95702, -0.23507911, 0.16952161, 0, 5.18316, 0)
 
 [node name="RightMidFillC" parent="Level/SideSpruces" parent_id_path=PackedInt32Array(1638308877, 207331484) index="52" unique_id=170010053]
 transform = Transform3D(0.6174072, 0, 0.16541867, 0, 0.7, 0, -0.16541867, 0, 0.6174072, 29.497581, 0, -70.07091)
