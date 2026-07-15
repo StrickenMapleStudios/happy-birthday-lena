@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dyv3ct0iq5v6v"]
+[gd_scene format=3 uid="uid://dyv3ct0iq5v6v"]
 
 [ext_resource type="PackedScene" path="res://assets/scenes/characters/npc_character.tscn" id="1_base"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/skins/cane.tscn" id="3_cane"]

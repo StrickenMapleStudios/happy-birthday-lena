@@ -11,7 +11,7 @@
 [ext_resource type="Script" uid="uid://csmvxjritgblu" path="res://assets/scripts/gameplay_ui_layer.gd" id="8_gameplay_ui"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/inventory_ui.tscn" id="9_inventory_ui"]
 [ext_resource type="PackedScene" path="res://assets/scenes/ui/cinematic_bars.tscn" id="10_cinematic_bars"]
-[ext_resource type="PackedScene" uid="uid://cp76hwmmebeg3" path="res://assets/scenes/common/lap_race_challenger_setup.tscn" id="11_lap_race_setup"]
+[ext_resource type="PackedScene" path="res://assets/scenes/common/lap_race_challenger_setup.tscn" id="11_lap_race_setup"]
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_game"]
 dof_blur_far_enabled = true
@@ -29,6 +29,9 @@ script = ExtResource("5_game")
 
 [node name="Level" parent="." unique_id=1638308877 instance=ExtResource("1_level")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="NavigationRegion3D" parent="Level" index="4" unique_id=1695030196]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.56883657, 0.0315094, 0, -57.300117)
 
 [node name="character" parent="." unique_id=77292897 instance=ExtResource("2_player")]
 
