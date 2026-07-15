@@ -190,13 +190,13 @@ light_color = Color(1, 0.898039, 0.72549, 1)
 light_energy = 0.88
 light_angular_distance = 2.8
 shadow_enabled = true
-shadow_bias = 0.02
-shadow_normal_bias = 0.12
+shadow_bias = 0.03
+shadow_normal_bias = 0.08
 shadow_opacity = 0.78
-directional_shadow_blend_splits = true
+directional_shadow_blend_splits = false
 directional_shadow_fade_start = 0.75
-directional_shadow_max_distance = 150.0
-directional_shadow_pancake_size = 0.1
+directional_shadow_max_distance = 90.0
+directional_shadow_pancake_size = 0.2
 
 [node name="SkyFill" type="DirectionalLight3D" parent="." unique_id=170001002]
 transform = Transform3D(-0.978148, 0.0773604, -0.192532, 0, 0.928368, 0.371662, 0.207912, 0.36354, -0.908088, 0, 3.17936, 0)

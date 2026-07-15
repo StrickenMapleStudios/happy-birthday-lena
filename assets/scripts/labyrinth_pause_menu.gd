@@ -5,6 +5,9 @@ signal exit_labyrinth_requested
 
 const EXIT_ICON := preload("res://assets/art/sprites/exit-icon.png")
 const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
+const UiScale := preload("res://assets/scripts/ui_scale.gd")
+const REFERENCE_VIEWPORT_SIZE := Vector2(1920.0, 1080.0)
+const CONTENT_MIN_SCALE := 0.72
 const VERTICAL_OFFSET_FROM_CENTER := 56.0
 
 @onready var menu_root: Control = $MenuRoot
@@ -23,6 +26,7 @@ var _mirrored_exit_icon: ImageTexture
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	get_viewport().size_changed.connect(_update_vertical_layout)
 	menu_root.visible = false
 	_mirrored_exit_icon = _make_mirrored_texture(EXIT_ICON)
 	exit_labyrinth_button.icon = _mirrored_exit_icon
@@ -71,8 +75,16 @@ func _make_mirrored_texture(source: Texture2D) -> ImageTexture:
 
 func _update_vertical_layout() -> void:
 	var target_size := content_root.get_combined_minimum_size()
+	var scale_factor := UiScale.compute_reference_scale(
+		get_viewport_rect().size,
+		REFERENCE_VIEWPORT_SIZE,
+		1.0,
+		CONTENT_MIN_SCALE
+	)
+	content_root.scale = Vector2(scale_factor, scale_factor)
+	var scaled_size := UiScale.get_control_scaled_size(content_root, target_size)
 	content_root.size = target_size
 	content_root.position = Vector2(
 		0.0,
-		maxf(((vertical_center.size.y - target_size.y) * 0.5) - VERTICAL_OFFSET_FROM_CENTER, 0.0)
+		maxf(((vertical_center.size.y - scaled_size.y) * 0.5) - VERTICAL_OFFSET_FROM_CENTER, 0.0)
 	)

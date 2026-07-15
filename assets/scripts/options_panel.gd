@@ -3,6 +3,10 @@ extends Control
 signal settings_applied(settings: Dictionary)
 
 const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
+const UiScale := preload("res://assets/scripts/ui_scale.gd")
+const REFERENCE_VIEWPORT_SIZE := Vector2(1920.0, 1080.0)
+const PANEL_REFERENCE_SIZE := Vector2(900.0, 888.0)
+const PANEL_MIN_SCALE := 0.68
 
 @onready var resolution_left_button: Button = $Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionLeftButton
 @onready var resolution_right_button: Button = $Content/OptionsBody/DisplayPanel/DisplayContent/ResolutionRow/ResolutionPicker/ResolutionRightButton
@@ -52,6 +56,7 @@ var _navigation_rows: Array = []
 
 
 func _ready() -> void:
+	get_viewport().size_changed.connect(_update_responsive_scale)
 	_apply_slider_theme()
 	_navigation_rows = [
 		[resolution_left_button, resolution_right_button],
@@ -81,6 +86,11 @@ func _ready() -> void:
 
 	GameSettings.settings_applied.connect(_on_settings_applied)
 	refresh_from_settings()
+	_update_responsive_scale()
+
+
+func get_scaled_size() -> Vector2:
+	return UiScale.get_control_scaled_size(self, PANEL_REFERENCE_SIZE)
 
 
 func refresh_from_settings() -> void:
@@ -232,3 +242,15 @@ func _make_slider_grabber(color: Color) -> ImageTexture:
 				image.set_pixel(x, y, color)
 
 	return ImageTexture.create_from_image(image)
+
+
+func _update_responsive_scale() -> void:
+	size = PANEL_REFERENCE_SIZE
+	custom_minimum_size = PANEL_REFERENCE_SIZE
+	var scale_factor := UiScale.compute_reference_scale(
+		get_viewport_rect().size,
+		REFERENCE_VIEWPORT_SIZE,
+		1.0,
+		PANEL_MIN_SCALE
+	)
+	scale = Vector2(scale_factor, scale_factor)

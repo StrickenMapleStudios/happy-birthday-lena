@@ -7,6 +7,7 @@ signal close_requested
 const TITLE_FONT := preload("res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf")
 const BODY_FONT := preload("res://assets/art/fonts/Paytone_One/PaytoneOne-Regular.ttf")
 const UINavigation := preload("res://assets/scripts/ui_navigation.gd")
+const UiScale := preload("res://assets/scripts/ui_scale.gd")
 const ICON_OUTLINE_SHADER := preload("res://assets/shaders/ui_icon_outline.gdshader")
 const KEY_ICON := preload("res://assets/art/sprites/key.png")
 const BACKPACK_ICON := preload("res://assets/art/sprites/backpack.png")
@@ -39,6 +40,10 @@ const SLOT_NEW_BADGE_SIZE := Vector2(12.0, 12.0)
 const TAB_NEW_BADGE_SIZE := Vector2(10.0, 10.0)
 const NEW_BADGE_FILL := Color(0.2, 0.66, 1.0, 1.0)
 const NEW_BADGE_BORDER := Color(0.88, 0.96, 1.0, 1.0)
+const REFERENCE_VIEWPORT_SIZE := Vector2(1920.0, 1080.0)
+const INVENTORY_CONTENT_SIZE := Vector2(760.0, 760.0)
+const INVENTORY_MIN_SCALE := 0.64
+const TITLE_TOP_MARGIN := 26.0
 
 @onready var menu_root: Control = $MenuRoot
 @onready var frame: InventoryFrame = $MenuRoot/Center/Frame
@@ -63,6 +68,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 180
 	menu_root.visible = false
+	get_viewport().size_changed.connect(_update_layout)
 
 	_tab_buttons = {
 		InventoryData.CATEGORY_KEYS: keys_tab_button,
@@ -361,14 +367,31 @@ func _update_layout() -> void:
 	if frame == null or content_root == null:
 		return
 
+	var scale_factor := UiScale.compute_reference_scale(
+		get_viewport_rect().size,
+		REFERENCE_VIEWPORT_SIZE,
+		1.0,
+		INVENTORY_MIN_SCALE
+	)
+	center_root.scale = Vector2(scale_factor, scale_factor)
+	center_root.size = INVENTORY_CONTENT_SIZE
+	center_root.position = Vector2(
+		(menu_root.size.x - (INVENTORY_CONTENT_SIZE.x * scale_factor)) * 0.5,
+		(menu_root.size.y - (INVENTORY_CONTENT_SIZE.y * scale_factor)) * 0.5
+	)
+	title_block.scale = Vector2(scale_factor, scale_factor)
+
 	var circle_center: Vector2 = frame.get_ring_center()
 	var title_size: Vector2 = title_block.get_combined_minimum_size()
 	var grid_size: Vector2 = slot_grid.get_combined_minimum_size()
 
-	title_block.position = Vector2((menu_root.size.x - title_size.x) * 0.5, 26.0)
+	title_block.position = Vector2(
+		(menu_root.size.x - (title_size.x * scale_factor)) * 0.5,
+		TITLE_TOP_MARGIN * scale_factor
+	)
 	tab_buttons_root.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	tab_buttons_root.position = Vector2.ZERO
-	tab_buttons_root.size = content_root.size
+	tab_buttons_root.size = INVENTORY_CONTENT_SIZE
 
 	var tab_buttons := [keys_tab_button, regular_tab_button, quest_tab_button]
 	for tab_index in range(tab_buttons.size()):

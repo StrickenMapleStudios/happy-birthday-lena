@@ -6,9 +6,10 @@ const SCENE_FADE_OUT_DURATION := 0.75
 const SCENE_FADE_IN_DURATION := 0.75
 const EXIT_FADE_OUT_DURATION := 0.5
 const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
-const MENU_CONTENT_BASE_SCALE := 1.2
+const UiScale := preload("res://assets/scripts/ui_scale.gd")
 const MENU_REFERENCE_SIZE := Vector2(1920.0, 1080.0)
 const MENU_CONTENT_UNSCALED_SIZE := Vector2(900.0, 888.0)
+const MENU_CONTENT_MIN_SCALE := 0.68
 
 @onready var menu_character: Node = get_parent().get_node_or_null("menuEnvironment/character")
 @onready var menu_content_scale: Control = $SafeMargin/Layout/MenuContentScale
@@ -219,11 +220,9 @@ func _update_menu_content_scale() -> void:
 
 func _compute_menu_content_scale() -> float:
 	var viewport_size := get_viewport_rect().size
-	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
-		return MENU_CONTENT_BASE_SCALE
-
-	var responsive_fit := minf(
-		viewport_size.x / MENU_REFERENCE_SIZE.x,
-		viewport_size.y / MENU_REFERENCE_SIZE.y
+	return UiScale.compute_reference_scale(
+		viewport_size,
+		MENU_REFERENCE_SIZE,
+		1.0,
+		MENU_CONTENT_MIN_SCALE
 	)
-	return MENU_CONTENT_BASE_SCALE * minf(1.0, responsive_fit)

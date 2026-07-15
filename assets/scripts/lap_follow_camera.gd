@@ -18,6 +18,9 @@ const MIN_LOOK_FORWARD_DISTANCE := 3.0
 const MIN_TARGET_MOVE_DISTANCE := 0.02
 const MOVEMENT_CAMERA_EFFECTS_DELAY := 0.3
 const INTRO_FLY_DURATION := 1.0
+const CAMERA_ANGLE_SETTLE_EPSILON := deg_to_rad(0.08)
+const CAMERA_POSITION_SETTLE_DISTANCE := 0.04
+const FOCUS_SETTLE_DISTANCE := 0.05
 
 @export var target_path: NodePath = ^"../PlayerCharacter"
 @export var lap_track_path: NodePath = ^"../LapTrack"
@@ -173,12 +176,16 @@ func _update_camera_transform(delta: float) -> void:
 		-PI,
 		PI
 	)
+	if absf(_get_wrapped_angle_delta(_camera_angle, desired_camera_angle)) <= CAMERA_ANGLE_SETTLE_EPSILON:
+		_camera_angle = desired_camera_angle
 
 	var desired_world_position := _get_world_position_for_angle(_camera_angle)
 	global_position = global_position.lerp(
 		desired_world_position,
 		minf(delta * FOLLOW_POSITION_LERP_SPEED, 1.0)
 	)
+	if global_position.distance_to(desired_world_position) <= CAMERA_POSITION_SETTLE_DISTANCE:
+		global_position = desired_world_position
 
 	var tangent := _get_camera_tangent_world(_camera_angle)
 	if tangent.length_squared() > MIN_DIRECTION_LENGTH_SQUARED:
@@ -219,6 +226,8 @@ func _update_camera_transform(delta: float) -> void:
 
 	var focus_point := target_position + Vector3(0.0, FOCUS_HEIGHT + _look_height_offset, 0.0)
 	_smoothed_focus_point = _smoothed_focus_point.lerp(focus_point, look_weight)
+	if _smoothed_focus_point.distance_to(focus_point) <= FOCUS_SETTLE_DISTANCE:
+		_smoothed_focus_point = focus_point
 	_game_camera.fov = BASE_FOV + _fov_offset
 	_game_camera.look_at(_get_clamped_focus_point(), Vector3.UP)
 

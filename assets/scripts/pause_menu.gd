@@ -9,6 +9,9 @@ const ACTION_QUIT := &"quit"
 const GEAR_ICON := preload("res://assets/art/sprites/gear-icon.png")
 const HOME_ICON := preload("res://assets/art/sprites/home.png")
 const UINavigation = preload("res://assets/scripts/ui_navigation.gd")
+const UiScale := preload("res://assets/scripts/ui_scale.gd")
+const REFERENCE_VIEWPORT_SIZE := Vector2(1920.0, 1080.0)
+const CONTENT_MIN_SCALE := 0.72
 const VERTICAL_OFFSET_FROM_CENTER := 56.0
 
 @onready var menu_root: Control = $MenuRoot
@@ -35,6 +38,7 @@ var _pending_action: StringName = &""
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	get_viewport().size_changed.connect(_update_vertical_layout)
 	menu_root.visible = false
 	main_menu_button.icon = HOME_ICON
 	resume_button.pressed.connect(func() -> void: resume_requested.emit())
@@ -180,9 +184,35 @@ func _center_panel_vertically(panel: Control) -> void:
 	if panel == null:
 		return
 
-	var target_size := panel.get_combined_minimum_size()
+	if panel == content_root:
+		_update_panel_scale(panel)
+
+	var target_size := _get_panel_base_size(panel)
+	var scaled_size := _get_panel_scaled_size(panel, target_size)
 	panel.size = target_size
 	panel.position = Vector2(
 		0.0,
-		maxf(((vertical_center.size.y - target_size.y) * 0.5) - VERTICAL_OFFSET_FROM_CENTER, 0.0)
+		maxf(((vertical_center.size.y - scaled_size.y) * 0.5) - VERTICAL_OFFSET_FROM_CENTER, 0.0)
 	)
+
+
+func _update_panel_scale(panel: Control) -> void:
+	var scale_factor := UiScale.compute_reference_scale(
+		get_viewport_rect().size,
+		REFERENCE_VIEWPORT_SIZE,
+		1.0,
+		CONTENT_MIN_SCALE
+	)
+	panel.scale = Vector2(scale_factor, scale_factor)
+
+
+func _get_panel_base_size(panel: Control) -> Vector2:
+	if panel == options_panel and panel.has_method("get_scaled_size"):
+		return panel.size
+	return panel.get_combined_minimum_size()
+
+
+func _get_panel_scaled_size(panel: Control, base_size: Vector2) -> Vector2:
+	if panel == options_panel and panel.has_method("get_scaled_size"):
+		return panel.call("get_scaled_size")
+	return UiScale.get_control_scaled_size(panel, base_size)

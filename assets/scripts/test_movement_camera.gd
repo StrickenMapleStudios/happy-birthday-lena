@@ -17,6 +17,8 @@ const LABYRINTH_TRANSITION_DURATION := 0.6
 const LABYRINTH_MOUSE_SENSITIVITY := 0.0035
 const LABYRINTH_PITCH_LIMIT := deg_to_rad(75.0)
 const LABYRINTH_FOV := 82.0
+const CAMERA_SETTLE_DISTANCE := 0.01
+const FOCUS_SETTLE_DISTANCE := 0.02
 signal labyrinth_view_yaw_changed(yaw: float)
 
 @export var target_path: NodePath = ^"../character"
@@ -93,6 +95,8 @@ func _update_camera(delta: float) -> void:
 	var desired_position: Vector3 = target_position
 	var follow_weight: float = minf(delta * FOLLOW_LERP_SPEED, 1.0)
 	_smoothed_target_position = _smoothed_target_position.lerp(desired_position, follow_weight)
+	if _smoothed_target_position.distance_to(desired_position) <= CAMERA_SETTLE_DISTANCE:
+		_smoothed_target_position = desired_position
 	global_position = _smoothed_target_position
 
 	var move_delta: Vector3 = target_position - _last_target_position
@@ -129,6 +133,8 @@ func _update_camera(delta: float) -> void:
 
 	var focus_point: Vector3 = target_position + Vector3(0.0, FOCUS_HEIGHT + _look_height_offset, 0.0)
 	_smoothed_focus_point = _smoothed_focus_point.lerp(focus_point, look_weight)
+	if _smoothed_focus_point.distance_to(focus_point) <= FOCUS_SETTLE_DISTANCE:
+		_smoothed_focus_point = focus_point
 	_game_camera.fov = BASE_FOV + _fov_offset + (PAUSE_FOCUS_FOV_OFFSET * _pause_focus_weight)
 	_game_camera.look_at(_smoothed_focus_point, Vector3.UP)
 

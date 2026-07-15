@@ -19,7 +19,7 @@ const BIRTHDAY_FINALE_OVERLAY_SCENE := preload("res://assets/scenes/ui/birthday_
 @onready var interaction_prompt_controller: InteractionPromptController = $InteractionPromptController
 @onready var gameplay_ui_layer: GameplayUiLayer = $GameplayUI
 @onready var pause_menu: Node = $PauseMenu
-@onready var inventory_ui: InventoryUi = $InventoryUI
+@onready var inventory_ui: Node = $InventoryUI
 @onready var dialogue_manager: Node = Engine.get_singleton("DialogueManager")
 
 const DIALOGUE_BALLOON_SCENE := preload("res://assets/scenes/ui/dialogue_balloon.tscn")
@@ -154,8 +154,12 @@ func _ready() -> void:
 		var inventory_menu_root := inventory_ui.get_node_or_null("MenuRoot") as Control
 		if inventory_menu_root != null:
 			inventory_menu_root.visible = false
-		inventory_ui.set_inventory(_inventory_data)
-		inventory_ui.close_requested.connect(_close_inventory)
+		if inventory_ui.has_method("set_inventory"):
+			inventory_ui.call("set_inventory", _inventory_data)
+		else:
+			push_warning("InventoryUI script is not active; inventory is disabled for this run.")
+		if inventory_ui.has_signal("close_requested") and not inventory_ui.is_connected("close_requested", Callable(self, "_close_inventory")):
+			inventory_ui.connect("close_requested", Callable(self, "_close_inventory"))
 	_connect_labyrinth_area_signals()
 	if camera_rig != null and camera_rig.has_signal("labyrinth_view_yaw_changed"):
 		camera_rig.connect("labyrinth_view_yaw_changed", Callable(self, "_on_labyrinth_view_yaw_changed"))
@@ -552,6 +556,7 @@ func _open_inventory() -> void:
 		or _cutscene_active
 		or _credits_active
 		or inventory_ui == null
+		or not inventory_ui.has_method("open")
 	):
 		return
 
@@ -562,7 +567,7 @@ func _open_inventory() -> void:
 	player.set_controls_enabled(false)
 	interaction_source.set_interaction_enabled(false)
 	_sync_input_context()
-	inventory_ui.open()
+	inventory_ui.call("open")
 
 
 func _close_inventory() -> void:
@@ -571,8 +576,8 @@ func _close_inventory() -> void:
 
 	_inventory_open = false
 	_tween_inventory_time_scale(INVENTORY_TIME_SCALE_CLOSED)
-	if inventory_ui != null:
-		inventory_ui.close()
+	if inventory_ui != null and inventory_ui.has_method("close"):
+		inventory_ui.call("close")
 	_inventory_data.set_selected_category(InventoryData.CATEGORY_REGULAR)
 	player.set_controls_enabled(true)
 	interaction_source.set_interaction_enabled(true)
