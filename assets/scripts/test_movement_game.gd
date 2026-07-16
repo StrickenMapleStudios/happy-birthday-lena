@@ -2,6 +2,7 @@ extends Node3D
 
 const MAIN_MENU_SCENE_PATH := "res://assets/scenes/menu/menu_main.tscn"
 const CREDITS_SCENE_PATH := "res://assets/scenes/game/credits_scene.tscn"
+const PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/pause_menu.tscn")
 const DIALOGUE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/dialogue_pause_menu.tscn")
 const CUTSCENE_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/cutscene_pause_menu.tscn")
 const LABYRINTH_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/labyrinth_pause_menu.tscn")
@@ -119,34 +120,13 @@ func _ready() -> void:
 	if dialogue_manager != null and not dialogue_manager.is_connected("dialogue_ended", Callable(self, "_on_dialogue_ended")):
 		dialogue_manager.connect("dialogue_ended", Callable(self, "_on_dialogue_ended"))
 	if pause_menu != null:
-		var pause_menu_root := pause_menu.get_node_or_null("MenuRoot") as Control
-		if pause_menu_root != null:
-			pause_menu_root.visible = false
+		pause_menu = _ensure_pause_menu_methods(pause_menu, PAUSE_MENU_SCENE, "default")
+		_hide_pause_menu_root(pause_menu)
 		_connect_pause_menu_signals(pause_menu)
-	_dialogue_pause_menu = DIALOGUE_PAUSE_MENU_SCENE.instantiate()
-	var dialogue_pause_menu_root := _dialogue_pause_menu.get_node_or_null("MenuRoot") as Control
-	if dialogue_pause_menu_root != null:
-		dialogue_pause_menu_root.visible = false
-	add_child(_dialogue_pause_menu)
-	_connect_pause_menu_signals(_dialogue_pause_menu)
-	_cutscene_pause_menu = CUTSCENE_PAUSE_MENU_SCENE.instantiate()
-	var cutscene_pause_menu_root := _cutscene_pause_menu.get_node_or_null("MenuRoot") as Control
-	if cutscene_pause_menu_root != null:
-		cutscene_pause_menu_root.visible = false
-	add_child(_cutscene_pause_menu)
-	_connect_pause_menu_signals(_cutscene_pause_menu)
-	_labyrinth_pause_menu = LABYRINTH_PAUSE_MENU_SCENE.instantiate()
-	var labyrinth_pause_menu_root := _labyrinth_pause_menu.get_node_or_null("MenuRoot") as Control
-	if labyrinth_pause_menu_root != null:
-		labyrinth_pause_menu_root.visible = false
-	add_child(_labyrinth_pause_menu)
-	_connect_pause_menu_signals(_labyrinth_pause_menu)
-	_credits_pause_menu = CREDITS_PAUSE_MENU_SCENE.instantiate()
-	var credits_pause_menu_root := _credits_pause_menu.get_node_or_null("MenuRoot") as Control
-	if credits_pause_menu_root != null:
-		credits_pause_menu_root.visible = false
-	add_child(_credits_pause_menu)
-	_connect_pause_menu_signals(_credits_pause_menu)
+	_dialogue_pause_menu = _instantiate_pause_menu(DIALOGUE_PAUSE_MENU_SCENE, "dialogue")
+	_cutscene_pause_menu = _instantiate_pause_menu(CUTSCENE_PAUSE_MENU_SCENE, "cutscene")
+	_labyrinth_pause_menu = _instantiate_pause_menu(LABYRINTH_PAUSE_MENU_SCENE, "labyrinth")
+	_credits_pause_menu = _instantiate_pause_menu(CREDITS_PAUSE_MENU_SCENE, "credits")
 	_birthday_finale_overlay = BIRTHDAY_FINALE_OVERLAY_SCENE.instantiate() as CanvasLayer
 	if _birthday_finale_overlay != null:
 		add_child(_birthday_finale_overlay)
@@ -524,8 +504,10 @@ func _open_pause_menu() -> void:
 	get_tree().paused = true
 	AudioService.apply_mix_preset(AUDIO_PRESET_PAUSE, AUDIO_PRESET_FADE_DURATION)
 	_sync_input_context()
-	if _active_pause_menu != null:
+	if _active_pause_menu != null and _active_pause_menu.has_method("open"):
 		_active_pause_menu.call("open")
+	else:
+		_recover_from_failed_pause_open(_active_pause_menu)
 
 
 func _resume_from_pause() -> void:
@@ -871,33 +853,109 @@ func _connect_pause_menu_signals(menu: Node) -> void:
 		return
 
 	menu.process_mode = Node.PROCESS_MODE_ALWAYS
-	if menu.has_signal("resume_requested"):
+	if menu.has_signal("resume_requested") and not menu.is_connected("resume_requested", Callable(self, "_resume_from_pause")):
 		menu.connect("resume_requested", Callable(self, "_resume_from_pause"))
-	if menu.has_signal("main_menu_requested"):
+	if menu.has_signal("main_menu_requested") and not menu.is_connected("main_menu_requested", Callable(self, "_return_to_main_menu")):
 		menu.connect("main_menu_requested", Callable(self, "_return_to_main_menu"))
-	if menu.has_signal("quit_requested"):
+	if menu.has_signal("quit_requested") and not menu.is_connected("quit_requested", Callable(self, "_quit_from_pause")):
 		menu.connect("quit_requested", Callable(self, "_quit_from_pause"))
-	if menu.has_signal("exit_dialogue_requested"):
+	if menu.has_signal("exit_dialogue_requested") and not menu.is_connected("exit_dialogue_requested", Callable(self, "_exit_dialogue_from_pause")):
 		menu.connect("exit_dialogue_requested", Callable(self, "_exit_dialogue_from_pause"))
-	if menu.has_signal("exit_cutscene_requested"):
+	if menu.has_signal("exit_cutscene_requested") and not menu.is_connected("exit_cutscene_requested", Callable(self, "_exit_cutscene_from_pause")):
 		menu.connect("exit_cutscene_requested", Callable(self, "_exit_cutscene_from_pause"))
-	if menu.has_signal("exit_labyrinth_requested"):
+	if menu.has_signal("exit_labyrinth_requested") and not menu.is_connected("exit_labyrinth_requested", Callable(self, "_exit_labyrinth_from_pause")):
 		menu.connect("exit_labyrinth_requested", Callable(self, "_exit_labyrinth_from_pause"))
-	if menu.has_signal("skip_credits_requested"):
+	if menu.has_signal("skip_credits_requested") and not menu.is_connected("skip_credits_requested", Callable(self, "_skip_credits_from_pause")):
 		menu.connect("skip_credits_requested", Callable(self, "_skip_credits_from_pause"))
 
 
 func _get_pause_menu_for_current_context() -> Node:
 	if _credits_active and _credits_pause_menu != null:
+		_credits_pause_menu = _ensure_pause_menu_methods(_credits_pause_menu, CREDITS_PAUSE_MENU_SCENE, "credits")
 		return _credits_pause_menu
 	if _dialogue_active and _dialogue_pause_menu != null:
+		_dialogue_pause_menu = _ensure_pause_menu_methods(_dialogue_pause_menu, DIALOGUE_PAUSE_MENU_SCENE, "dialogue")
 		return _dialogue_pause_menu
 	if _cutscene_active and _cutscene_pause_menu != null:
+		_cutscene_pause_menu = _ensure_pause_menu_methods(_cutscene_pause_menu, CUTSCENE_PAUSE_MENU_SCENE, "cutscene")
 		return _cutscene_pause_menu
 	if _labyrinth_active and _labyrinth_pause_menu != null:
+		_labyrinth_pause_menu = _ensure_pause_menu_methods(_labyrinth_pause_menu, LABYRINTH_PAUSE_MENU_SCENE, "labyrinth")
 		return _labyrinth_pause_menu
 
+	pause_menu = _ensure_pause_menu_methods(pause_menu, PAUSE_MENU_SCENE, "default")
 	return pause_menu
+
+
+func _instantiate_pause_menu(menu_scene: PackedScene, menu_label: String) -> Node:
+	if menu_scene == null:
+		return null
+
+	var menu := menu_scene.instantiate()
+	add_child(menu)
+	menu = _ensure_pause_menu_methods(menu, menu_scene, menu_label)
+	_hide_pause_menu_root(menu)
+	_connect_pause_menu_signals(menu)
+	return menu
+
+
+func _hide_pause_menu_root(menu: Node) -> void:
+	if menu == null:
+		return
+
+	var pause_menu_root := menu.get_node_or_null("MenuRoot") as Control
+	if pause_menu_root != null:
+		pause_menu_root.visible = false
+
+
+func _ensure_pause_menu_methods(menu: Node, menu_scene: PackedScene, menu_label: String) -> Node:
+	if menu == null:
+		return null
+
+	if menu.has_method("open") and menu.has_method("close"):
+		return menu
+
+	var replacement := menu_scene.instantiate() if menu_scene != null else null
+	if replacement == null:
+		push_error("Pause menu '%s' is missing open/close methods and could not be reinstantiated." % menu_label)
+		return menu
+
+	if menu.get_parent() != null:
+		var parent := menu.get_parent()
+		var original_index := menu.get_index()
+		var original_name := menu.name
+		parent.add_child(replacement)
+		parent.move_child(replacement, original_index)
+		replacement.name = original_name
+		menu.queue_free()
+
+	if not replacement.has_method("open") or not replacement.has_method("close"):
+		push_error(
+			"Pause menu '%s' still has no open/close methods after reinstantiation. scene=%s script=%s"
+			% [menu_label, replacement.scene_file_path, replacement.get_script()]
+		)
+		return replacement
+
+	_hide_pause_menu_root(replacement)
+	_connect_pause_menu_signals(replacement)
+	return replacement
+
+
+func _recover_from_failed_pause_open(menu: Node) -> void:
+	push_error(
+		"Failed to open pause menu. context=%s node=%s script=%s"
+		% [str(_input_context), str(menu), str(menu.get_script()) if menu != null else "<null>"]
+	)
+	get_tree().paused = false
+	_pause_active = false
+	_active_pause_menu = null
+	if not _dialogue_active and not _cutscene_active and not _labyrinth_active and camera_rig != null and camera_rig.has_method("end_pause_focus"):
+		camera_rig.call("end_pause_focus")
+	AudioService.apply_mix_preset(
+		AUDIO_PRESET_DIALOGUE if _dialogue_active else AUDIO_PRESET_GAMEPLAY,
+		AUDIO_PRESET_FADE_DURATION
+	)
+	_sync_input_context()
 
 
 func _resolve_speaker_for_character_name(character_name: String) -> Node3D:
