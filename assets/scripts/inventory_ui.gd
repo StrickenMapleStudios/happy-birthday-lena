@@ -368,7 +368,7 @@ func _update_layout() -> void:
 		return
 
 	var scale_factor := UiScale.compute_reference_scale(
-		get_viewport_rect().size,
+		get_viewport().get_visible_rect().size,
 		REFERENCE_VIEWPORT_SIZE,
 		1.0,
 		INVENTORY_MIN_SCALE

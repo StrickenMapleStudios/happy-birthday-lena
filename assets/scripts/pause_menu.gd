@@ -198,7 +198,7 @@ func _center_panel_vertically(panel: Control) -> void:
 
 func _update_panel_scale(panel: Control) -> void:
 	var scale_factor := UiScale.compute_reference_scale(
-		get_viewport_rect().size,
+		get_viewport().get_visible_rect().size,
 		REFERENCE_VIEWPORT_SIZE,
 		1.0,
 		CONTENT_MIN_SCALE

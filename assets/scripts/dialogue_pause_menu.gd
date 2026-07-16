@@ -76,7 +76,7 @@ func _make_mirrored_texture(source: Texture2D) -> ImageTexture:
 func _update_vertical_layout() -> void:
 	var target_size := content_root.get_combined_minimum_size()
 	var scale_factor := UiScale.compute_reference_scale(
-		get_viewport_rect().size,
+		get_viewport().get_visible_rect().size,
 		REFERENCE_VIEWPORT_SIZE,
 		1.0,
 		CONTENT_MIN_SCALE
