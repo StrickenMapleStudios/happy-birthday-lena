@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://wmpareqch47r" path="res://assets/scripts/interaction_target.gd" id="5_interaction_target"]
 [ext_resource type="Resource" uid="uid://e4btrqkr3fah" path="res://assets/dialogue/cake_conversation.dialogue" id="6_cake_dialogue"]
 [ext_resource type="Script" uid="uid://qnjae4do8pus" path="res://assets/scripts/cake_dialogue_state.gd" id="7_cake_dialogue_state"]
+[ext_resource type="Script" path="res://assets/scripts/mystery_room_light_isolation.gd" id="8_light_isolation"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_side_wall"]
 size = Vector3(1.5, 24.1, 161.1)
@@ -24,6 +25,9 @@ size = Vector3(40, 4, 4)
 
 [node name="MysteryRoomCutscene" type="Node3D" unique_id=46491078]
 script = ExtResource("2_cutscene")
+
+[node name="LightIsolation" type="Node" parent="." unique_id=141602731]
+script = ExtResource("8_light_isolation")
 
 [node name="CakeDialogueState" type="Node" parent="." unique_id=1699858056]
 script = ExtResource("7_cake_dialogue_state")

@@ -59,10 +59,10 @@ light_energy = 0.85
 light_cull_mask = 1
 shadow_enabled = true
 shadow_bias = 0.03
-shadow_normal_bias = 0.18
-directional_shadow_blend_splits = false
+shadow_normal_bias = 0.06
+directional_shadow_blend_splits = true
 directional_shadow_fade_start = 0.75
-directional_shadow_max_distance = 420.0
+directional_shadow_max_distance = 180.0
 
 [node name="Ground" type="MeshInstance3D" parent="." unique_id=449554160]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.014071941, -0.029748935, 0.002511382)
