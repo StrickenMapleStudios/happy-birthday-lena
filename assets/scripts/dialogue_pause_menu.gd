@@ -50,6 +50,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func open() -> void:
 	menu_root.visible = true
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	_set_button_focus_enabled(menu_buttons, true)
 	resume_button.grab_focus()
 	call_deferred("_update_vertical_layout")

@@ -87,6 +87,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func open() -> void:
 	menu_root.visible = true
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	_pending_action = &""
 	confirm_dialog.call("hide_dialog")
 	_show_main_buttons()

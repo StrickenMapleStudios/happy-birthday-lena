@@ -12,7 +12,7 @@ const BRASS_KEY_ITEM := preload("res://assets/data/items/brass_key_item.tres")
 const RACE_RESULT_WIN := &"win"
 const RACE_RESULT_LOSE := &"lose"
 const THIRD_RACE_ID := &"third_race"
-const NPC_STANDARD_SPEED_BOOST := 2.0
+const NPC_STANDARD_SPEED_BOOST := 4.0
 const NPC_TURBO_ANIMATION_SPEED_SCALE := 2.0
 
 @export var lap_track_path: NodePath = ^"../LapTrack"
