@@ -29,10 +29,10 @@ const TEMPLATE_PROFESSIONS := [
 @export_range(10.0, 200.0, 1.0) var scroll_speed := 42.0
 @export_range(0.0, 4.0, 0.01) var blur_strength := 1.45
 @export_range(0.0, 1.0, 0.01) var dim_strength := 0.08
-@export_range(0.0, 10.0, 0.01) var blur_delay_seconds := 0.875
-@export_range(0.0, 5.0, 0.01) var blur_fade_duration := 0.3
 @export_range(0, 256, 1) var role_font_size := 34
 @export_range(0, 256, 1) var name_font_size := 34
+@export_range(0.0, 1000.0, 1.0) var column_gap := 72.0
+@export_range(0.0, 1200.0, 1.0) var column_width := 480.0
 @export_range(0.0, 400.0, 1.0) var row_spacing := 28.0
 @export_range(0.0, 3000.0, 1.0) var top_padding := 1080.0
 @export_range(0.0, 3000.0, 1.0) var bottom_padding := 720.0
@@ -42,7 +42,6 @@ const TEMPLATE_PROFESSIONS := [
 @onready var _entries: VBoxContainer = $ClipContainer/CreditsScroll/Entries
 
 var _scrolling := false
-var _blur_tween: Tween
 
 
 func _ready() -> void:
@@ -63,12 +62,11 @@ func start_scrolling() -> void:
 	_scroll_root.position.y = top_padding
 	_scrolling = true
 	visible = true
-	_schedule_delayed_blur()
+	_apply_blur_state_immediately(blur_strength)
 
 
 func stop_scrolling() -> void:
 	_scrolling = false
-	_kill_blur_tween()
 	_apply_blur_state_immediately(0.0)
 	visible = false
 
@@ -105,13 +103,14 @@ func _build_entries() -> void:
 
 func _create_entry_row(profession: String) -> Control:
 	var row := HBoxContainer.new()
-	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_theme_constant_override("separation", 48)
+	row.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", int(column_gap))
 	var normalized_profession := profession.strip_edges()
 
 	var role_label := Label.new()
 	role_label.text = normalized_profession
-	role_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	role_label.custom_minimum_size.x = column_width
 	role_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	role_label.add_theme_font_override("font", TITLE_FONT)
 	role_label.add_theme_font_size_override("font_size", role_font_size)
@@ -120,30 +119,14 @@ func _create_entry_row(profession: String) -> Control:
 
 	var name_label := Label.new()
 	name_label.text = String(SPECIAL_CREDIT_NAMES_BY_ROLE.get(normalized_profession, credit_name))
-	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	name_label.custom_minimum_size.x = column_width
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	name_label.add_theme_font_override("font", TITLE_FONT)
 	name_label.add_theme_font_size_override("font_size", name_font_size)
 	name_label.add_theme_color_override("font_color", Color(1.0, 0.95, 0.78, 1.0))
 	row.add_child(name_label)
 
 	return row
-
-
-func _schedule_delayed_blur() -> void:
-	_kill_blur_tween()
-	_apply_blur_state_immediately(0.0)
-	if _dim_overlay == null:
-		return
-
-	_blur_tween = create_tween()
-	_blur_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	if blur_delay_seconds > 0.0:
-		_blur_tween.tween_interval(blur_delay_seconds)
-	var blur_material := _dim_overlay.material as ShaderMaterial
-	if blur_material == null:
-		return
-	_blur_tween.tween_method(_set_blur_amount, 0.0, blur_strength, blur_fade_duration)
 
 
 func _set_blur_amount(value: float) -> void:
@@ -160,9 +143,3 @@ func _set_blur_amount(value: float) -> void:
 
 func _apply_blur_state_immediately(value: float) -> void:
 	_set_blur_amount(value)
-
-
-func _kill_blur_tween() -> void:
-	if _blur_tween != null and _blur_tween.is_valid():
-		_blur_tween.kill()
-	_blur_tween = null

@@ -5,7 +5,6 @@ const CREDITS_PAUSE_MENU_SCENE := preload("res://assets/scenes/ui/credits_pause_
 const BIRTHDAY_FINALE_OVERLAY_SCENE := preload("res://assets/scenes/ui/birthday_finale_overlay.tscn")
 const CURSOR_MODE_CREDITS := Input.MOUSE_MODE_HIDDEN
 const CURSOR_MODE_UI := Input.MOUSE_MODE_VISIBLE
-const CREDITS_VISIBLE_SECONDS := 15.0
 const CREDITS_END_FADE_OUT_DURATION := 3.0
 const BIRTHDAY_FINALE_HOLD_SECONDS := 3.0
 const BIRTHDAY_FINALE_POST_FADE_DELAY_SECONDS := 1.0
@@ -63,10 +62,11 @@ func _run_credits_sequence() -> void:
 
 	_credits_finished_requested = false
 	_credits_skip_requested = false
-	if CREDITS_VISIBLE_SECONDS <= 0.0:
+	var credits_duration := _get_credits_duration_seconds()
+	if credits_duration <= 0.0:
 		_credits_finished_requested = true
 	else:
-		var credits_timer := get_tree().create_timer(CREDITS_VISIBLE_SECONDS, false)
+		var credits_timer := get_tree().create_timer(credits_duration, false)
 		credits_timer.timeout.connect(func() -> void: _credits_finished_requested = true, CONNECT_ONE_SHOT)
 
 	while not _credits_skip_requested and not _credits_finished_requested:
@@ -166,3 +166,13 @@ func _stop_credits_presentation() -> void:
 		credits_ui.stop_scrolling()
 	if giant_character_showcase != null and giant_character_showcase.has_method("end_credits_dance"):
 		giant_character_showcase.call("end_credits_dance")
+
+
+func _get_credits_duration_seconds() -> float:
+	if giant_character_showcase != null and giant_character_showcase.has_method("get_credits_duration"):
+		return float(giant_character_showcase.call("get_credits_duration"))
+
+	if credits_ui != null:
+		return credits_ui.get_estimated_scroll_duration()
+
+	return 0.0
