@@ -1,6 +1,7 @@
 extends CharacterBody3D
 
 const CharacterAnimationLibrary = preload("res://assets/scripts/character_animation_library.gd")
+const CharacterAnimationTreeFactory = preload("res://assets/scripts/character_animation_tree_factory.gd")
 const CharacterGroundSnap = preload("res://assets/scripts/character_ground_snap.gd")
 const DEFAULT_DIALOGUE_RESOURCE = preload("res://assets/dialogue/friend_intro_template.dialogue")
 const HIYORI_DIALOGUE_RESOURCE = preload("res://assets/dialogue/friend_intro_hiyori.dialogue")
@@ -28,9 +29,9 @@ const MAX_COLLISION_SLIDES := 4
 @export var npc_dialogue_name := ""
 @export_range(0.1, 3.0, 0.05) var locomotion_speed_multiplier := 1.0
 
-@onready var animation_player: AnimationPlayer = $Model/AnimationPlayer
-@onready var animation_tree: AnimationTree = $Model/AnimationPlayer/AnimationTree
-@onready var dialogue_animation_tree: AnimationTree = $Model/AnimationPlayer/DialogueAnimationTree
+@onready var animation_player: AnimationPlayer = get_node_or_null(^"Model/AnimationPlayer") as AnimationPlayer
+@onready var animation_tree: AnimationTree = null
+@onready var dialogue_animation_tree: AnimationTree = null
 
 var _playback: AnimationNodeStateMachinePlayback
 var _dialogue_animation_mode_active := false
@@ -50,6 +51,7 @@ var _runtime_locomotion_speed_scale := 1.0
 
 func _ready() -> void:
 	_feet_height_offset = CharacterGroundSnap.compute_feet_height_offset(self)
+	_restore_animation_trees_if_needed()
 	CharacterAnimationLibrary.apply_to(animation_player)
 	_apply_dialogue_resource_override()
 	if animation_player != null:
@@ -64,6 +66,15 @@ func _ready() -> void:
 	_configure_root_motion_track()
 	_travel_to(STATE_IDLE)
 	call_deferred("_snap_to_ground_height")
+
+
+func _restore_animation_trees_if_needed() -> void:
+	if animation_player == null:
+		return
+
+	var restored_trees := CharacterAnimationTreeFactory.ensure_locomotion_trees(animation_player)
+	animation_tree = restored_trees.get("animation_tree") as AnimationTree
+	dialogue_animation_tree = restored_trees.get("dialogue_animation_tree") as AnimationTree
 
 
 func _process(delta: float) -> void:

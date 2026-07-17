@@ -20,11 +20,16 @@ var _pending_constellation_reward := false
 
 
 func _ready() -> void:
+	_restore_animation_trees_if_needed()
 	CharacterAnimationLibrary.apply_to(animation_player)
 	if animation_tree != null:
 		animation_tree.active = true
 	if dialogue_animation_tree != null:
 		dialogue_animation_tree.active = false
+	if animation_tree == null:
+		push_warning("Elder character is missing AnimationTree. Elder animation setup was skipped.")
+		_sync_dialogue_setup()
+		return
 
 	_playback = animation_tree.get("parameters/playback") as AnimationNodeStateMachinePlayback
 	_configure_elder_trees()

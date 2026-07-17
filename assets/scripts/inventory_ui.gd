@@ -12,7 +12,7 @@ const ICON_OUTLINE_SHADER := preload("res://assets/shaders/ui_icon_outline.gdsha
 const KEY_ICON := preload("res://assets/art/sprites/key.png")
 const BACKPACK_ICON := preload("res://assets/art/sprites/backpack.png")
 const SCROLL_ICON := preload("res://assets/art/sprites/scroll.png")
-const PLACEHOLDER_ITEM_ICON := preload("res://addons/assetplus/defaultgodot.png")
+const PLACEHOLDER_ITEM_ICON := preload("res://assets/art/sprites/backpack.png")
 const CATEGORY_TO_TAB := {
 	InventoryData.CATEGORY_KEYS: 0,
 	InventoryData.CATEGORY_REGULAR: 1,

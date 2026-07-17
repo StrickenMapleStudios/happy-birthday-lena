@@ -1,6 +1,7 @@
 extends CharacterBody3D
 
 const CharacterAnimationLibrary = preload("res://assets/scripts/character_animation_library.gd")
+const CharacterAnimationTreeFactory = preload("res://assets/scripts/character_animation_tree_factory.gd")
 const CharacterGroundSnap = preload("res://assets/scripts/character_ground_snap.gd")
 
 const WALKING_TURN_SPEED := 6.0
@@ -35,9 +36,9 @@ const MAX_COLLISION_SLIDES := 4
 const CONTROL_MODE_DEFAULT := 0
 const CONTROL_MODE_LABYRINTH := 1
 @onready var model: Node3D = $Model
-@onready var animation_tree: AnimationTree = $Model/AnimationPlayer/AnimationTree
-@onready var dialogue_animation_tree: AnimationTree = $Model/AnimationPlayer/DialogueAnimationTree
-@onready var animation_player: AnimationPlayer = $Model/AnimationPlayer
+@onready var animation_player: AnimationPlayer = get_node_or_null(^"Model/AnimationPlayer") as AnimationPlayer
+@onready var animation_tree: AnimationTree = null
+@onready var dialogue_animation_tree: AnimationTree = null
 @onready var first_person_camera_mount: Node3D = $FirstPersonCameraMount
 
 var _playback: AnimationNodeStateMachinePlayback
@@ -56,6 +57,7 @@ func _ready() -> void:
 	_ensure_input_map()
 	_feet_height_offset = CharacterGroundSnap.compute_feet_height_offset(self)
 	add_to_group(&"player_character")
+	_restore_animation_trees_if_needed()
 	if animation_player == null or animation_tree == null:
 		push_warning("Player character is missing AnimationPlayer/AnimationTree. Locomotion animation setup was skipped.")
 		return
@@ -70,6 +72,15 @@ func _ready() -> void:
 	_sync_animation_flags(false, false)
 	_travel_to(STATE_IDLE)
 	call_deferred("_snap_to_ground_height")
+
+
+func _restore_animation_trees_if_needed() -> void:
+	if animation_player == null:
+		return
+
+	var restored_trees := CharacterAnimationTreeFactory.ensure_locomotion_trees(animation_player)
+	animation_tree = restored_trees.get("animation_tree") as AnimationTree
+	dialogue_animation_tree = restored_trees.get("dialogue_animation_tree") as AnimationTree
 
 
 func _process(delta: float) -> void:

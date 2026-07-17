@@ -1,6 +1,7 @@
 extends Node3D
 
 const CharacterAnimationLibrary = preload("res://assets/scripts/character_animation_library.gd")
+const CharacterAnimationTreeFactory = preload("res://assets/scripts/character_animation_tree_factory.gd")
 const GAMEPLAY_COLLISION_GROUP := &"gameplay_collision_state_receivers"
 
 @export var visual_root_path: NodePath = ^"Model"
@@ -15,7 +16,7 @@ const GAMEPLAY_COLLISION_GROUP := &"gameplay_collision_state_receivers"
 
 @onready var look_tracking: NpcLookTrackingController = $LookTracking
 @onready var head_pole_modifier: GiantHeadPoleModifier = $Model/Rig/Skeleton3D/HeadPoleModifier
-@onready var dialogue_animation_tree: AnimationTree = $Model/AnimationPlayer/DialogueAnimationTree
+@onready var dialogue_animation_tree: AnimationTree = null
 @onready var _gameplay_collision_body: StaticBody3D = get_node_or_null(gameplay_collision_body_path) as StaticBody3D
 
 var _gameplay_collision_shapes: Array[CollisionShape3D] = []
@@ -25,7 +26,11 @@ var _character_visible := true
 
 func _ready() -> void:
 	add_to_group(GAMEPLAY_COLLISION_GROUP)
-	CharacterAnimationLibrary.apply_to($Model/AnimationPlayer)
+	var animation_player := get_node_or_null(^"Model/AnimationPlayer") as AnimationPlayer
+	if animation_player != null:
+		var restored_trees := CharacterAnimationTreeFactory.ensure_locomotion_trees(animation_player)
+		dialogue_animation_tree = restored_trees.get("dialogue_animation_tree") as AnimationTree
+		CharacterAnimationLibrary.apply_to(animation_player)
 	if dialogue_animation_tree != null:
 		dialogue_animation_tree.active = true
 		_set_dialogue_animation_condition(false)
