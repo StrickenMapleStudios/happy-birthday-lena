@@ -1,12 +1,13 @@
 extends Node3D
 
-const CharacterAnimationLibrary = preload("res://assets/scripts/character_animation_library.gd")
-const CharacterAnimationTreeFactory = preload("res://assets/scripts/character_animation_tree_factory.gd")
 const GAMEPLAY_COLLISION_GROUP := &"gameplay_collision_state_receivers"
 const GIANT_LOOK_TRACKING_SETTINGS = preload("res://assets/data/characters/giant_look_tracking.tres")
 const GIANT_STATE_IDLE := &"Idle"
 const GIANT_STATE_GUARDING := &"Guarding"
 const GIANT_STATE_SECRETLY_DANCING := &"SecretlyDancing"
+const GIANT_GUARDING_ANIMATION_CANDIDATES := [&"Guarding", &"guarding"]
+const GIANT_DANCING_ANIMATION_CANDIDATES := [&"SecretlyDancing", &"secretlydancing"]
+const GIANT_IDLE_ANIMATION_CANDIDATES := [&"Idle", &"idle"]
 
 @export var visual_root_path: NodePath = ^"Model"
 @export var interaction_target_path: NodePath = ^"InteractionRig/InteractionTarget"
@@ -34,9 +35,7 @@ func _ready() -> void:
 	add_to_group(GAMEPLAY_COLLISION_GROUP)
 	var animation_player := get_node_or_null(^"Model/AnimationPlayer") as AnimationPlayer
 	if animation_player != null:
-		var restored_trees := CharacterAnimationTreeFactory.ensure_locomotion_trees(animation_player)
-		dialogue_animation_tree = restored_trees.get("dialogue_animation_tree") as AnimationTree
-		CharacterAnimationLibrary.apply_to(animation_player)
+		dialogue_animation_tree = animation_player.get_node_or_null(^"DialogueAnimationTree") as AnimationTree
 	_restore_runtime_scene_overrides()
 	_ensure_giant_dialogue_tree()
 	if dialogue_animation_tree != null:
@@ -142,7 +141,8 @@ func set_gameplay_collision_enabled(value: bool) -> void:
 func enter_dialogue_animation_mode(_is_talking: bool) -> void:
 	_set_dialogue_animation_condition(true)
 	_travel_giant_state(GIANT_STATE_GUARDING)
-	_play_giant_animation(GIANT_STATE_GUARDING)
+	_set_dialogue_tree_active(false)
+	_play_giant_mode_animation(GIANT_GUARDING_ANIMATION_CANDIDATES)
 
 	if look_tracking != null:
 		look_tracking.set_tracking_enabled(true)
@@ -152,8 +152,9 @@ func enter_dialogue_animation_mode(_is_talking: bool) -> void:
 
 func exit_dialogue_animation_mode() -> void:
 	_set_dialogue_animation_condition(false)
+	_play_giant_mode_animation(GIANT_IDLE_ANIMATION_CANDIDATES)
+	_set_dialogue_tree_active(true)
 	_travel_giant_state(GIANT_STATE_IDLE)
-	_play_giant_animation(GIANT_STATE_IDLE)
 
 	if look_tracking != null:
 		look_tracking.set_tracking_enabled(false)
@@ -165,7 +166,8 @@ func enter_secretly_dancing_mode() -> void:
 	_set_dialogue_animation_condition(false)
 	_set_secretly_dancing_condition(true)
 	_travel_giant_state(GIANT_STATE_SECRETLY_DANCING)
-	_play_giant_animation(GIANT_STATE_SECRETLY_DANCING)
+	_set_dialogue_tree_active(false)
+	_play_giant_mode_animation(GIANT_DANCING_ANIMATION_CANDIDATES)
 
 	if look_tracking != null:
 		look_tracking.set_tracking_enabled(false)
@@ -176,8 +178,9 @@ func enter_secretly_dancing_mode() -> void:
 func exit_secretly_dancing_mode() -> void:
 	_set_secretly_dancing_condition(false)
 	_set_dialogue_animation_condition(false)
+	_play_giant_mode_animation(GIANT_IDLE_ANIMATION_CANDIDATES)
+	_set_dialogue_tree_active(true)
 	_travel_giant_state(GIANT_STATE_IDLE)
-	_play_giant_animation(GIANT_STATE_IDLE)
 
 
 func face_towards_position(target_position: Vector3) -> void:
@@ -252,10 +255,33 @@ func _travel_giant_state(state_name: StringName) -> void:
 	_dialogue_playback.travel(state_name)
 
 
-func _play_giant_animation(animation_name: StringName) -> void:
+func _play_giant_mode_animation(animation_candidates: Array) -> void:
 	if animation_player == null:
 		return
-	if not animation_player.has_animation(animation_name):
+
+	var animation_name := _find_first_available_animation(animation_candidates)
+	if animation_name.is_empty():
 		return
 
 	animation_player.play(animation_name)
+	animation_player.seek(0.0, true)
+	animation_player.advance(0.0)
+
+
+func _find_first_available_animation(animation_candidates: Array) -> StringName:
+	if animation_player == null:
+		return StringName()
+
+	for candidate in animation_candidates:
+		var animation_name := StringName(candidate)
+		if animation_player.has_animation(animation_name):
+			return animation_name
+
+	return StringName()
+
+
+func _set_dialogue_tree_active(value: bool) -> void:
+	if dialogue_animation_tree == null:
+		return
+
+	dialogue_animation_tree.active = value

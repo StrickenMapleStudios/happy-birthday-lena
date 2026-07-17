@@ -21,6 +21,7 @@ var _pending_constellation_reward := false
 
 func _ready() -> void:
 	_restore_animation_trees_if_needed()
+	_restore_runtime_scene_overrides()
 	CharacterAnimationLibrary.apply_to(animation_player)
 	if animation_tree != null:
 		animation_tree.active = true
