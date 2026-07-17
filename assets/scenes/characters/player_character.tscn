@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://cc2jbk4pqovrg" path="res://assets/scripts/character_identity_component.gd" id="5_identity_component"]
 [ext_resource type="Resource" path="res://assets/data/characters/player_identity.tres" id="6_identity_data"]
 [ext_resource type="PackedScene" path="res://assets/scenes/common/character_collision_shape.tscn" id="7_collision_shape"]
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dialogue_idle"]
 animation = &"Idle"
 

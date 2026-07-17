@@ -6,6 +6,7 @@ signal lap_completed(total_laps: int)
 @export var runner_path: NodePath = ^"../NpcTurboSupersonicSonic"
 @export_enum("Inner", "Outer") var lane_side := 1
 @export_range(0.5, 4.0, 0.05) var root_motion_speed_multiplier := 1.35
+@export_range(0.0, 40.0, 0.05) var fallback_speed := 0.0
 @export_range(0.25, 8.0, 0.05) var look_ahead_distance := 1.8
 @export_range(0.0, 4.0, 0.05) var runner_height_offset := 0.0
 
@@ -52,11 +53,12 @@ func _physics_process(_delta: float) -> void:
 	var root_motion_step := 0.0
 	if _runner.has_method("consume_root_motion_distance"):
 		root_motion_step = float(_runner.call("consume_root_motion_distance"))
-	if root_motion_step <= 0.0001:
+	var distance_step := maxf(root_motion_step * root_motion_speed_multiplier, fallback_speed * _delta)
+	if distance_step <= 0.0001:
 		return
 
 	var previous_progress := _progress
-	_progress = wrapf(_progress + (root_motion_step * root_motion_speed_multiplier), 0.0, baked_length)
+	_progress = wrapf(_progress + distance_step, 0.0, baked_length)
 	if _progress < previous_progress:
 		_completed_laps += 1
 		lap_completed.emit(_completed_laps)

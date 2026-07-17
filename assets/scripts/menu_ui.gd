@@ -10,15 +10,17 @@ const UiScale := preload("res://assets/scripts/ui_scale.gd")
 const MENU_REFERENCE_SIZE := Vector2(1920.0, 1080.0)
 const MENU_CONTENT_UNSCALED_SIZE := Vector2(900.0, 888.0)
 const MENU_CONTENT_MIN_SCALE := 0.68
+const MENU_OPTIONS_VERTICAL_OFFSET_FROM_CENTER := 56.0
 
 @onready var menu_character: Node = get_parent().get_node_or_null("menuEnvironment/character")
+@onready var layout_root: Control = $SafeMargin/Layout
 @onready var menu_content_scale: Control = $SafeMargin/Layout/MenuContentScale
 @onready var sidebar: VBoxContainer = $SafeMargin/Layout/MenuContentScale/Sidebar
 @onready var play_button: Button = $SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/PlayButton
 @onready var credits_button: Button = $SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/CreditsButton
 @onready var options_button: Button = $SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/OptionsButton
 @onready var exit_button: Button = $SafeMargin/Layout/MenuContentScale/Sidebar/ButtonStack/ExitButton
-@onready var options_screen: Control = $SafeMargin/Layout/MenuContentScale/OptionsPanel
+@onready var options_screen: Control = $SafeMargin/Layout/OptionsPanel
 @onready var confirm_dialog = $ConfirmDialog
 
 @onready var menu_buttons: Array[Button] = [
@@ -49,6 +51,7 @@ func _ready() -> void:
 	options_screen.call("set_focus_enabled", false)
 	confirm_dialog.call("hide_dialog")
 	_set_button_focus_enabled(menu_buttons, true)
+	_update_options_screen_layout()
 	call_deferred("_focus_first_main_menu_button")
 
 
@@ -159,6 +162,7 @@ func _show_options_screen() -> void:
 	sidebar.visible = false
 	options_screen.visible = true
 	options_screen.call("refresh_from_settings")
+	_update_options_screen_layout()
 	_set_character_standing(false)
 	_set_button_focus_enabled(menu_buttons, false)
 	options_screen.call("set_focus_enabled", true)
@@ -216,6 +220,21 @@ func _update_menu_content_scale() -> void:
 	menu_content_scale.scale = Vector2(scale_factor, scale_factor)
 	menu_content_scale.pivot_offset = Vector2.ZERO
 	menu_content_scale.size = MENU_CONTENT_UNSCALED_SIZE
+	_update_options_screen_layout()
+
+
+func _update_options_screen_layout() -> void:
+	if options_screen == null:
+		return
+	if not options_screen.has_method("get_scaled_size"):
+		return
+
+	options_screen.anchor_left = 0.0
+	options_screen.anchor_top = 0.0
+	options_screen.anchor_right = 0.0
+	options_screen.anchor_bottom = 0.0
+
+	options_screen.position = menu_content_scale.position
 
 
 func _compute_menu_content_scale() -> float:

@@ -12,8 +12,10 @@ const BRASS_KEY_ITEM := preload("res://assets/data/items/brass_key_item.tres")
 const RACE_RESULT_WIN := &"win"
 const RACE_RESULT_LOSE := &"lose"
 const THIRD_RACE_ID := &"third_race"
-const NPC_STANDARD_SPEED_BOOST := 4.0
+const NPC_STANDARD_SPEED_BOOST := 8.0
+const NPC_STANDARD_TRACK_SPEED_BOOST := 1.5
 const NPC_TURBO_ANIMATION_SPEED_SCALE := 2.0
+const NPC_THIRD_RACE_TRACK_SPEED_BOOST := 4.0
 
 @export var lap_track_path: NodePath = ^"../LapTrack"
 @export var player_path: NodePath = ^"../PlayerCharacter"
@@ -437,15 +439,18 @@ func _load_race_definitions() -> void:
 
 
 func _configure_npc_race_speed(configured_speed_multiplier: float) -> void:
-	var lane_speed_multiplier := 1.0
+	var lane_speed_multiplier := NPC_STANDARD_TRACK_SPEED_BOOST
 	var animation_speed_scale := configured_speed_multiplier * NPC_STANDARD_SPEED_BOOST
+	var fallback_speed := configured_speed_multiplier * NPC_STANDARD_SPEED_BOOST * NPC_STANDARD_TRACK_SPEED_BOOST
 
 	if _active_race_id == THIRD_RACE_ID:
 		animation_speed_scale = NPC_TURBO_ANIMATION_SPEED_SCALE
-		lane_speed_multiplier = configured_speed_multiplier / maxf(animation_speed_scale, 0.01)
+		lane_speed_multiplier = (configured_speed_multiplier / maxf(animation_speed_scale, 0.01)) * NPC_THIRD_RACE_TRACK_SPEED_BOOST
+		fallback_speed = configured_speed_multiplier * NPC_THIRD_RACE_TRACK_SPEED_BOOST
 
 	if _npc_lane_runner != null:
 		_npc_lane_runner.set("root_motion_speed_multiplier", lane_speed_multiplier)
+		_npc_lane_runner.set("fallback_speed", fallback_speed)
 
 	if _npc_runner != null and _npc_runner.has_method("set_runtime_locomotion_speed_scale"):
 		_npc_runner.call("set_runtime_locomotion_speed_scale", animation_speed_scale)
