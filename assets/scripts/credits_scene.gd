@@ -63,13 +63,14 @@ func _run_credits_sequence() -> void:
 
 	_credits_finished_requested = false
 	_credits_skip_requested = false
-	if CREDITS_VISIBLE_SECONDS > 0.0:
-		await get_tree().create_timer(CREDITS_VISIBLE_SECONDS, false).timeout
-	else:
-		await get_tree().process_frame
-
-	if not _credits_skip_requested:
+	if CREDITS_VISIBLE_SECONDS <= 0.0:
 		_credits_finished_requested = true
+	else:
+		var credits_timer := get_tree().create_timer(CREDITS_VISIBLE_SECONDS, false)
+		credits_timer.timeout.connect(func() -> void: _credits_finished_requested = true, CONNECT_ONE_SHOT)
+
+	while not _credits_skip_requested and not _credits_finished_requested:
+		await get_tree().process_frame
 
 	_transition_locked = true
 	get_tree().paused = false

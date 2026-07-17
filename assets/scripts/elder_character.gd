@@ -97,6 +97,8 @@ func _configure_elder_trees() -> void:
 	if elder_animation.is_empty():
 		elder_animation = &"leaningoncane"
 
+	_ensure_elder_state_machine(animation_tree, elder_animation)
+	_ensure_elder_state_machine(dialogue_animation_tree, elder_animation)
 	_set_tree_animation(animation_tree, elder_animation)
 	_set_tree_animation(dialogue_animation_tree, elder_animation)
 
@@ -139,3 +141,27 @@ func _find_elder_animation_name() -> StringName:
 			return animation_name
 
 	return StringName()
+
+
+func _ensure_elder_state_machine(tree: AnimationTree, animation_name: StringName) -> void:
+	if tree == null:
+		return
+
+	var state_machine := tree.tree_root as AnimationNodeStateMachine
+	if state_machine != null and state_machine.has_node(ELDER_STATE_NAME):
+		return
+
+	var new_state_machine := AnimationNodeStateMachine.new()
+	new_state_machine.graph_offset = Vector2(-72.0, -6.0)
+	new_state_machine.add_node(&"Start", AnimationNodeOutput.new(), Vector2(160.0, 116.0))
+	new_state_machine.add_node(ELDER_STATE_NAME, _make_elder_animation_node(animation_name), Vector2(372.0, 117.0))
+	var start_transition := AnimationNodeStateMachineTransition.new()
+	start_transition.advance_mode = AnimationNodeStateMachineTransition.ADVANCE_MODE_AUTO
+	new_state_machine.add_transition(&"Start", ELDER_STATE_NAME, start_transition)
+	tree.tree_root = new_state_machine
+
+
+func _make_elder_animation_node(animation_name: StringName) -> AnimationNodeAnimation:
+	var animation_node := AnimationNodeAnimation.new()
+	animation_node.animation = animation_name
+	return animation_node

@@ -5,6 +5,7 @@ const CharacterAnimationTreeFactory = preload("res://assets/scripts/character_an
 const CharacterGroundSnap = preload("res://assets/scripts/character_ground_snap.gd")
 const DEFAULT_DIALOGUE_RESOURCE = preload("res://assets/dialogue/friend_intro_template.dialogue")
 const HIYORI_DIALOGUE_RESOURCE = preload("res://assets/dialogue/friend_intro_hiyori.dialogue")
+const DEFAULT_LOOK_TRACKING_SETTINGS = preload("res://assets/data/characters/npc_default_look_tracking.tres")
 
 const WALKING_TURN_SPEED := 6.0
 const RUNNING_TURN_SPEED := 9.0
@@ -15,8 +16,11 @@ const WALKING_SPEED_SCALE := 2.0
 const RUNNING_SPEED_SCALE := 5.0
 const CHARACTER_IDENTITY_PATH := ^"CharacterIdentity"
 const HEAD_POLE_MODIFIER_PATH := ^"Model/Rig/Skeleton3D/HeadPoleModifier"
+const HAT_PATH := ^"Model/Rig/Skeleton3D/hat_2"
+const INNER_HAT_PATH := ^"Model/Rig/Skeleton3D/hat_2/hat"
 const FRIEND_FOLLOW_STATE_PATH := ^"FriendFollowState"
 const LOOK_TRACKING_PATH := ^"LookTracking"
+const LOOK_TRACKING_CONTROLLER_RELATIVE_PATH := ^"../../../../LookTracking"
 const INTERACTION_TARGET_PATH := ^"InteractionTarget"
 const PREPARED_SPEED_SCALE_META := &"prepared_speed_scale"
 const STATE_IDLE := &"Idle"
@@ -52,6 +56,7 @@ var _runtime_locomotion_speed_scale := 1.0
 func _ready() -> void:
 	_feet_height_offset = CharacterGroundSnap.compute_feet_height_offset(self)
 	_restore_animation_trees_if_needed()
+	_restore_runtime_scene_overrides()
 	CharacterAnimationLibrary.apply_to(animation_player)
 	_apply_dialogue_resource_override()
 	if animation_player != null:
@@ -75,6 +80,33 @@ func _restore_animation_trees_if_needed() -> void:
 	var restored_trees := CharacterAnimationTreeFactory.ensure_locomotion_trees(animation_player)
 	animation_tree = restored_trees.get("animation_tree") as AnimationTree
 	dialogue_animation_tree = restored_trees.get("dialogue_animation_tree") as AnimationTree
+
+
+func _restore_runtime_scene_overrides() -> void:
+	var hat := get_node_or_null(HAT_PATH) as Node3D
+	if hat != null:
+		hat.visible = false
+	var inner_hat := get_node_or_null(INNER_HAT_PATH) as Node3D
+	if inner_hat != null:
+		inner_hat.visible = false
+
+	var look_tracking := get_node_or_null(LOOK_TRACKING_PATH)
+	if look_tracking != null:
+		look_tracking.set("settings", DEFAULT_LOOK_TRACKING_SETTINGS)
+		look_tracking.set("monitoring", true)
+		look_tracking.set("monitorable", false)
+		if look_tracking.has_method("set_tracking_enabled"):
+			look_tracking.call("set_tracking_enabled", true)
+		if look_tracking.has_method("refresh_tracking_configuration"):
+			look_tracking.call("refresh_tracking_configuration")
+
+	var head_pole_modifier := get_node_or_null(HEAD_POLE_MODIFIER_PATH)
+	if head_pole_modifier != null:
+		head_pole_modifier.set("settings", DEFAULT_LOOK_TRACKING_SETTINGS)
+		head_pole_modifier.set("look_tracking_controller_path", LOOK_TRACKING_CONTROLLER_RELATIVE_PATH)
+		head_pole_modifier.set("active", true)
+		if head_pole_modifier.has_method("reset_head_rotation_immediately"):
+			head_pole_modifier.call("reset_head_rotation_immediately")
 
 
 func _process(delta: float) -> void:
