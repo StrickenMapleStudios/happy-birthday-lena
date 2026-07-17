@@ -45,12 +45,15 @@ var _saved_companion_dialogue_transform := Transform3D.IDENTITY
 var _external_motion_enabled := false
 var _feet_height_offset := CharacterGroundSnap.DEFAULT_FEET_HEIGHT_OFFSET
 var _character_visible := true
+var _runtime_locomotion_speed_scale := 1.0
 
 
 func _ready() -> void:
 	_feet_height_offset = CharacterGroundSnap.compute_feet_height_offset(self)
 	CharacterAnimationLibrary.apply_to(animation_player)
 	_apply_dialogue_resource_override()
+	if animation_player != null:
+		animation_player.speed_scale = _runtime_locomotion_speed_scale
 	if animation_tree != null:
 		animation_tree.active = true
 	if dialogue_animation_tree != null:
@@ -186,6 +189,12 @@ func set_follow_navigation(direction: Vector3, turn_speed: float = WALKING_TURN_
 
 func set_external_motion_enabled(value: bool) -> void:
 	_external_motion_enabled = value
+
+
+func set_runtime_locomotion_speed_scale(value: float) -> void:
+	_runtime_locomotion_speed_scale = maxf(value, 0.01)
+	if animation_player != null:
+		animation_player.speed_scale = _runtime_locomotion_speed_scale
 
 
 func consume_root_motion_distance() -> float:

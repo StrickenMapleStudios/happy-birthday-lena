@@ -2,6 +2,8 @@ extends Control
 
 class_name ScrollingCreditsUI
 
+signal scrolling_finished
+
 const TITLE_FONT := preload("res://assets/art/fonts/Titan_One/TitanOne-Regular.ttf")
 const DEFAULT_CREDIT_NAME := "Артем Айрапетов"
 const LAPTOP_CREDIT_ROLE := "Ноутбук"
@@ -42,6 +44,7 @@ const TEMPLATE_PROFESSIONS := [
 @onready var _entries: VBoxContainer = $ClipContainer/CreditsScroll/Entries
 
 var _scrolling := false
+var _finished := false
 
 
 func _ready() -> void:
@@ -55,18 +58,24 @@ func _process(delta: float) -> void:
 		return
 
 	_scroll_root.position.y -= scroll_speed * delta
+	if _has_scroll_finished():
+		_scrolling = false
+		_finished = true
+		scrolling_finished.emit()
 
 
 func start_scrolling() -> void:
 	_build_entries()
 	_scroll_root.position.y = top_padding
 	_scrolling = true
+	_finished = false
 	visible = true
 	_apply_blur_state_immediately(blur_strength)
 
 
 func stop_scrolling() -> void:
 	_scrolling = false
+	_finished = false
 	_apply_blur_state_immediately(0.0)
 	visible = false
 
@@ -85,6 +94,10 @@ func get_estimated_scroll_duration() -> float:
 		return 0.0
 
 	return travel_distance / scroll_speed
+
+
+func is_finished() -> bool:
+	return _finished
 
 
 func _build_entries() -> void:
@@ -143,3 +156,11 @@ func _set_blur_amount(value: float) -> void:
 
 func _apply_blur_state_immediately(value: float) -> void:
 	_set_blur_amount(value)
+
+
+func _has_scroll_finished() -> bool:
+	if _entries == null or _scroll_root == null:
+		return false
+
+	var content_bottom := _scroll_root.position.y + _entries.get_combined_minimum_size().y + bottom_padding
+	return content_bottom <= 0.0

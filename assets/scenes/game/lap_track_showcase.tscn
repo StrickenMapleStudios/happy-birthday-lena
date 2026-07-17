@@ -166,7 +166,7 @@ transform = Transform3D(0.5897147, 0, -0.20647334, 0, 0.7, 0, 0.20647334, 0, 0.5
 
 [node name="NpcLaneRunner" type="Node" parent="." unique_id=2068378393]
 script = ExtResource("5_lane_runner")
-root_motion_speed_multiplier = 0.72
+root_motion_speed_multiplier = 1.0
 
 [node name="CameraRig" parent="." unique_id=25535630 instance=ExtResource("4_camera_rig")]
 

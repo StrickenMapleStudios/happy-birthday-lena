@@ -62,12 +62,8 @@ func _run_credits_sequence() -> void:
 
 	_credits_finished_requested = false
 	_credits_skip_requested = false
-	var credits_duration := _get_credits_duration_seconds()
-	if credits_duration <= 0.0:
-		_credits_finished_requested = true
-	else:
-		var credits_timer := get_tree().create_timer(credits_duration, false)
-		credits_timer.timeout.connect(func() -> void: _credits_finished_requested = true, CONNECT_ONE_SHOT)
+	if credits_ui != null and not credits_ui.is_connected("scrolling_finished", Callable(self, "_on_credits_scrolling_finished")):
+		credits_ui.connect("scrolling_finished", Callable(self, "_on_credits_scrolling_finished"))
 
 	while not _credits_skip_requested and not _credits_finished_requested:
 		await get_tree().process_frame
@@ -168,11 +164,5 @@ func _stop_credits_presentation() -> void:
 		giant_character_showcase.call("end_credits_dance")
 
 
-func _get_credits_duration_seconds() -> float:
-	if giant_character_showcase != null and giant_character_showcase.has_method("get_credits_duration"):
-		return float(giant_character_showcase.call("get_credits_duration"))
-
-	if credits_ui != null:
-		return credits_ui.get_estimated_scroll_duration()
-
-	return 0.0
+func _on_credits_scrolling_finished() -> void:
+	_credits_finished_requested = true
